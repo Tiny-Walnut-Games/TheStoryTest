@@ -21,11 +21,13 @@ jobs:
         include:
           - os: ubuntu-latest
             unity-platform: StandaloneLinux64
+            unity-version: '2022.3.17f1'
           - os: windows-latest
             unity-platform: StandaloneWindows64
+            unity-version: '2022.3.17f1'
           - os: macos-latest
             unity-platform: StandaloneOSX
-        unity-version: ['2022.3.17f1']  # Adjust to your Unity version
+            unity-version: '2022.3.17f1'
     
     steps:
       - name: Checkout Repository
