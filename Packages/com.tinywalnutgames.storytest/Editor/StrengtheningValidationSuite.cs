@@ -199,10 +199,14 @@ namespace TinyWalnutGames.StoryTest.Editor
             {
                 EditorApplication.playModeStateChanged -= OnPlayModeChanged;
                 // Delay to allow scene to initialize
-                EditorApplication.delayCall += () => RunValidation();
+                // EditorApplication.delayCall += () => RunValidation();
+                // TODO: Restore when ProductionExcellenceStoryTest is implemented
+                Debug.LogWarning("Complete validation pipeline not yet implemented");
             }
         }
 
+        // TODO: Re-enable when ProductionExcellenceStoryTest and ValidationReport are implemented
+        /*
         private static void RunValidation()
         {
             var testObject = GameObject.FindFirstObjectByType<ProductionExcellenceStoryTest>();
@@ -242,6 +246,7 @@ namespace TinyWalnutGames.StoryTest.Editor
                     "Fix Issues");
             }
         }
+        */
 
         private static void ShowValidationWindow(List<StoryViolation> violations)
         {

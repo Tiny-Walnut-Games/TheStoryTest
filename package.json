@@ -2,13 +2,13 @@
   "name": "@tinywalnutgames/storytest",
   "version": "1.0.0",
   "description": "Story Test Framework - Code quality validation via IL bytecode analysis for Unity and .NET projects",
-  "main": "story_test.py",
+  "main": "scripts/story_test.py",
   "scripts": {
     "test": "python -m pytest tests/ -v",
-    "lint": "python -m pylint story_test.py",
-    "validate": "python story_test.py . --verbose",
-    "validate:report": "python story_test.py . --verbose --output .debug/story-test-report.json",
-    "validate:ci": "python story_test.py . --fail-on-violations --output story-test-report.json"
+    "lint": "python -m pylint scripts/story_test.py",
+    "validate": "python scripts/story_test.py . --verbose",
+    "validate:report": "python scripts/story_test.py . --verbose --output .debug/story-test-report.json",
+    "validate:ci": "python scripts/story_test.py . --fail-on-violations --output story-test-report.json"
   },
   "repository": {
     "type": "git",

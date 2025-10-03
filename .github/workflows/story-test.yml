@@ -74,7 +74,7 @@ jobs:
         id: story-test
         continue-on-error: true
         run: |
-          python story_test.py Samples~/ExampleProject --verbose --output story-test-report.json --fail-on-violations
+          python scripts/story_test.py Samples~/ExampleProject --verbose --output story-test-report.json --fail-on-violations
         shell: bash
       
       - name: Upload Story Test Report
