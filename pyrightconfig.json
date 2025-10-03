@@ -1,0 +1,9 @@
+{
+  "include": [
+    "scripts"
+  ],
+  "reportMissingImports": "none",
+  "reportMissingTypeStubs": "none",
+  "pythonVersion": "3.8",
+  "pythonPlatform": "All"
+}

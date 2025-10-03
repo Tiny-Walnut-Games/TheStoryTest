@@ -17,20 +17,20 @@ from enum import Enum
 
 try:
     # Configure pythonnet to use CoreCLR instead of Mono (cross-platform)
-    from pythonnet import set_runtime
-    from clr_loader import get_coreclr
+    from pythonnet import set_runtime  # type: ignore
+    from clr_loader import get_coreclr  # type: ignore
     
     # Use CoreCLR runtime (works on Windows, Linux, macOS)
     rt = get_coreclr()
     set_runtime(rt)
     
-    import clr
+    import clr  # type: ignore
     clr.AddReference("System.Reflection")
-    from System.Reflection import Assembly, BindingFlags, MethodInfo, PropertyInfo
-    from System import Type, Enum as DotNetEnum
+    from System.Reflection import Assembly, BindingFlags, MethodInfo, PropertyInfo  # type: ignore
+    from System import Type, Enum as DotNetEnum  # type: ignore
 except ImportError as e:
     print(f"Error: pythonnet not installed or runtime configuration failed: {e}")
-    print("Install with: pip install pythonnet")
+    print("Install with: pip install -r requirements.txt")
     sys.exit(1)
 
 
