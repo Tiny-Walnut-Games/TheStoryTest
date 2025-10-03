@@ -7,26 +7,34 @@
 ## Solutions Implemented
 
 ### 1. Fixed Action Resolution Errors
+
 **Before**: Used commit hash `@3da9d9dcca2b3cf52e8f11f4eeac04c70e31ccb1` which local linter couldn't validate  
 **After**: Changed to `@v4` with comment documenting the pinned commit hash  
+
 ```yaml
 uses: game-ci/unity-builder@v4  # Pinned commit: 3da9d9dcca2b3cf52e8f11f4eeac04c70e31ccb1
 ```
 
 ### 2. Cleaned Up Workspace Configuration
+
 **File**: `TheStoryTest.code-workspace`
+
 - Added explicit folder name: `"name": "TheStoryTest"`
 - Added watcher exclusion for ghost directory
 - Added GitHub Actions validation settings
 
 ### 3. Added VS Code Settings
+
 **File**: `.vscode/settings.json`
+
 - Configured YAML validation for GitHub workflows
 - Set GitHub Actions to use version style references
 - Added JSON schema mapping for workflow files
 
 ### 4. Created Actionlint Configuration
+
 **File**: `.github/actionlint.yaml`
+
 - Documents expected secrets (UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD)
 - Provides reference to Unity activation guide
 
@@ -39,6 +47,7 @@ uses: game-ci/unity-builder@v4  # Pinned commit: 3da9d9dcca2b3cf52e8f11f4eeac04c
 ## Expected Warnings When Secrets Are Not Configured
 
 When Unity secrets are not yet added to GitHub repository settings, you may see these **informational warnings**:
+
 - `Context access might be invalid: UNITY_LICENSE`
 - `Context access might be invalid: UNITY_EMAIL`  
 - `Context access might be invalid: UNITY_PASSWORD`
@@ -46,7 +55,7 @@ When Unity secrets are not yet added to GitHub repository settings, you may see 
 **These are expected** and will disappear once you configure the secrets at:
 `https://github.com/jmeyer1980/TheStoryTest/settings/secrets/actions`
 
-See Unity activation guide: https://game.ci/docs/github/activation
+See Unity activation guide: <https://game.ci/docs/github/activation>
 
 ## Workflow Features
 
@@ -69,6 +78,7 @@ See Unity activation guide: https://game.ci/docs/github/activation
 
 **Date Fixed**: October 2, 2025  
 **Files Modified**:
+
 - `.github/workflows/story-test.yml`
 - `.github/actionlint.yaml`
 - `.vscode/settings.json`
