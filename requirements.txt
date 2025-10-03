@@ -1,0 +1,8 @@
+# Story Test Framework - Python Requirements
+# Install with: pip install -r requirements.txt
+
+# Core dependency for .NET reflection
+pythonnet>=3.0.0
+
+# Optional: For better terminal output
+colorama>=0.4.6

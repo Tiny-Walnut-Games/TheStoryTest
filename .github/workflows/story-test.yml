@@ -1,0 +1,160 @@
+name: Story Test Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  story-test:
+    name: Story Test - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        unity-version: ['2022.3.17f1']  # Adjust to your Unity version
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Cache Unity Library
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ matrix.os }}-${{ matrix.unity-version }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-${{ matrix.os }}-${{ matrix.unity-version }}-
+            Library-${{ matrix.os }}-
+      
+      - name: Setup Unity
+        uses: unity-actions/unity-builder@v4
+        with:
+          unityVersion: ${{ matrix.unity-version }}
+          targetPlatform: StandaloneWindows64
+          buildMethod: UnityEditor.BuildPipeline.BuildPlayer
+          versioning: None
+          allowDirtyBuild: true
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      
+      - name: Build Unity Project (to generate assemblies)
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: ${{ matrix.unity-version }}
+          targetPlatform: StandaloneWindows64
+          buildMethod: UnityEditor.BuildPipeline.BuildPlayer
+      
+      - name: Run Story Test Validation
+        id: story-test
+        continue-on-error: true
+        run: |
+          python story_test.py . --verbose --output story-test-report.json --fail-on-violations
+        shell: bash
+      
+      - name: Upload Story Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: story-test-report-${{ matrix.os }}
+          path: story-test-report.json
+      
+      - name: Parse and Display Results
+        if: always()
+        shell: bash
+        run: |
+          if [ -f story-test-report.json ]; then
+            echo "## Story Test Results - ${{ matrix.os }}" >> $GITHUB_STEP_SUMMARY
+            
+            TOTAL=$(jq '.totalViolations' story-test-report.json)
+            
+            if [ "$TOTAL" -eq 0 ]; then
+              echo "✅ **No violations found!** Code narrative is complete." >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ **Found $TOTAL violation(s)**" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "### Violations by Type" >> $GITHUB_STEP_SUMMARY
+              jq -r '.violationsByType | to_entries[] | "- **\(.key)**: \(.value)"' story-test-report.json >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "### Violation Details" >> $GITHUB_STEP_SUMMARY
+              jq -r '.violations[] | "- `\(.type).\(.member)`: \(.violation)"' story-test-report.json >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⚠️ Story test report not generated" >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: Fail if violations found
+        if: steps.story-test.outcome == 'failure'
+        run: |
+          echo "Story Test validation failed. Review the violations above."
+          exit 1
+
+  # Alternative job for projects without Unity (pure C# libraries)
+  story-test-dotnet:
+    name: Story Test (C# Only) - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    if: false  # Enable this if you have a non-Unity C# project
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        dotnet-version: ['7.0']
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      
+      - name: Restore Dependencies
+        run: dotnet restore
+      
+      - name: Build Project
+        run: dotnet build --configuration Release --no-restore
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run Story Test Validation
+        run: |
+          python story_test.py ./bin/Release --verbose --output story-test-report.json --fail-on-violations
+      
+      - name: Upload Story Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: story-test-report-dotnet-${{ matrix.os }}
+          path: story-test-report.json
