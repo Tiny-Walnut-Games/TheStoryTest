@@ -19,6 +19,9 @@ namespace TinyWalnutGames.StoryTest.Shared
         public bool strictMode = false;
         public string exportPath = ".debug/storytest_report.txt";
 
+        // Conceptual validation configuration
+        public ConceptualValidationConfig conceptualValidation = new ConceptualValidationConfig();
+
         private static StoryTestSettings _instance;
         private static readonly object _lock = new object();
 
@@ -138,5 +141,31 @@ namespace TinyWalnutGames.StoryTest.Shared
                 _instance = null;
             }
         }
+    }
+
+    /// <summary>
+    /// Configuration for conceptual validation features.
+    /// </summary>
+    [Serializable]
+    public class ConceptualValidationConfig
+    {
+        public bool enableConceptTests = true;
+        public bool autoDetectEnvironment = true;
+        public ValidationTiers validationTiers = new ValidationTiers();
+        public EnvironmentCapabilities environmentCapabilities = new EnvironmentCapabilities();
+        public string[] customComponentTypes = new string[0];
+        public string[] enumValidationPatterns = new string[0];
+        public string fallbackMode = "ilAnalysis"; // or "skip"
+    }
+
+    /// <summary>
+    /// Validation tier configuration.
+    /// </summary>
+    [Serializable]
+    public class ValidationTiers
+    {
+        public bool universal = true;
+        public bool unityAware = true;
+        public bool projectSpecific = false;
     }
 }
