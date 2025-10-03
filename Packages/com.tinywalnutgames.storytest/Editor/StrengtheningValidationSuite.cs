@@ -60,7 +60,7 @@ namespace TinyWalnutGames.StoryTest.Editor
 
             // TODO: Re-enable when StoryIntegrityValidator is implemented
             // var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
-            var violations = new System.Collections.Generic.List<object>();
+            var violations = new System.Collections.Generic.List<TinyWalnutGames.StoryTest.Shared.StoryViolation>();
 
             if (violations.Any())
             {
@@ -276,7 +276,7 @@ namespace TinyWalnutGames.StoryTest.Editor
 
             // TODO: Re-enable when StoryIntegrityValidator is implemented
             // var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
-            var violations = new System.Collections.Generic.List<object>();
+            var violations = new System.Collections.Generic.List<TinyWalnutGames.StoryTest.Shared.StoryViolation>();
 
             report += "STORY INTEGRITY ANALYSIS\n";
             report += new string('-', 25) + "\n";
