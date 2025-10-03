@@ -9,6 +9,7 @@ namespace TinyWalnutGames.StoryTest.Shared
     /// Provides conceptual validation strategies that adapt to project structure.
     /// This class enables dynamic, environment-agnostic validation beyond the core 9 Acts.
     /// </summary>
+    [StoryIgnore("Infrastructure component for Story Test validation framework")]
     public static class ConceptualValidator
     {
         /// <summary>
@@ -321,6 +322,7 @@ namespace TinyWalnutGames.StoryTest.Shared
     /// Serializable for saving to settings file.
     /// </summary>
     [Serializable]
+    [StoryIgnore("Environment detection infrastructure for Story Test framework")]
     public class EnvironmentCapabilities
     {
         public bool hasUnityEngine;

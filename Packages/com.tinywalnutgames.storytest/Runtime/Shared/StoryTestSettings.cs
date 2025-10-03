@@ -9,6 +9,7 @@ namespace TinyWalnutGames.StoryTest.Shared
     /// Loaded from Resources/StoryTestSettings.json or uses defaults for project-agnostic validation.
     /// </summary>
     [Serializable]
+    [StoryIgnore("Configuration infrastructure for Story Test framework")]
     public class StoryTestSettings
     {
         public string projectName = "YourProjectName";
@@ -147,6 +148,7 @@ namespace TinyWalnutGames.StoryTest.Shared
     /// Configuration for conceptual validation features.
     /// </summary>
     [Serializable]
+    [StoryIgnore("Configuration infrastructure for conceptual validation")]
     public class ConceptualValidationConfig
     {
         public bool enableConceptTests = true;
@@ -162,6 +164,7 @@ namespace TinyWalnutGames.StoryTest.Shared
     /// Validation tier configuration.
     /// </summary>
     [Serializable]
+    [StoryIgnore("Configuration infrastructure for validation tiers")]
     public class ValidationTiers
     {
         public bool universal = true;

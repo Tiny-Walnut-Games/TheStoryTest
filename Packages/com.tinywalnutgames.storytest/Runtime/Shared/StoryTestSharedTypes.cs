@@ -11,6 +11,7 @@ namespace TinyWalnutGames.StoryTest.Shared
     /// <summary>
     /// Shared utilities for story test validation including IL analysis helpers.
     /// </summary>
+    [StoryIgnore("Infrastructure utilities for Story Test validation framework")]
     public static class StoryTestUtilities
     {
         public static bool ContainsThrowNotImplementedException(byte[] ilBytes)

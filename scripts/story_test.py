@@ -16,12 +16,21 @@ from typing import List, Dict, Any, Tuple
 from enum import Enum
 
 try:
+    # Configure pythonnet to use CoreCLR instead of Mono (cross-platform)
+    from pythonnet import set_runtime
+    from clr_loader import get_coreclr
+    
+    # Use CoreCLR runtime (works on Windows, Linux, macOS)
+    rt = get_coreclr()
+    set_runtime(rt)
+    
     import clr
     clr.AddReference("System.Reflection")
     from System.Reflection import Assembly, BindingFlags, MethodInfo, PropertyInfo
     from System import Type, Enum as DotNetEnum
-except ImportError:
-    print("Error: pythonnet not installed. Install with: pip install pythonnet")
+except ImportError as e:
+    print(f"Error: pythonnet not installed or runtime configuration failed: {e}")
+    print("Install with: pip install pythonnet")
     sys.exit(1)
 
 
