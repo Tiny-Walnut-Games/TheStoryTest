@@ -46,13 +46,15 @@ namespace TinyWalnutGames.StoryTest.Shared
 
         public static StoryViolationType GetViolationType(string violation)
         {
-            if (violation.Contains("🏳TODO") || violation.Contains("NotImplementedException"))
+            // Note: This method categorizes ACTUAL violation messages (not comments)
+            // Violation messages contain the real words without 🏳 prefix
+            if (violation.Contains("TODO") || violation.Contains("NotImplementedException"))
                 return StoryViolationType.IncompleteImplementation;
             if (violation.Contains("Phantom") || violation.Contains("Cold") || violation.Contains("Hollow"))
                 return StoryViolationType.UnusedCode;
-            if (violation.Contains("Abstract") || violation.Contains("🏳Unsealed"))
+            if (violation.Contains("Abstract") || violation.Contains("Unsealed"))
                 return StoryViolationType.IncompleteImplementation;
-            if (violation.Contains("🏳Debug") || violation.Contains("🏳Test"))
+            if (violation.Contains("Debug") || violation.Contains("Test"))
                 return StoryViolationType.DebuggingCode;
             if (violation.Contains("Premature"))
                 return StoryViolationType.PrematureCelebration;
