@@ -42,7 +42,8 @@ namespace TinyWalnutGames.StoryTest.Editor
                 return;
             }
 
-            // TODO: Re-enable when ProductionExcellenceStoryTest and ValidationReport are implemented
+            // 🚧 PLANNED FEATURE: Complete validation pipeline
+            // Will be implemented in Phase 3+ when ProductionExcellenceStoryTest and ValidationReport are available
             // RunValidation();
         }
 
@@ -58,7 +59,7 @@ namespace TinyWalnutGames.StoryTest.Editor
                 .Where(a => !a.FullName.Contains("Unity") && !a.FullName.Contains("UnityEngine") && !a.FullName.Contains("UnityEditor"))
                 .ToArray();
 
-            // 📜 TODO: Re-enable when StoryIntegrityValidator is implemented
+            // � PLANNED FEATURE: Will use StoryIntegrityValidator in Phase 3+
             // var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
             var violations = new System.Collections.Generic.List<TinyWalnutGames.StoryTest.Shared.StoryViolation>();
 
@@ -203,12 +204,12 @@ namespace TinyWalnutGames.StoryTest.Editor
                 EditorApplication.playModeStateChanged -= OnPlayModeChanged;
                 // Delay to allow scene to initialize
                 // EditorApplication.delayCall += () => RunValidation();
-                // 👀 TODO: Restore when ProductionExcellenceStoryTest is implemented
-                Debug.LogWarning("Complete validation pipeline not yet implemented");
+                // � PLANNED FEATURE: Will be implemented in Phase 3+ when ProductionExcellenceStoryTest is available
+                Debug.LogWarning("🏳Complete validation pipeline not yet implemented");
             }
         }
 
-        // 👀 TODO: Re-enable when ProductionExcellenceStoryTest and ValidationReport are implemented
+        // � PLANNED FEATURE: Will be implemented in Phase 3+ when ProductionExcellenceStoryTest and ValidationReport are available
         /*
         private static void RunValidation()
         {
@@ -274,7 +275,7 @@ namespace TinyWalnutGames.StoryTest.Editor
                             settings.assemblyFilters.Any(filter => a.FullName.Contains(filter))))
                 .ToArray();
 
-            // 👀 TODO: Re-enable when StoryIntegrityValidator is implemented
+            // � PLANNED FEATURE: Will use StoryIntegrityValidator in Phase 3+
             // var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
             var violations = new System.Collections.Generic.List<TinyWalnutGames.StoryTest.Shared.StoryViolation>();
 

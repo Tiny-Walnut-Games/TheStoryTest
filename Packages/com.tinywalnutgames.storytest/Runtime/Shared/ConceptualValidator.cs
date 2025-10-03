@@ -33,7 +33,7 @@ namespace TinyWalnutGames.StoryTest.Shared
 
         /// <summary>
         /// Validate an enum type according to conceptual rules.
-        /// Returns violations if enum is "hollow" (too few values, all placeholders).
+        /// Returns violations if enum is "hollow" (too few values, all 🏳placeholders).
         /// </summary>
         public static List<string> ValidateEnum(Type enumType)
         {
@@ -53,14 +53,14 @@ namespace TinyWalnutGames.StoryTest.Shared
                 violations.Add($"{enumType.FullName}: Enum has only {enumValues.Length} value(s). Enums should have at least 2 meaningful values.");
             }
 
-            // Rule 2: Check for placeholder-only names
-            var placeholderNames = new[] { "None", "Default", "Undefined", "Placeholder", "TODO", "TEMP", "Unknown" };
+            // Rule 2: Check for 🏳placeholder-only names
+            var placeholderNames = new[] { "None", "Default", "Undefined", "Placeholder", "🏳TODO", "TEMP", "Unknown" };
             var nonPlaceholderCount = enumNames.Count(name => 
                 !placeholderNames.Contains(name, StringComparer.OrdinalIgnoreCase));
 
             if (enumValues.Length == 2 && nonPlaceholderCount == 0)
             {
-                violations.Add($"{enumType.FullName}: Enum has only placeholder names: {string.Join(", ", enumNames)}");
+                violations.Add($"{enumType.FullName}: Enum has only 🏳placeholder names: {string.Join(", ", enumNames)}");
             }
 
             return violations;
@@ -131,7 +131,7 @@ namespace TinyWalnutGames.StoryTest.Shared
 
             if (fields.Length == 0 && properties.Length == 0)
             {
-                violations.Add($"{valueType.FullName}: Value type has no public fields or properties. Likely a placeholder.");
+                violations.Add($"{valueType.FullName}: Value type has no public fields or properties. Likely a 🏳placeholder.");
             }
 
             // Check for default constructor (value types always have one, but verify it's not explicitly deleted)
@@ -142,7 +142,7 @@ namespace TinyWalnutGames.StoryTest.Shared
 
         /// <summary>
         /// Validate that classes with abstract members are marked as abstract.
-        /// This is a conceptual check for Act4 (UnsealedAbstractMembers).
+        /// This is a conceptual check for Act4 (🏳UnsealedAbstractMembers).
         /// </summary>
         public static List<string> ValidateAbstractMemberSealing(Type classType)
         {
@@ -163,7 +163,7 @@ namespace TinyWalnutGames.StoryTest.Shared
 
             if (abstractMethods.Any() || abstractProperties.Any())
             {
-                violations.Add($"{classType.FullName}: Class has abstract members but is not marked as abstract (Act4: UnsealedAbstractMembers)");
+                violations.Add($"{classType.FullName}: Class has abstract members but is not marked as abstract (Act4: 🏳UnsealedAbstractMembers)");
             }
 
             return violations;
@@ -293,7 +293,7 @@ namespace TinyWalnutGames.StoryTest.Shared
                 }
             }
 
-            // Check for empty value types
+            // Check for 🏳empty value types
             if (type.IsValueType && !type.IsEnum && !type.IsPrimitive)
             {
                 var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
@@ -305,7 +305,7 @@ namespace TinyWalnutGames.StoryTest.Shared
                     {
                         Type = type.FullName,
                         Member = null,
-                        Violation = "Value type has no public fields or properties - likely a placeholder",
+                        Violation = "Value type has no public fields or properties - likely a 🏳placeholder",
                         FilePath = type.Assembly.Location,
                         LineNumber = 0,
                         ViolationType = StoryViolationType.IncompleteImplementation

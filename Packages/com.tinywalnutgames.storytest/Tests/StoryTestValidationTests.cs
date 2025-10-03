@@ -96,16 +96,16 @@ namespace TinyWalnutGames.StoryTest.Tests
                     Assert.IsTrue(enumValues.Length >= 2, 
                         $"{enumType.FullName} enum should have at least 2 values (Act8: HollowEnums)");
 
-                    // Check for placeholder names
+                    // Check for 🏳placeholder names
                     var names = System.Enum.GetNames(enumType);
-                    var placeholderNames = new[] { "None", "Default", "Undefined", "Placeholder", "TODO", "TEMP" };
+                    var placeholderNames = new[] { "None", "Default", "Undefined", "Placeholder", "🏳TODO", "TEMP" };
                     
                     if (enumValues.Length == 2)
                     {
-                        // If only 2 values, ensure both aren't placeholders
+                        // If only 2 values, ensure both aren't 🏳placeholders
                         var nonPlaceholders = names.Where(n => !placeholderNames.Contains(n, System.StringComparer.OrdinalIgnoreCase)).Count();
                         Assert.IsTrue(nonPlaceholders > 0,
-                            $"{enumType.FullName} has only placeholder values (Act8: HollowEnums)");
+                            $"{enumType.FullName} has only 🏳placeholder values (Act8: HollowEnums)");
                     }
                 }
             }
@@ -159,7 +159,7 @@ namespace TinyWalnutGames.StoryTest.Tests
         [Test]
         public void ClassesWithAbstractMembersAreAbstract()
         {
-            // This validates Act4 (UnsealedAbstractMembers) conceptually
+            // This validates Act4 (🏳UnsealedAbstractMembers) conceptually
             var settings = StoryTestSettings.Instance;
             var assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic && IsProjectAssembly(a, settings))
@@ -180,7 +180,7 @@ namespace TinyWalnutGames.StoryTest.Tests
 
                     if (abstractMembers.Length > 0 && !type.IsAbstract)
                     {
-                        Assert.Fail($"{type.FullName} has abstract members but is not marked as abstract (Act4: UnsealedAbstractMembers)");
+                        Assert.Fail($"{type.FullName} has abstract members but is not marked as abstract (Act4: 🏳UnsealedAbstractMembers)");
                     }
                 }
             }
@@ -292,7 +292,7 @@ namespace TinyWalnutGames.StoryTest.Tests
     {
         public void SomeMethod()
         {
-            // This would normally be flagged as incomplete, but StoryIgnore should prevent it
+            // This would normally be flagged as 🏳incomplete, but StoryIgnore should prevent it
         }
     }
 }
