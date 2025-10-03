@@ -1,7 +1,6 @@
 using System;
-
-using TinyWalnutGames.StoryTest.Shared;
 using System.Reflection;
+using TinyWalnutGames.StoryTest.Shared;
 
 namespace TinyWalnutGames.StoryTest
 {

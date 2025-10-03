@@ -1,13 +1,11 @@
 {
-    "name": "TinyWalnutGames.TheStoryTest.Editor",
-    "rootNamespace": "TinyWalnutGames.TheStoryTest.Editor",
+    "name": "TinyWalnutGames.TheStoryTest",
+    "rootNamespace": "TinyWalnutGames.TheStoryTest",
     "references": [
-        "TinyWalnutGames.TheStoryTest",
-        "TinyWalnutGames.TheStoryTest.Shared"
+        "TinyWalnutGames.TheStoryTest.Shared",
+        "TinyWalnutGames.TheStoryTest.Acts"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

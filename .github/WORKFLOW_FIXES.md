@@ -3,12 +3,15 @@
 ## Latest Update: December 2024 - Version Tag Migration
 
 ### Problem: Deprecated Action Versions
+
 GitHub Actions workflow was using pinned commit SHAs for action versions, which can become deprecated and cause workflow failures.
 
 ### Solution: Migrated to Major Version Tags
+
 Updated all GitHub Actions to use major version tags (`@v4`, `@v5`) instead of commit SHAs, following GitHub's recommended best practices.
 
 **Before:**
+
 ```yaml
 uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
 uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c  # v5.0.0
@@ -19,6 +22,7 @@ uses: game-ci/unity-builder@v4  # Pinned commit: 3da9d9dcca2b3cf52e8f11f4eeac04c
 ```
 
 **After:**
+
 ```yaml
 uses: actions/checkout@v4
 uses: actions/setup-python@v5
@@ -29,6 +33,7 @@ uses: game-ci/unity-builder@v4
 ```
 
 **Benefits:**
+
 - ✅ Automatic updates to latest compatible versions
 - ✅ Automatic security patches
 - ✅ Reduced maintenance burden

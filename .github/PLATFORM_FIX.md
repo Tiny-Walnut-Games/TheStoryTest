@@ -1,19 +1,24 @@
 # GitHub Actions Unity Platform Fix
 
 ## Issue
+
 The workflow was failing on Linux builds with the error:
-```
+
+```ts
 Platform must be one of the ones described in the documentation.
 "Linux64" is currently not supported.
 ```
 
 ## Root Cause
+
 The workflow was using an incorrect platform identifier `Linux64` which is not recognized by Unity's build system.
 
 ## Solution
+
 Changed from dynamic platform selection to explicit matrix mapping using correct Unity platform identifiers:
 
 ### Before (Incorrect)
+
 ```yaml
 matrix:
   os: [ubuntu-latest, windows-latest, macos-latest]
@@ -22,6 +27,7 @@ targetPlatform: ${{ matrix.os == 'windows-latest' && 'StandaloneWindows64' || ma
 ```
 
 ### After (Correct)
+
 ```yaml
 matrix:
   include:
@@ -55,7 +61,9 @@ According to [game-ci/unity-builder documentation](https://game.ci/docs/github/b
 4. ✅ **Extensible** - Can add platform-specific configurations (e.g., Android API level)
 
 ## Testing
+
 After this fix, all three platforms should build successfully:
+
 - ✅ **Ubuntu** → StandaloneLinux64
 - ⏳ **Windows** → StandaloneWindows64 (waiting)
 - ⏳ **macOS** → StandaloneOSX (waiting)

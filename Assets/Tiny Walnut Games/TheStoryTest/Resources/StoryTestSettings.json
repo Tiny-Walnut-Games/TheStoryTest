@@ -1,0 +1,18 @@
+{
+  "projectName": "YourProjectName",
+  "menuPath": "Tiny Walnut Games/The Story Test/",
+  "assemblyFilters": [],
+  "includeUnityAssemblies": false,
+  "validateOnStart": false,
+  "strictMode": false,
+  "exportPath": ".debug/storytest_report.txt",
+  "comments": {
+    "projectName": "The name of your project - used for folder structure validation and reporting",
+    "menuPath": "Unity Editor menu path for Story Test tools. Must end with '/'",
+    "assemblyFilters": "Array of assembly name patterns to validate. Empty array = validate all project assemblies",
+    "includeUnityAssemblies": "Set to true to validate Unity engine assemblies (not recommended)",
+    "validateOnStart": "Automatically run validation when ProductionExcellenceStoryTest MonoBehaviour starts",
+    "strictMode": "Enable strict validation mode with stricter rules",
+    "exportPath": "Path where validation reports are exported (relative to project root)"
+  }
+}

@@ -85,7 +85,7 @@ StoryTestValidator
 
 ### Unity Developers
 1. Import package to `Assets/Tiny Walnut Games/TheStoryTest/`
-2. Run via menu: `Tools/Toxicity/Run Story Test and Export Report`
+2. Run via menu: `Tiny Walnut Games/The Story Test/Run Story Test and Export Report`
 3. Review violations in `.debug/storytest_report.txt`
 
 ### CI/CD Engineers

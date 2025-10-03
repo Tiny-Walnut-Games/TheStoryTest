@@ -8,7 +8,7 @@ Copy the `Assets/Tiny Walnut Games/TheStoryTest/` folder into your Unity project
 ### 2. Run Your First Validation
 **Option A - Menu:**
 1. Open Unity Editor
-2. Go to `Tools/Toxicity/Run Story Test and Export Report`
+2. Go to `Tiny Walnut Games/The Story Test/Run Story Test and Export Report`
 3. Check the generated report at `.debug/storytest_report.txt`
 
 **Option B - MonoBehaviour:**

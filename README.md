@@ -22,7 +22,7 @@ Think of your code as a narrative where every element must serve a purpose. The 
 ### Unity Projects (In-Editor)
 
 1. **Import** the Story Test package into `Assets/Tiny Walnut Games/TheStoryTest/`
-2. **Run validation** via Unity menu: `Tools/Toxicity/Run Story Test and Export Report`
+2. **Run validation** via Unity menu: `Tiny Walnut Games/The Story Test/Run Story Test and Export Report`
 3. **Review** violations in `.debug/storytest_report.txt`
 
 Or add the `ProductionExcellenceStoryTest` MonoBehaviour to a GameObject and run via Context Menu.

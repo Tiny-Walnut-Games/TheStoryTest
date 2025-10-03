@@ -107,7 +107,7 @@ using Debug = System.Diagnostics.Debug;
 ## Development Workflow
 
 ### Running Validation (Unity)
-1. **Menu**: `Tools/Toxicity/Run Story Test and Export Report` → exports to `.debug/storytest_report.txt`
+1. **Menu**: `Tiny Walnut Games/The Story Test/Run Story Test and Export Report` → exports to `.debug/storytest_report.txt`
 2. **In-Scene**: Add `ProductionExcellenceStoryTest` MonoBehaviour, configure phases, run via Context Menu
 3. **Tests**: `StoryTestValidationTests.cs` contains NUnit integration tests
 

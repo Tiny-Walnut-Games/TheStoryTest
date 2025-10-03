@@ -14,7 +14,13 @@ namespace TinyWalnutGames.StoryTest.Editor
     [StoryIgnore("Editor tooling for story test infrastructure")]
     public static class StrengtheningValidationSuite
     {
-        private const string MenuRoot = "Toxicity/Story Test/";
+        // MenuItem attributes require const, so we use a default that can be configured via StoryTestSettings
+        private const string MenuRoot = "Tiny Walnut Games/The Story Test/";
+        
+        /// <summary>
+        /// Gets the configured menu path from settings. Falls back to MenuRoot if not configured.
+        /// </summary>
+        private static string GetMenuPath() => StoryTestSettings.Instance.menuPath ?? MenuRoot;
 
         /// <summary>
         /// Runs the complete strengthening validation pipeline.
@@ -43,8 +49,10 @@ namespace TinyWalnutGames.StoryTest.Editor
         [MenuItem(MenuRoot + "Validate Story Integrity", false, 2)]
         public static void ValidateStoryIntegrity()
         {
+            // We don't want to include Unity assemblies in the integrity check as Unity's own code is out of our control.
+            // 📜 This is a best-effort approach and may need adjustments based on project structure.
             var assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => a.FullName.Contains("Toxicity"))
+                .Where(a => !a.FullName.Contains("Unity") && !a.FullName.Contains("UnityEngine") && !a.FullName.Contains("UnityEditor"))
                 .ToArray();
 
             var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
@@ -77,7 +85,7 @@ namespace TinyWalnutGames.StoryTest.Editor
             var reportPath = EditorUtility.SaveFilePanel(
                 "Save Validation Report",
                 Application.dataPath,
-                $"ToxicityValidationReport_{System.DateTime.Now:yyyyMMdd_HHmmss}",
+                $"StoryTestValidationReport_{System.DateTime.Now:yyyyMMdd_HHmmss}",
                 "txt");
 
             if (string.IsNullOrEmpty(reportPath))
@@ -116,12 +124,42 @@ namespace TinyWalnutGames.StoryTest.Editor
                 issues.Add("DOTS/ECS assemblies not properly referenced");
             }
 
-            // Check for proper folder structure
+            // Check for proper folder structure?            
+            // 📜 - A better approach would be to load a config file defining the expected structure.
+            /* I am not sure of the string over-ride syntax here, but as an example:
+            storysettings.json
+            {
+                "projectName": "MyGame",
+                "requiredFolders": [
+                    $"Assets/{projectName}/Scripts",
+                    $"Assets/{projectName}/Scenes",
+                    $"Assets/{projectName}/Prefabs",
+                    $"Assets/{projectName}/Art",
+                    $"Assets/{projectName}/Audio",
+                    $"Assets/Editor",
+                    $"Assets/Tests"
+                ],
+                "optionalFolders": [
+                    $"Assets/{projectName}/UI",
+                    $"Assets/{projectName}/Resources",
+                    $"Assets/{projectName}/Animations"
+                ],
+                "rules": {
+                    "enforcePrefabUsage": true,
+                    "allowResourcesFolder": false,
+                    "requireTests": true
+                }
+            }
+            */
             var requiredFolders = new[]
             {
                 "Assets/Scripts",
-                "Assets/Resources",
-                "Assets/Scenes"
+                "Assets/Scenes",
+                "Assets/Prefabs",
+                "Assets/Art",
+                "Assets/Audio",
+                "Assets/Editor",
+                "Assets/Tests"
             };
 
             foreach (var folder in requiredFolders)
@@ -210,15 +248,20 @@ namespace TinyWalnutGames.StoryTest.Editor
 
         private static string GenerateReport()
         {
-            var report = "TOXICITY FRAMEWORK STRENGTHENING VALIDATION REPORT\n";
+            var report = "THE STORY-TEST FRAMEWORK STRENGTHENING VALIDATION REPORT\n";
             report += new string('=', 50) + "\n\n";
             report += $"Generated: {System.DateTime.Now:yyyy-MM-dd HH:mm:ss}\n";
             report += $"Unity Version: {Application.unityVersion}\n";
             report += $"Target Platform: {EditorUserBuildSettings.activeBuildTarget}\n\n";
 
             // Story integrity analysis
+            var settings = StoryTestSettings.Instance;
             var assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => a.FullName.Contains("Toxicity"))
+                .Where(a => !a.FullName.StartsWith("Unity") && 
+                           !a.FullName.StartsWith("UnityEngine") && 
+                           !a.FullName.StartsWith("UnityEditor") &&
+                           (settings.assemblyFilters.Length == 0 || 
+                            settings.assemblyFilters.Any(filter => a.FullName.Contains(filter))))
                 .ToArray();
 
             var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
@@ -277,7 +320,7 @@ namespace TinyWalnutGames.StoryTest.Editor
         private Vector2 scrollPosition;
         private bool validateOnBuild = true;
         private bool strictMode = false;
-        private string[] assemblyFilters = { "Toxicity" };
+        private string[] assemblyFilters = { "" };
 
         public static void ShowWindow()
         {
@@ -345,26 +388,33 @@ namespace TinyWalnutGames.StoryTest.Editor
 
         private void ApplyConfiguration()
         {
-            EditorPrefs.SetBool("Toxicity.ValidateOnBuild", validateOnBuild);
-            EditorPrefs.SetBool("Toxicity.StrictMode", strictMode);
+            var settings = StoryTestSettings.Instance;
+            settings.validateOnStart = validateOnBuild;
+            settings.strictMode = strictMode;
+            settings.assemblyFilters = assemblyFilters ?? new string[0];
+            settings.SaveSettings();
+
+            // Also save to EditorPrefs for backwards compatibility
+            EditorPrefs.SetBool("StoryTest.ValidateOnBuild", validateOnBuild);
+            EditorPrefs.SetBool("StoryTest.StrictMode", strictMode);
 
             if (assemblyFilters != null)
             {
                 for (int i = 0; i < assemblyFilters.Length; i++)
                 {
-                    EditorPrefs.SetString($"Toxicity.AssemblyFilter.{i}", assemblyFilters[i]);
+                    EditorPrefs.SetString($"StoryTest.AssemblyFilter.{i}", assemblyFilters[i]);
                 }
-                EditorPrefs.SetInt("Toxicity.AssemblyFilters.Count", assemblyFilters.Length);
+                EditorPrefs.SetInt("StoryTest.AssemblyFilters.Count", assemblyFilters.Length);
             }
 
-            Debug.Log("Strengthening configuration applied successfully.");
+            Debug.Log("Story Test configuration applied and saved to StoryTestSettings.json");
         }
 
         private void ResetToDefaults()
         {
             validateOnBuild = true;
             strictMode = false;
-            assemblyFilters = new[] { "Toxicity" };
+            assemblyFilters = new[] { "" };
         }
 
         private void OnEnable()
@@ -374,14 +424,27 @@ namespace TinyWalnutGames.StoryTest.Editor
 
         private void LoadConfiguration()
         {
-            validateOnBuild = EditorPrefs.GetBool("Toxicity.ValidateOnBuild", true);
-            strictMode = EditorPrefs.GetBool("Toxicity.StrictMode", false);
+            var settings = StoryTestSettings.Instance;
+            
+            // Load from settings file first
+            validateOnBuild = settings.validateOnStart;
+            strictMode = settings.strictMode;
+            assemblyFilters = settings.assemblyFilters.Length > 0 
+                ? settings.assemblyFilters 
+                : new string[] { "" };
+            
+            // Override with EditorPrefs if they exist (user-specific overrides)
+            validateOnBuild = EditorPrefs.GetBool("StoryTest.ValidateOnBuild", validateOnBuild);
+            strictMode = EditorPrefs.GetBool("StoryTest.StrictMode", strictMode);
 
-            var filterCount = EditorPrefs.GetInt("Toxicity.AssemblyFilters.Count", 1);
-            assemblyFilters = new string[filterCount];
-            for (int i = 0; i < filterCount; i++)
+            var filterCount = EditorPrefs.GetInt("StoryTest.AssemblyFilters.Count", -1);
+            if (filterCount > 0)
             {
-                assemblyFilters[i] = EditorPrefs.GetString($"Toxicity.AssemblyFilter.{i}", i == 0 ? "Toxicity" : "");
+                assemblyFilters = new string[filterCount];
+                for (int i = 0; i < filterCount; i++)
+                {
+                    assemblyFilters[i] = EditorPrefs.GetString($"StoryTest.AssemblyFilter.{i}", "");
+                }
             }
         }
     }
@@ -426,6 +489,10 @@ namespace TinyWalnutGames.StoryTest.Editor
                 GUILayout.Label(violation.ViolationType.ToString(), style);
                 GUILayout.Label($"Member: {violation.Type}.{violation.Member}", EditorStyles.wordWrappedLabel);
                 GUILayout.Label($"Issue: {violation.Violation}", EditorStyles.wordWrappedLabel);
+                GUILayout.Label($"Location: {violation.Location}", EditorStyles.wordWrappedLabel);
+                GUILayout.Label($"Description: {violation.Description}", EditorStyles.wordWrappedLabel);
+                GUILayout.Label($"Severity: {violation.Severity}", EditorStyles.wordWrappedLabel);
+                GUILayout.Label($"Timestamp: {violation.Timestamp}", EditorStyles.wordWrappedLabel);
 
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.Space();

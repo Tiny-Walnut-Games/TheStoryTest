@@ -2,15 +2,20 @@
 using UnityEditor;
 using UnityEngine;
 using TinyWalnutGames.StoryTest;
+using TinyWalnutGames.StoryTest.Shared;
 
 namespace TinyWalnutGames.StoryTest.Editor
 {
     public static class StoryTestExportMenu
     {
-        [MenuItem("Tiny Walnut Games/The Story Test/Run Story Test and Export Report")]
+        // MenuItem requires const, so we use default path that matches StoryTestSettings default
+        private const string MenuPath = "Tiny Walnut Games/The Story Test/Run Story Test and Export Report";
+        
+        [MenuItem(MenuPath)]
         public static async void RunAndExportStoryTest()
         {
-            string exportPath = System.IO.Path.Combine(Application.dataPath, "../.debug/storytest_report.txt");
+            var settings = StoryTestSettings.Instance;
+            string exportPath = System.IO.Path.Combine(Application.dataPath, "..", settings.exportPath);
             Debug.Log($"Running story test and exporting to: {exportPath}");
             await StoryTestSyncPointValidator.QuickSyncPointTestAndExport(exportPath);
             EditorUtility.RevealInFinder(exportPath);

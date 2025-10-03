@@ -30,8 +30,10 @@ namespace TinyWalnutGames.StoryTest
         [SerializeField] private ValidationPhase enabledPhases = ValidationPhase.All;
 
         [Header("Assembly Filtering")]
-        [SerializeField] private string[] assemblyNameFilters = new string[0]; // Empty = validate all assemblies
+        [Tooltip("Leave empty to use settings from StoryTestSettings.json. Override here for this specific instance.")]
+        [SerializeField] private string[] assemblyNameFilters = new string[0]; // Empty = use settings file defaults
         [SerializeField] private bool includeUnityAssemblies = false;
+        [SerializeField] private bool useSettingsFileDefaults = true; // Load assembly filters from StoryTestSettings.json
 
         [Header("Results")]
         [SerializeField, TextArea(5, 10)] private string lastValidationResults = "";
@@ -59,6 +61,18 @@ namespace TinyWalnutGames.StoryTest
 
         private void Start()
         {
+            // Load defaults from settings if configured
+            if (useSettingsFileDefaults)
+            {
+                var settings = StoryTestSettings.Instance;
+                if (assemblyNameFilters == null || assemblyNameFilters.Length == 0)
+                {
+                    assemblyNameFilters = settings.assemblyFilters;
+                }
+                includeUnityAssemblies = settings.includeUnityAssemblies;
+                validateOnStart = settings.validateOnStart;
+            }
+            
             if (validateOnStart)
             {
                 StartCoroutine(PerformValidationAsync());
