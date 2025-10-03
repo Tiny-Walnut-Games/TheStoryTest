@@ -1,21 +1,56 @@
 # GitHub Actions Workflow Fixes - Complete
 
-## Problem: 72 Duplicate Linter Errors
+## Latest Update: December 2024 - Version Tag Migration
 
-**Root Cause**: VS Code workspace had ghost folder references to the deleted `TheStoryTest/TheStoryTest` nested directory, causing the GitHub Actions extension to validate `.github/workflows/story-test.yml` multiple times (~10 instances × 7 errors each = 72 total errors).
+### Problem: Deprecated Action Versions
+GitHub Actions workflow was using pinned commit SHAs for action versions, which can become deprecated and cause workflow failures.
 
-## Solutions Implemented
+### Solution: Migrated to Major Version Tags
+Updated all GitHub Actions to use major version tags (`@v4`, `@v5`) instead of commit SHAs, following GitHub's recommended best practices.
 
-### 1. Fixed Action Resolution Errors
-
-**Before**: Used commit hash `@3da9d9dcca2b3cf52e8f11f4eeac04c70e31ccb1` which local linter couldn't validate  
-**After**: Changed to `@v4` with comment documenting the pinned commit hash  
-
+**Before:**
 ```yaml
+uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c  # v5.0.0
+uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2  # v4.0.0
+uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3  # v4.3.1
+uses: actions/setup-dotnet@4d6c8fcf3c8f7a60068d26b594648e99df24cee3  # v4.0.0
 uses: game-ci/unity-builder@v4  # Pinned commit: 3da9d9dcca2b3cf52e8f11f4eeac04c70e31ccb1
 ```
 
-### 2. Cleaned Up Workspace Configuration
+**After:**
+```yaml
+uses: actions/checkout@v4
+uses: actions/setup-python@v5
+uses: actions/cache@v4
+uses: actions/upload-artifact@v4
+uses: actions/setup-dotnet@v4
+uses: game-ci/unity-builder@v4
+```
+
+**Benefits:**
+- ✅ Automatic updates to latest compatible versions
+- ✅ Automatic security patches
+- ✅ Reduced maintenance burden
+- ✅ Cleaner, more readable code
+- ✅ GitHub best practice compliance
+
+---
+
+## Previous Fix: October 2024 - Linter Errors
+
+### Problem: 72 Duplicate Linter Errors
+
+**Root Cause**: VS Code workspace had ghost folder references to the deleted `TheStoryTest/TheStoryTest` nested directory, causing the GitHub Actions extension to validate `.github/workflows/story-test.yml` multiple times (~10 instances × 7 errors each = 72 total errors).
+
+### Solutions Implemented
+
+#### 1. Fixed Action Resolution Errors
+
+**Before**: Used commit hash without version tag reference  
+**After**: Standardized to version tag format
+
+#### 2. Cleaned Up Workspace Configuration
 
 **File**: `TheStoryTest.code-workspace`
 
@@ -23,7 +58,7 @@ uses: game-ci/unity-builder@v4  # Pinned commit: 3da9d9dcca2b3cf52e8f11f4eeac04c
 - Added watcher exclusion for ghost directory
 - Added GitHub Actions validation settings
 
-### 3. Added VS Code Settings
+#### 3. Added VS Code Settings
 
 **File**: `.vscode/settings.json`
 
@@ -31,7 +66,7 @@ uses: game-ci/unity-builder@v4  # Pinned commit: 3da9d9dcca2b3cf52e8f11f4eeac04c
 - Set GitHub Actions to use version style references
 - Added JSON schema mapping for workflow files
 
-### 4. Created Actionlint Configuration
+#### 4. Created Actionlint Configuration
 
 **File**: `.github/actionlint.yaml`
 

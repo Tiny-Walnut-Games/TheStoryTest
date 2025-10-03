@@ -23,12 +23,12 @@ jobs:
     
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       
       - name: Set up Python
-        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c  # v5.0.0
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       
@@ -38,7 +38,7 @@ jobs:
           pip install -r requirements.txt
       
       - name: Cache Unity Library
-        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2  # v4.0.0
+        uses: actions/cache@v4
         with:
           path: Library
           key: Library-${{ matrix.os }}-${{ matrix.unity-version }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
@@ -50,7 +50,7 @@ jobs:
       # See https://game.ci/docs/github/activation for setup instructions
       # yamllint disable-line rule:line-length
       - name: Build Unity Project (to generate assemblies)
-        uses: game-ci/unity-builder@v4  # Pinned commit: 3da9d9dcca2b3cf52e8f11f4eeac04c70e31ccb1
+        uses: game-ci/unity-builder@v4
         env:
           # These secrets must be configured in repository settings - warnings are expected until configured
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}  # pragma: allowlist secret
@@ -70,7 +70,7 @@ jobs:
       
       - name: Upload Story Test Report
         if: always()
-        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3  # v4.3.1
+        uses: actions/upload-artifact@v4
         with:
           name: story-test-report-${{ matrix.os }}
           path: story-test-report.json
@@ -119,10 +119,10 @@ jobs:
     
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+        uses: actions/checkout@v4
       
       - name: Setup .NET
-        uses: actions/setup-dotnet@4d6c8fcf3c8f7a60068d26b594648e99df24cee3  # v4.0.0
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
       
@@ -133,7 +133,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
       
       - name: Set up Python
-        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c  # v5.0.0
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       
@@ -148,7 +148,7 @@ jobs:
       
       - name: Upload Story Test Report
         if: always()
-        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3  # v4.3.1
+        uses: actions/upload-artifact@v4
         with:
           name: story-test-report-dotnet-${{ matrix.os }}
           path: story-test-report.json
