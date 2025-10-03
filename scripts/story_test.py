@@ -45,22 +45,28 @@ class StoryViolationType(Enum):
 
 class StoryViolation:
     """Represents a Story Test violation"""
-    def __init__(self, type_name: str, member: str, violation: str, violation_type: StoryViolationType):
+    def __init__(self, type_name: str, member: str, violation: str, violation_type: StoryViolationType, 
+                 file_path: str = "", line_number: int = 0):
         self.type_name = type_name
         self.member = member
         self.violation = violation
         self.violation_type = violation_type
+        self.file_path = file_path
+        self.line_number = line_number
 
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> Dict[str, Any]:
         return {
             "type": self.type_name,
             "member": self.member,
             "violation": self.violation,
+            "filePath": self.file_path,
+            "lineNumber": self.line_number,
             "violationType": self.violation_type.value
         }
 
     def __str__(self) -> str:
-        return f"[{self.violation_type.value}] {self.type_name}.{self.member}: {self.violation}"
+        location = f" ({self.file_path}:{self.line_number})" if self.file_path else ""
+        return f"[{self.violation_type.value}] {self.type_name}.{self.member}: {self.violation}{location}"
 
 
 class ILAnalyzer:
@@ -155,18 +161,24 @@ class StoryTestValidator:
         
         type_name = str(type_obj.Name)
         
+        # Extract assembly file path for violation reporting
+        try:
+            file_path = str(type_obj.Assembly.Location) if hasattr(type_obj, 'Assembly') else ""
+        except:
+            file_path = ""
+        
         # Act 3: Incomplete Classes
-        self._check_incomplete_classes(type_obj, type_name)
+        self._check_incomplete_classes(type_obj, type_name, file_path)
         
         # Act 8: Hollow Enums
         if type_obj.IsEnum:
-            self._check_hollow_enums(type_obj, type_name)
+            self._check_hollow_enums(type_obj, type_name, file_path)
         
         # Validate methods
         try:
             methods = type_obj.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
             for method in methods:
-                self._validate_method(type_obj, method, type_name)
+                self._validate_method(type_obj, method, type_name, file_path)
         except:
             pass
         
@@ -174,11 +186,11 @@ class StoryTestValidator:
         try:
             properties = type_obj.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
             for prop in properties:
-                self._validate_property(type_obj, prop, type_name)
+                self._validate_property(type_obj, prop, type_name, file_path)
         except:
             pass
     
-    def _validate_method(self, type_obj, method, type_name: str):
+    def _validate_method(self, type_obj, method, type_name: str, file_path: str):
         """Validate a method"""
         if self._has_story_ignore_attribute(method):
             return
@@ -191,21 +203,21 @@ class StoryTestValidator:
         
         # Act 1: TODO Comments (NotImplementedException)
         # Act 2: Placeholder Implementations
-        self._check_todo_and_placeholders(method, type_name, method_name)
+        self._check_todo_and_placeholders(method, type_name, method_name, file_path)
         
         # Act 4: Unsealed Abstract Members
-        self._check_unsealed_abstract(method, type_obj, type_name, method_name)
+        self._check_unsealed_abstract(method, type_obj, type_name, method_name, file_path)
         
         # Act 5: Debug-Only Implementations
-        self._check_debug_only(method, type_name, method_name)
+        self._check_debug_only(method, type_name, method_name, file_path)
         
         # Act 7: Cold Methods
-        self._check_cold_methods(method, type_name, method_name)
+        self._check_cold_methods(method, type_name, method_name, file_path)
         
         # Act 9: Premature Celebrations
-        self._check_premature_celebrations(method, type_name, method_name)
+        self._check_premature_celebrations(method, type_name, method_name, file_path)
     
-    def _validate_property(self, type_obj, prop, type_name: str):
+    def _validate_property(self, type_obj, prop, type_name: str, file_path: str):
         """Validate a property"""
         if self._has_story_ignore_attribute(prop):
             return
@@ -213,9 +225,9 @@ class StoryTestValidator:
         prop_name = str(prop.Name)
         
         # Act 6: Phantom Props
-        self._check_phantom_props(prop, type_name, prop_name)
+        self._check_phantom_props(prop, type_name, prop_name, file_path)
     
-    def _check_todo_and_placeholders(self, method, type_name: str, method_name: str):
+    def _check_todo_and_placeholders(self, method, type_name: str, method_name: str, file_path: str):
         """Act 1 & 2: Check for TODO comments and placeholder implementations"""
         try:
             method_body = method.GetMethodBody()
@@ -229,7 +241,8 @@ class StoryTestValidator:
                 self.violations.append(StoryViolation(
                     type_name, method_name,
                     "Method contains NotImplementedException indicating TODO implementation",
-                    StoryViolationType.INCOMPLETE_IMPLEMENTATION
+                    StoryViolationType.INCOMPLETE_IMPLEMENTATION,
+                    file_path=file_path
                 ))
                 return
             
@@ -238,12 +251,13 @@ class StoryTestValidator:
                 self.violations.append(StoryViolation(
                     type_name, method_name,
                     "Method only returns default value without implementation",
-                    StoryViolationType.INCOMPLETE_IMPLEMENTATION
+                    StoryViolationType.INCOMPLETE_IMPLEMENTATION,
+                    file_path=file_path
                 ))
         except:
             pass
     
-    def _check_incomplete_classes(self, type_obj, type_name: str):
+    def _check_incomplete_classes(self, type_obj, type_name: str, file_path: str):
         """Act 3: Check for incomplete class implementations"""
         if type_obj.IsInterface or type_obj.IsAbstract:
             return
@@ -257,24 +271,26 @@ class StoryTestValidator:
                 self.violations.append(StoryViolation(
                     type_name, type_name,
                     f"Class has unimplemented abstract methods: {method_names}",
-                    StoryViolationType.INCOMPLETE_IMPLEMENTATION
+                    StoryViolationType.INCOMPLETE_IMPLEMENTATION,
+                    file_path=file_path
                 ))
         except:
             pass
     
-    def _check_unsealed_abstract(self, method, type_obj, type_name: str, method_name: str):
+    def _check_unsealed_abstract(self, method, type_obj, type_name: str, method_name: str, file_path: str):
         """Act 4: Check for unsealed abstract members"""
         try:
             if method.IsAbstract and not type_obj.IsAbstract and not type_obj.IsInterface:
                 self.violations.append(StoryViolation(
                     type_name, method_name,
                     "Abstract method in non-abstract class (unsealed narrative element)",
-                    StoryViolationType.INCOMPLETE_IMPLEMENTATION
+                    StoryViolationType.INCOMPLETE_IMPLEMENTATION,
+                    file_path=file_path
                 ))
         except:
             pass
     
-    def _check_debug_only(self, method, type_name: str, method_name: str):
+    def _check_debug_only(self, method, type_name: str, method_name: str, file_path: str):
         """Act 5: Check for debug-only implementations"""
         if method_name.startswith("Debug") or method_name.startswith("Test") or "Temp" in method_name:
             # Check for Obsolete attribute
@@ -286,22 +302,24 @@ class StoryTestValidator:
                     self.violations.append(StoryViolation(
                         type_name, method_name,
                         "Debug/Test method without Obsolete attribute (should be temporary)",
-                        StoryViolationType.DEBUGGING_CODE
+                        StoryViolationType.DEBUGGING_CODE,
+                        file_path=file_path
                     ))
             except:
                 pass
     
-    def _check_phantom_props(self, prop, type_name: str, prop_name: str):
+    def _check_phantom_props(self, prop, type_name: str, prop_name: str, file_path: str):
         """Act 6: Check for phantom properties"""
         # Simple heuristic: check for suspicious property names
         if "Unused" in prop_name or "Temp" in prop_name or "Placeholder" in prop_name:
             self.violations.append(StoryViolation(
                 type_name, prop_name,
                 "Phantom property detected - name suggests it's unused",
-                StoryViolationType.UNUSED_CODE
+                StoryViolationType.UNUSED_CODE,
+                file_path=file_path
             ))
     
-    def _check_cold_methods(self, method, type_name: str, method_name: str):
+    def _check_cold_methods(self, method, type_name: str, method_name: str, file_path: str):
         """Act 7: Check for cold (empty) methods"""
         if method.IsAbstract or method.IsVirtual:
             return
@@ -318,12 +336,13 @@ class StoryTestValidator:
                 self.violations.append(StoryViolation(
                     type_name, method_name,
                     "Cold method detected - method body is empty or minimal",
-                    StoryViolationType.UNUSED_CODE
+                    StoryViolationType.UNUSED_CODE,
+                    file_path=file_path
                 ))
         except:
             pass
     
-    def _check_hollow_enums(self, type_obj, type_name: str):
+    def _check_hollow_enums(self, type_obj, type_name: str, file_path: str):
         """Act 8: Check for hollow enums"""
         try:
             enum_values = DotNetEnum.GetValues(type_obj)
@@ -331,7 +350,8 @@ class StoryTestValidator:
                 self.violations.append(StoryViolation(
                     type_name, type_name,
                     "Hollow enum detected - enum has no or minimal values defined",
-                    StoryViolationType.UNUSED_CODE
+                    StoryViolationType.UNUSED_CODE,
+                    file_path=file_path
                 ))
                 return
             
@@ -343,12 +363,13 @@ class StoryTestValidator:
                 self.violations.append(StoryViolation(
                     type_name, type_name,
                     f"Hollow enum detected - contains placeholder values: {', '.join(placeholder_names)}",
-                    StoryViolationType.UNUSED_CODE
+                    StoryViolationType.UNUSED_CODE,
+                    file_path=file_path
                 ))
         except:
             pass
     
-    def _check_premature_celebrations(self, method, type_name: str, method_name: str):
+    def _check_premature_celebrations(self, method, type_name: str, method_name: str, file_path: str):
         """Act 9: Check for premature celebrations"""
         try:
             # Check if method is marked as "Complete" or similar
@@ -368,7 +389,8 @@ class StoryTestValidator:
                         self.violations.append(StoryViolation(
                             type_name, method_name,
                             "Premature celebration - marked as complete but throws NotImplementedException",
-                            StoryViolationType.PREMATURE_CELEBRATION
+                            StoryViolationType.PREMATURE_CELEBRATION,
+                            file_path=file_path
                         ))
         except:
             pass
