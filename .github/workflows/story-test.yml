@@ -58,7 +58,8 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}  # pragma: allowlist secret
         with:
           unityVersion: ${{ matrix.unity-version }}
-          targetPlatform: StandaloneWindows64
+          targetPlatform: ${{ matrix.os == 'windows-latest' && 'StandaloneWindows64' || matrix.os == 'macos-latest' && 'StandaloneOSX' || 'Linux64' }}
+          buildName: StoryTestBuild
       
       - name: Run Story Test Validation
         id: story-test
