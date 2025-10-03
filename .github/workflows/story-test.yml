@@ -5,7 +5,7 @@ name: Story Test Validation
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'jmeyer1980/**' ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
