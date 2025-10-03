@@ -41,20 +41,30 @@ jobs:
           # This provides quick feedback without waiting for Unity compilation
           echo "Running static analysis on C# source files..."
           
-          # Check for common Story Test violations in source code
-          find Packages/com.tinywalnutgames.storytest -name "*.cs" -exec grep -l "NotImplementedException" {} \; > violations.txt || true
-          find Packages/com.tinywalnutgames.storytest -name "*.cs" -exec grep -l "TODO" {} \; >> violations.txt || true
+          # Check for common Story Test violations with line numbers
+          echo "## Story Test Pattern Violations" > violations.txt
+          echo "" >> violations.txt
           
-          if [ -s violations.txt ]; then
-            echo "⚠️ Found potential violations in source files:"
-            cat violations.txt
-            echo "Full validation will run on Unity build job"
-          else
-            echo "✅ Quick scan passed - no obvious violations found"
-          fi
+          # Search for NotImplementedException with context
+          echo "### NotImplementedException Found:" >> violations.txt
+          grep -rn "NotImplementedException" Packages/com.tinywalnutgames.storytest --include="*.cs" | head -20 >> violations.txt || echo "None" >> violations.txt
+          echo "" >> violations.txt
+          
+          # Search for TODO comments with context
+          echo "### TODO Comments Found:" >> violations.txt
+          grep -rn "TODO" Packages/com.tinywalnutgames.storytest --include="*.cs" | head -20 >> violations.txt || echo "None" >> violations.txt
+          echo "" >> violations.txt
+          
+          # Search for throw new patterns
+          echo "### Throw Statements Found:" >> violations.txt
+          grep -rn "throw new" Packages/com.tinywalnutgames.storytest --include="*.cs" | head -20 >> violations.txt || echo "None" >> violations.txt
+          
+          # Display results
+          cat violations.txt
           
           # Note: Full IL bytecode analysis happens in Unity build jobs
-          echo "Quick validation complete. Awaiting full Unity validation..."
+          echo ""
+          echo "✅ Quick static analysis complete. Full validation runs in Unity build jobs below."
       
       - name: Upload Quick Validation Report
         if: always()
@@ -73,18 +83,16 @@ jobs:
           echo "Full IL bytecode validation runs in the Unity build jobs below." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          if [ -s violations.txt ]; then
-            echo "⚠️ **Potential issues found in source files:**" >> $GITHUB_STEP_SUMMARY
+          if [ -f violations.txt ]; then
+            echo "### Pattern Analysis" >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
             cat violations.txt >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "These files contain patterns that may violate Story Test doctrine." >> $GITHUB_STEP_SUMMARY
-            echo "Check Unity build results for definitive validation." >> $GITHUB_STEP_SUMMARY
+            echo "These patterns may indicate Story Test doctrine violations." >> $GITHUB_STEP_SUMMARY
+            echo "Check Unity build results for definitive validation with IL bytecode analysis." >> $GITHUB_STEP_SUMMARY
           else
-            echo "✅ **No obvious violations detected in source scan!**" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "🎉 **Quick dopamine hit delivered!** Awaiting full Unity validation..." >> $GITHUB_STEP_SUMMARY
+            echo "✅ **No violations.txt generated!**" >> $GITHUB_STEP_SUMMARY
           fi
       
       # Don't fail on quick validation - it's just a pre-check
