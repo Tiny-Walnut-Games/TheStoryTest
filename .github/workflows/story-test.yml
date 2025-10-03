@@ -48,8 +48,8 @@ jobs:
       - name: Cache Unity Library
         uses: actions/cache@v4
         with:
-          path: Library
-          key: Library-${{ matrix.os }}-${{ matrix.unity-version }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          path: Samples~/ExampleProject/Library
+          key: Library-${{ matrix.os }}-${{ matrix.unity-version }}-${{ hashFiles('Samples~/ExampleProject/**') }}
           restore-keys: |
             Library-${{ matrix.os }}-${{ matrix.unity-version }}-
             Library-${{ matrix.os }}-
@@ -57,7 +57,7 @@ jobs:
       # Note: Unity secrets (UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD) must be added to repository Settings > Secrets
       # See https://game.ci/docs/github/activation for setup instructions
       # yamllint disable-line rule:line-length
-      - name: Build Unity Project (to generate assemblies)
+      - name: Build Sample Project (to generate assemblies)
         uses: game-ci/unity-builder@v4
         env:
           # These secrets must be configured in repository settings - warnings are expected until configured
@@ -65,15 +65,16 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}  # pragma: allowlist secret
         with:
+          projectPath: Samples~/ExampleProject
           unityVersion: ${{ matrix.unity-version }}
           targetPlatform: ${{ matrix.unity-platform }}
-          buildName: StoryTestBuild
+          buildName: StoryTestSampleBuild
       
       - name: Run Story Test Validation
         id: story-test
         continue-on-error: true
         run: |
-          python story_test.py . --verbose --output story-test-report.json --fail-on-violations
+          python story_test.py Samples~/ExampleProject --verbose --output story-test-report.json --fail-on-violations
         shell: bash
       
       - name: Upload Story Test Report

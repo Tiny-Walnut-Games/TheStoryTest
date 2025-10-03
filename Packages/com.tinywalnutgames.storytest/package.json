@@ -9,21 +9,21 @@
   "changelogUrl": "https://github.com/jmeyer1980/TheStoryTest/blob/main/CHANGELOG.md",
   "licensesUrl": "https://github.com/jmeyer1980/TheStoryTest/blob/main/LICENSE",
   "keywords": [
+    "confidence",
     "testing",
     "validation",
     "code-quality",
-    "ecs",
-    "dots",
     "bytecode-analysis",
     "il-analysis",
     "code-standards",
-    "story-test"
+    "story-test",
+    "code-narrative"
   ],
   "author": {
     "name": "Tiny Walnut Games",
-    "email": "jerioke@live.com",
+    "email": "jmeyer1980@gmail.com",
     "url": "https://github.com/jmeyer1980"
   },
-  "type": "tool",
+  "dependencies": {},
   "hideInEditor": false
 }

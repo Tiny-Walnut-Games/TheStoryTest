@@ -1,0 +1,49 @@
+{
+  "name": "@tinywalnutgames/storytest",
+  "version": "1.0.0",
+  "description": "Story Test Framework - Code quality validation via IL bytecode analysis for Unity and .NET projects",
+  "main": "story_test.py",
+  "scripts": {
+    "test": "python -m pytest tests/ -v",
+    "lint": "python -m pylint story_test.py",
+    "validate": "python story_test.py . --verbose",
+    "validate:report": "python story_test.py . --verbose --output .debug/story-test-report.json",
+    "validate:ci": "python story_test.py . --fail-on-violations --output story-test-report.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jmeyer1980/TheStoryTest.git"
+  },
+  "keywords": [
+    "unity",
+    "dotnet",
+    "csharp",
+    "testing",
+    "validation",
+    "code-quality",
+    "il-analysis",
+    "bytecode",
+    "static-analysis",
+    "story-test"
+  ],
+  "author": {
+    "name": "Tiny Walnut Games",
+    "email": "jmeyer1980@gmail.com",
+    "url": "https://github.com/jmeyer1980"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jmeyer1980/TheStoryTest/issues"
+  },
+  "homepage": "https://github.com/jmeyer1980/TheStoryTest#readme",
+  "engines": {
+    "python": ">=3.8",
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {},
+  "python": {
+    "dependencies": [
+      "pythonnet>=3.0.0"
+    ]
+  }
+}
