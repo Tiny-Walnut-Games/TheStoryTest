@@ -1,0 +1,16 @@
+{
+    "name": "TinyWalnutGames.TheStoryTest.Acts",
+    "rootNamespace": "TinyWalnutGames.TheStoryTest.Acts",
+    "references": [
+        "TinyWalnutGames.TheStoryTest.Shared"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

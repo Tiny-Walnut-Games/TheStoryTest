@@ -1,0 +1,29 @@
+{
+  "name": "com.tinywalnutgames.storytest",
+  "version": "1.0.0",
+  "displayName": "The Story Test Framework",
+  "description": "A comprehensive code quality validation framework for Unity and .NET projects that enforces Story Test Doctrine: every symbol must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.",
+  "unity": "2020.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "https://github.com/jmeyer1980/TheStoryTest#readme",
+  "changelogUrl": "https://github.com/jmeyer1980/TheStoryTest/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/jmeyer1980/TheStoryTest/blob/main/LICENSE",
+  "keywords": [
+    "testing",
+    "validation",
+    "code-quality",
+    "ecs",
+    "dots",
+    "bytecode-analysis",
+    "il-analysis",
+    "code-standards",
+    "story-test"
+  ],
+  "author": {
+    "name": "Tiny Walnut Games",
+    "email": "jerioke@live.com",
+    "url": "https://github.com/jmeyer1980"
+  },
+  "type": "tool",
+  "hideInEditor": false
+}

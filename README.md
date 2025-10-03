@@ -6,6 +6,8 @@ A code quality validation framework that enforces the "Story Test Doctrine": eve
 
 Originally designed for Unity ECS/DOTS projects, Story Test is now **Unity-agnostic** and works with any C# codebase, including GameObject-based Unity projects and pure .NET applications.
 
+> **📦 Package-Based Distribution**: This repository now uses Unity Package Manager (UPM) format for easy integration into your projects. The framework code is in `Packages/com.tinywalnutgames.storytest/`.
+
 ## 🎯 Philosophy
 
 Think of your code as a narrative where every element must serve a purpose. The Story Test Framework uses IL bytecode analysis to detect:
@@ -19,11 +21,37 @@ Think of your code as a narrative where every element must serve a purpose. The 
 
 ## 🚀 Quick Start
 
-### Unity Projects (In-Editor)
+### Unity Projects - Package Installation
 
-1. **Import** the Story Test package into `Assets/Tiny Walnut Games/TheStoryTest/`
-2. **Run validation** via Unity menu: `Tiny Walnut Games/The Story Test/Run Story Test and Export Report`
-3. **Review** violations in `.debug/storytest_report.txt`
+**Option 1: Via Git URL (Recommended)**
+
+Add this to your project's `Packages/manifest.json`:
+
+```json
+{
+  "dependencies": {
+    "com.tinywalnutgames.storytest": "https://github.com/jmeyer1980/TheStoryTest.git?path=Packages/com.tinywalnutgames.storytest"
+  }
+}
+```
+
+**Option 2: Via Unity Package Manager UI**
+
+1. Open Unity Package Manager (`Window > Package Manager`)
+2. Click the `+` button → "Add package from git URL..."
+3. Enter: `https://github.com/jmeyer1980/TheStoryTest.git?path=Packages/com.tinywalnutgames.storytest`
+
+**Option 3: Manual Installation**
+
+1. Download from [Releases](https://github.com/jmeyer1980/TheStoryTest/releases)
+2. Extract to your project's `Packages/` folder
+3. Unity will auto-import
+
+### Using the Framework
+
+Once installed, run validation via Unity menu:
+
+`Tiny Walnut Games/The Story Test/Run Story Test and Export Report`
 
 Or add the `ProductionExcellenceStoryTest` MonoBehaviour to a GameObject and run via Context Menu.
 
