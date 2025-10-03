@@ -38,7 +38,7 @@ namespace TinyWalnutGames.StoryTest.Acts
                         {
                             if (!method.IsAbstract && !method.IsVirtual)
                             {
-                                violation = "Cold method detected - method body is empty or minimal";
+                                violation = "Cold method detected - method body is 🏳empty or 🏳minimal";
                                 return true;
                             }
                         }

@@ -58,7 +58,7 @@ namespace TinyWalnutGames.StoryTest.Editor
                 .Where(a => !a.FullName.Contains("Unity") && !a.FullName.Contains("UnityEngine") && !a.FullName.Contains("UnityEditor"))
                 .ToArray();
 
-            // TODO: Re-enable when StoryIntegrityValidator is implemented
+            // 📜 TODO: Re-enable when StoryIntegrityValidator is implemented
             // var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
             var violations = new System.Collections.Generic.List<TinyWalnutGames.StoryTest.Shared.StoryViolation>();
 
@@ -130,7 +130,7 @@ namespace TinyWalnutGames.StoryTest.Editor
             }
 
             // Check for proper folder structure?            
-            // 📜 - A better approach would be to load a config file defining the expected structure.
+            // 👀 - A better approach would be to load a config file defining the expected structure.
             /* I am not sure of the string over-ride syntax here, but as an example:
             storysettings.json
             {
@@ -203,12 +203,12 @@ namespace TinyWalnutGames.StoryTest.Editor
                 EditorApplication.playModeStateChanged -= OnPlayModeChanged;
                 // Delay to allow scene to initialize
                 // EditorApplication.delayCall += () => RunValidation();
-                // TODO: Restore when ProductionExcellenceStoryTest is implemented
+                // 👀 TODO: Restore when ProductionExcellenceStoryTest is implemented
                 Debug.LogWarning("Complete validation pipeline not yet implemented");
             }
         }
 
-        // TODO: Re-enable when ProductionExcellenceStoryTest and ValidationReport are implemented
+        // 👀 TODO: Re-enable when ProductionExcellenceStoryTest and ValidationReport are implemented
         /*
         private static void RunValidation()
         {
@@ -274,7 +274,7 @@ namespace TinyWalnutGames.StoryTest.Editor
                             settings.assemblyFilters.Any(filter => a.FullName.Contains(filter))))
                 .ToArray();
 
-            // TODO: Re-enable when StoryIntegrityValidator is implemented
+            // 👀 TODO: Re-enable when StoryIntegrityValidator is implemented
             // var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
             var violations = new System.Collections.Generic.List<TinyWalnutGames.StoryTest.Shared.StoryViolation>();
 

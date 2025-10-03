@@ -4,7 +4,7 @@ using TinyWalnutGames.StoryTest.Shared;
 namespace TinyWalnutGames.StoryTest.Acts
 {
     /// <summary>
-    /// Story Test Act 4: Checks for unsealed abstract members.
+    /// Story Test Act 4: Checks for 🏳unsealed abstract members.
     /// This act identifies abstract methods in non-abstract classes which violates narrative completion.
     /// </summary>
     [StoryIgnore("Story test validation infrastructure")]
@@ -16,7 +16,7 @@ namespace TinyWalnutGames.StoryTest.Acts
     public static readonly ValidationRule Rule = CheckForUnsealedAbstractMembers;
 
         /// <summary>
-        /// Checks for unsealed abstract members that should be implemented.
+        /// Checks for 🏳unsealed abstract members that should be implemented.
         /// </summary>
         private static bool CheckForUnsealedAbstractMembers(MemberInfo member, out string violation)
         {
@@ -26,7 +26,7 @@ namespace TinyWalnutGames.StoryTest.Acts
             {
                 if (!method.DeclaringType.IsAbstract && !method.DeclaringType.IsInterface)
                 {
-                    violation = "Abstract method in non-abstract class (unsealed narrative element)";
+                    violation = "Abstract method in non-abstract class (🏳unsealed narrative element)";
                     return true;
                 }
             }

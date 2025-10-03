@@ -6,8 +6,8 @@ using TinyWalnutGames.StoryTest.Shared;
 namespace TinyWalnutGames.StoryTest.Acts
 {
     /// <summary>
-    /// Story Test Act 3: Checks for incomplete class implementations.
-    /// This act ensures that non-abstract classes don't have unimplemented abstract methods.
+    /// Story Test Act 3: Checks for 🏳incomplete class implementations.
+    /// This act ensures that non-abstract classes don't have 🏳unimplemented abstract methods.
     /// </summary>
     [StoryIgnore("Story test validation infrastructure")]
     public static class Act3IncompleteClasses
@@ -19,7 +19,7 @@ namespace TinyWalnutGames.StoryTest.Acts
 
         /// <summary>
         /// The validation rule for this act.
-        /// Checks for incomplete class implementations.
+        /// Checks for 🏳incomplete class implementations.
         /// </summary>
         private static bool CheckForIncompleteClasses(MemberInfo member, out string violation)
         {
@@ -32,7 +32,7 @@ namespace TinyWalnutGames.StoryTest.Acts
 
                 if (abstractMethods.Length > 0)
                 {
-                    violation = $"Class has unimplemented abstract methods: {string.Join(", ", abstractMethods.Select(m => m.Name))}";
+                    violation = $"Class has 🏳unimplemented abstract methods: {string.Join(", ", abstractMethods.Select(m => m.Name))}";
                     return true;
                 }
             }

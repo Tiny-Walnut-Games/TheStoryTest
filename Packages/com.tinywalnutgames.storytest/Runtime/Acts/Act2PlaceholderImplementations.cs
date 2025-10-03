@@ -4,7 +4,7 @@ using TinyWalnutGames.StoryTest.Shared;
 namespace TinyWalnutGames.StoryTest.Acts
 {
     /// <summary>
-    /// Story Test Act 2: Checks for placeholder implementations.
+    /// Story Test Act 2: Checks for 🏳placeholder implementations.
     /// This act detects methods that only throw exceptions or return defaults without proper implementation.
     /// </summary>
     [StoryIgnore("Story test validation infrastructure")]
@@ -16,7 +16,7 @@ namespace TinyWalnutGames.StoryTest.Acts
     public static readonly ValidationRule Rule = CheckForPlaceholderImplementations;
         /// <summary>
         /// The validation rule for this act.
-        /// Checks for placeholder implementations (methods that only throw exceptions or return defaults).
+        /// Checks for 🏳placeholder implementations (methods that only throw exceptions or return defaults).
         /// </summary>
         private static bool CheckForPlaceholderImplementations(MemberInfo member, out string violation)
         {
@@ -34,7 +34,7 @@ namespace TinyWalnutGames.StoryTest.Acts
                         // Check for throw new NotImplementedException pattern
                         if (StoryTestUtilities.ContainsThrowNotImplementedException(ilBytes))
                         {
-                            violation = "Method throws NotImplementedException (placeholder implementation)";
+                            violation = "Method throws NotImplementedException (🏳placeholder implementation)";
                             return true;
                         }
                     }

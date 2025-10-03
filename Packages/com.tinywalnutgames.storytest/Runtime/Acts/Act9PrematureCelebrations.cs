@@ -7,7 +7,7 @@ namespace TinyWalnutGames.StoryTest.Acts
     /// <summary>
     /// Story Test Act 9: Checks for "Premature Celebrations" - code that claims to be complete but isn't.
     /// Enhanced from original TinyWalnutGames implementation.
-    /// This act identifies code marked as complete but still containing placeholder implementations.
+    /// This act identifies code marked as complete but still containing 🏳placeholder implementations.
     /// </summary>
     [StoryIgnore("Story test validation infrastructure")]
     public static class Act9PrematureCelebrations

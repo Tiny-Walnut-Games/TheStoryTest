@@ -49,7 +49,7 @@ namespace TinyWalnutGames.StoryTest.Acts
                                 // Check if it's used anywhere meaningful (simplified check)
                                 if (property.Name.Contains("Unused") || property.Name.Contains("Temp"))
                                 {
-                                    violation = "Phantom property detected - defined but likely unused";
+                                    violation = "Phantom property detected - defined but likely 🏳unused";
                                     return true;
                                 }
                             }

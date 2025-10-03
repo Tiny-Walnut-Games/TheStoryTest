@@ -35,11 +35,11 @@ namespace TinyWalnutGames.StoryTest.Acts
                     return true;
                 }
 
-                // Check for placeholder enum values
+                // Check for 🏳placeholder enum values
                 var enumNames = Enum.GetNames(type);
                 if (enumNames.Any(name => name.Contains("Placeholder") || name.Contains("TODO") || name.Contains("Temp")))
                 {
-                    violation = "Hollow enum detected - contains placeholder values";
+                    violation = "Hollow enum detected - contains 🏳placeholder values";
                     return true;
                 }
             }

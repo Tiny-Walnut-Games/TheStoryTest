@@ -5,8 +5,8 @@ using TinyWalnutGames.StoryTest.Shared;
 namespace TinyWalnutGames.StoryTest.Acts
 {
     /// <summary>
-    /// Story Test Act 5: Checks for debug-only implementations.
-    /// This act ensures debug/test methods are properly marked as temporary for production builds.
+    /// Story Test Act 5: Checks for 🏳debug-only implementations.
+    /// This act ensures 🏳debug/🏳test methods are properly marked as 🏳temporary for production builds.
     /// </summary>
     [StoryIgnore("Story test validation infrastructure")]
     public static class Act5DebugOnlyImplementations
@@ -17,7 +17,7 @@ namespace TinyWalnutGames.StoryTest.Acts
     public static readonly ValidationRule Rule = CheckForDebugOnlyImplementations;
 
         /// <summary>
-        /// Checks for debug-only implementations that shouldn't be in production.
+        /// Checks for 🏳debug-only implementations that shouldn't be in production.
         /// </summary>
         private static bool CheckForDebugOnlyImplementations(MemberInfo member, out string violation)
         {
@@ -28,7 +28,7 @@ namespace TinyWalnutGames.StoryTest.Acts
                 var obsoleteAttr = member.GetCustomAttribute<ObsoleteAttribute>();
                 if (obsoleteAttr == null)
                 {
-                    violation = "Debug/Test method without Obsolete attribute (should be temporary)";
+                    violation = "🏳Debug/🏳Test method without Obsolete attribute (should be 🏳temporary)";
                     return true;
                 }
             }

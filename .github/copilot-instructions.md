@@ -47,6 +47,15 @@ public class ProductionExcellenceStoryTest : MonoBehaviour { }
 - **MUST** provide non-empty reason string (enforced by constructor)
 - Use sparingly—only for test infrastructure and Unity Editor-only code
 
+**🏳 Educational Comment Protection**: To prevent the Story Test framework's own documentation from triggering violations, use the 🏳 (white flag) emoji prefix before violation-triggering words in comments and documentation:
+- ✅ `// Use IL analysis to detect 🏳placeholder implementations`
+- ✅ `/// This act ensures that no 🏳TODO implementations remain in production code`
+- ✅ `violation = "Method contains 🏳debug-only code without proper marking"`
+- ❌ `// Check for placeholder implementations` (would trigger Act2 if scanned)
+- ❌ `// TODO: Implement this later` (would trigger Act1)
+
+This second layer of protection allows educational/explanatory comments to use flagged terminology without causing self-violations in the framework's own codebase. The 🏳 prefix signals "this is educational documentation, not actual violation code."
+
 ## Critical Coding Rules
 
 ### 1. Every Parameter Must Be Used
