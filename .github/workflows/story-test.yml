@@ -48,12 +48,14 @@ jobs:
       
       # Note: Unity secrets (UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD) must be added to repository Settings > Secrets
       # See https://game.ci/docs/github/activation for setup instructions
+      # yamllint disable-line rule:line-length
       - name: Build Unity Project (to generate assemblies)
-        uses: game-ci/unity-builder@3da9d9dcca2b3cf52e8f11f4eeac04c70e31ccb1  # v4
+        uses: game-ci/unity-builder@v4  # Pinned commit: 3da9d9dcca2b3cf52e8f11f4eeac04c70e31ccb1
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          # These secrets must be configured in repository settings - warnings are expected until configured
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}  # pragma: allowlist secret
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}  # pragma: allowlist secret
         with:
           unityVersion: ${{ matrix.unity-version }}
           targetPlatform: StandaloneWindows64

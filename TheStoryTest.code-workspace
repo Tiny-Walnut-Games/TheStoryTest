@@ -1,6 +1,7 @@
 {
 	"folders": [
 		{
+			"name": "TheStoryTest",
 			"path": "."
 		}
 	],
@@ -11,6 +12,12 @@
 			"*.prefab": "yaml",
 			"*.unity": "yaml"
 		},
-		"dotnet.defaultSolution": "TheStoryTest.sln"
+		"dotnet.defaultSolution": "TheStoryTest.sln",
+		
+		// Prevent duplicate workflow validations
+		"github-actions.workflows.pinned.uses.style": "version",
+		"files.watcherExclude": {
+			"**/TheStoryTest/TheStoryTest/**": true
+		}
 	}
 }

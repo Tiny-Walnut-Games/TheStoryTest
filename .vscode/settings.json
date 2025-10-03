@@ -66,5 +66,12 @@
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj",
     },
-    "dotnet.defaultSolution": "TheStoryTest.sln"
+    "dotnet.defaultSolution": "TheStoryTest.sln",
+    
+    // GitHub Actions workflow settings
+    "github-actions.workflows.pinned.uses.style": "version",
+    "yaml.validate": true,
+    "yaml.schemas": {
+        "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.yml"
+    }
 }

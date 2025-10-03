@@ -1,0 +1,12 @@
+# actionlint configuration
+# Suppress warnings for undefined secrets that will be configured in repository settings
+
+# Allow undefined secrets - these will be added via GitHub Settings > Secrets > Actions
+# See: https://game.ci/docs/github/activation
+self-hosted-runner: false
+
+# Allow secret context access warnings
+config-variables:
+  - UNITY_LICENSE
+  - UNITY_EMAIL
+  - UNITY_PASSWORD
