@@ -12,7 +12,8 @@ Converting TheStoryTest from a full Unity project repository to a package-based 
 ## Current Structure Analysis
 
 ### What We Have Now (Unity Project Repo)
-```
+
+```ts
 TheStoryTest/
 ├── Assets/
 │   └── Tiny Walnut Games/
@@ -27,7 +28,8 @@ TheStoryTest/
 ```
 
 ### What We Want (Package-Based Repo)
-```
+
+```ts
 TheStoryTest/
 ├── Packages/
 │   └── com.tinywalnutgames.storytest/
@@ -45,30 +47,35 @@ TheStoryTest/
 ## Conversion Strategy
 
 ### Phase 1: Package Structure Setup ✅
+
 1. Create `Packages/com.tinywalnutgames.storytest/` directory
 2. Move core framework from `Assets/Tiny Walnut Games/TheStoryTest/` to package
 3. Create proper `package.json` manifest
 4. Update all assembly definitions (.asmdef) with package references
 
 ### Phase 2: Unity Project Cleanup
+
 1. Remove unnecessary Unity project files (ProjectSettings, Library, Temp)
 2. Keep minimal Unity project for testing in `samples/`
 3. Update .gitignore for package-based structure
 4. Clean up root-level Unity-specific files
 
 ### Phase 3: Documentation & Samples
+
 1. Create `Documentation~/` folder with package docs
 2. Move existing markdown docs to `docs/` folder
 3. Create sample Unity project demonstrating package usage
 4. Update README.md for package installation instructions
 
 ### Phase 4: CI/CD Pipeline Updates
+
 1. Update GitHub Actions workflows for package testing
 2. Add UPM package validation
 3. Keep cross-platform testing (Windows, macOS, Linux)
 4. Add automatic package versioning
 
 ### Phase 5: Distribution Preparation
+
 1. Create package release workflow
 2. Set up UPM registry integration (GitHub Packages or OpenUPM)
 3. Document installation methods (git URL, scoped registry, manual)
@@ -77,24 +84,28 @@ TheStoryTest/
 ## File Migration Map
 
 ### Core Framework Files (Move to Package)
-```
+
+```ts
 Assets/Tiny Walnut Games/TheStoryTest/
 → Packages/com.tinywalnutgames.storytest/
 ```
 
 ### Assembly Definitions
+
 - Keep existing .asmdef structure
 - Update root namespace to package namespace
 - Ensure proper package references
 
 ### Tests
-```
+
+```ts
 Assets/Tiny Walnut Games/TheStoryTest/Tests/
 → Packages/com.tinywalnutgames.storytest/Tests/
 ```
 
 ### Documentation
-```
+
+```ts
 ASSEMBLY_STRUCTURE.md → docs/assembly-structure.md
 DYNAMIC_VALIDATION.md → docs/dynamic-validation.md
 QUICKSTART.md → Documentation~/QuickStart.md
@@ -102,7 +113,8 @@ README.md → Updated for package usage
 ```
 
 ### Standalone Components
-```
+
+```ts
 story_test.py → Keep at root (standalone CLI tool)
 requirements.txt → Keep at root
 ```
@@ -142,18 +154,21 @@ requirements.txt → Keep at root
 ## Benefits of This Approach
 
 ### For Package Users
+
 - ✅ Easy installation via Unity Package Manager
 - ✅ No project pollution (framework isolated in Packages folder)
 - ✅ Clear versioning and updates
 - ✅ Works with existing Unity projects without conflicts
 
 ### For Maintainers
+
 - ✅ Cleaner repository structure
 - ✅ Easier to test in isolation
 - ✅ Standard UPM distribution
 - ✅ Better separation of concerns
 
 ### For CI/CD
+
 - ✅ Faster builds (no full Unity project compilation)
 - ✅ Package-specific testing
 - ✅ Automated package validation
@@ -162,6 +177,7 @@ requirements.txt → Keep at root
 ## Migration Checklist
 
 ### Immediate Tasks
+
 - [ ] Create package directory structure
 - [ ] Move Runtime/ folder to package
 - [ ] Move Editor/ folder to package
@@ -171,6 +187,7 @@ requirements.txt → Keep at root
 - [ ] Create sample Unity project
 
 ### Documentation Tasks
+
 - [ ] Update README.md with UPM installation instructions
 - [ ] Create Documentation~/ folder
 - [ ] Move technical docs to docs/ folder
@@ -178,6 +195,7 @@ requirements.txt → Keep at root
 - [ ] Document installation methods (git URL, tarball, scoped registry)
 
 ### Testing Tasks
+
 - [ ] Verify package compiles in clean Unity project
 - [ ] Test all 9 Acts validation rules
 - [ ] Test conceptual validation
@@ -185,6 +203,7 @@ requirements.txt → Keep at root
 - [ ] Verify standalone Python validator still works
 
 ### CI/CD Tasks
+
 - [ ] Update workflow to test package installation
 - [ ] Add package validation step
 - [ ] Create package release workflow
@@ -192,6 +211,7 @@ requirements.txt → Keep at root
 - [ ] Configure package publishing
 
 ### Cleanup Tasks
+
 - [ ] Remove ProjectSettings/ (move to sample)
 - [ ] Remove Library/ and Temp/
 - [ ] Update .gitignore
@@ -201,6 +221,7 @@ requirements.txt → Keep at root
 ## Installation Methods (Post-Conversion)
 
 ### Method 1: Git URL (Recommended for Development)
+
 ```json
 {
   "dependencies": {
@@ -210,11 +231,13 @@ requirements.txt → Keep at root
 ```
 
 ### Method 2: Manual Installation
+
 1. Download package from Releases
 2. Extract to `Packages/com.tinywalnutgames.storytest/`
 3. Unity will auto-detect and import
 
 ### Method 3: Scoped Registry (Future)
+
 ```json
 {
   "scopedRegistries": [
@@ -230,12 +253,14 @@ requirements.txt → Keep at root
 ## Breaking Changes
 
 ### For Existing Users
+
 - Menu path remains: `Tiny Walnut Games/The Story Test/`
 - Assembly names unchanged
 - API remains compatible
 - Settings file location unchanged (Resources/)
 
 ### Migration Guide for Existing Users
+
 1. Remove `Assets/Tiny Walnut Games/TheStoryTest/` folder
 2. Install package via UPM
 3. Settings automatically migrate (uses Resources/)

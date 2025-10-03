@@ -10,13 +10,15 @@
 ### ✅ Created UPM Package Structure
 
 Successfully created a proper Unity Package Manager (UPM) package at:
-```
+
+```ts
 Packages/com.tinywalnutgames.storytest/
 ```
 
 ### ✅ Package Contents
 
 **Core Files:**
+
 - `package.json` - UPM manifest with metadata, keywords, and versioning
 - `README.md` - Package documentation with installation instructions
 - `Runtime/` - All framework code (Acts, validators, shared types)
@@ -24,7 +26,8 @@ Packages/com.tinywalnutgames.storytest/
 - `Tests/` - NUnit test suite
 
 **Complete Assembly Structure:**
-```
+
+```ts
 Packages/com.tinywalnutgames.storytest/
 ├── package.json (UPM manifest)
 ├── README.md (package documentation)
@@ -52,6 +55,7 @@ Packages/com.tinywalnutgames.storytest/
 ### ✅ Git Repository Updates
 
 **Commit:** `4a7a37b` - "feat: Phase 1 - Create UPM package structure (#2)"
+
 - 53 files changed
 - 2,674 insertions, 116 deletions
 - Pushed to `jmeyer1980/issue2` branch
@@ -59,6 +63,7 @@ Packages/com.tinywalnutgames.storytest/
 ## Installation Methods Now Available
 
 ### Method 1: Git URL (Recommended for Development)
+
 ```json
 {
   "dependencies": {
@@ -68,11 +73,13 @@ Packages/com.tinywalnutgames.storytest/
 ```
 
 ### Method 2: Unity Package Manager UI
+
 1. Window > Package Manager
 2. Click `+` → "Add package from git URL..."
 3. Enter the git URL above
 
 ### Method 3: Manual
+
 1. Download/clone repository
 2. Copy `Packages/com.tinywalnutgames.storytest/` to your project's `Packages/` folder
 
@@ -81,6 +88,7 @@ Packages/com.tinywalnutgames.storytest/
 ### Remaining Tasks
 
 **Immediate (Phase 2):**
+
 - [ ] Move Unity project files to `samples/` directory
 - [ ] Create minimal sample Unity project
 - [ ] Clean up root-level Unity files (ProjectSettings, Library, Temp)
@@ -88,18 +96,21 @@ Packages/com.tinywalnutgames.storytest/
 - [ ] Remove or relocate Assets/ folder
 
 **Documentation (Phase 3):**
+
 - [ ] Create `Documentation~/` folder for in-editor docs
 - [ ] Move technical docs to `docs/` folder
 - [ ] Create sample demonstrating package usage
 - [ ] Add migration guide for existing users
 
 **CI/CD (Phase 4):**
+
 - [ ] Update GitHub Actions for package testing
 - [ ] Add UPM package validation workflow
 - [ ] Test across Unity versions (2020.3+)
 - [ ] Verify standalone Python validator still works
 
 **Distribution (Phase 5):**
+
 - [ ] Create package release workflow
 - [ ] Set up automatic versioning
 - [ ] Document publishing to UPM registry
@@ -108,6 +119,7 @@ Packages/com.tinywalnutgames.storytest/
 ## Current State
 
 ### What Works Now ✅
+
 - Package structure is complete
 - All framework code is in the package
 - Assembly definitions are properly configured
@@ -115,12 +127,14 @@ Packages/com.tinywalnutgames.storytest/
 - Framework functionality is identical to previous version
 
 ### What's Still Unity Project ⚠️
+
 - Root folder still has Unity project structure
 - `Assets/` folder exists (will move to samples)
 - `ProjectSettings/`, `Library/`, `Temp/` present
 - Root-level .csproj files (Unity-generated)
 
 ### No Breaking Changes 🎯
+
 - Menu paths unchanged: `Tiny Walnut Games/The Story Test/`
 - Assembly names unchanged
 - API fully compatible
@@ -156,19 +170,22 @@ Once we complete Phase 2, we need to test:
 
 ## Key Benefits of Package Structure
 
-### For Users:
+### For Users
+
 - ✅ **Easy Installation:** Just add git URL to manifest.json
 - ✅ **No Project Pollution:** Framework isolated in Packages/
 - ✅ **Clear Versioning:** Semantic versioning via package.json
 - ✅ **Clean Updates:** Pull latest via UPM or git
 
-### For Maintainers:
+### For Maintainers
+
 - ✅ **Standard Distribution:** Industry-standard UPM format
 - ✅ **Better Testing:** Package can be tested in isolation
 - ✅ **Cleaner Repo:** No Unity project clutter
 - ✅ **Easier CI/CD:** Package-specific workflows
 
-### For CI/CD:
+### For CI/CD
+
 - ✅ **Faster Builds:** No full Unity project compilation needed
 - ✅ **Package Validation:** Can validate package integrity
 - ✅ **Multiple Unity Versions:** Easy to test across versions
@@ -184,6 +201,7 @@ The `story_test.py` CLI tool remains at the repository root and continues to wor
 
 **Next Session:**
 When you're ready for Phase 2, we'll:
+
 1. Create a clean sample Unity project in `samples/`
 2. Move Unity-specific files out of root
 3. Update .gitignore for package structure
