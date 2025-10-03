@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -203,7 +205,7 @@ namespace TinyWalnutGames.StoryTest.Editor
 
         private static void RunValidation()
         {
-            var testObject = Object.FindFirstObjectByType<ProductionExcellenceStoryTest>();
+            var testObject = GameObject.FindFirstObjectByType<ProductionExcellenceStoryTest>();
             if (testObject == null)
             {
                 // Create temporary test object
@@ -213,7 +215,7 @@ namespace TinyWalnutGames.StoryTest.Editor
                 testObject.OnValidationComplete += (report) =>
                 {
                     ShowValidationResults(report);
-                    Object.DestroyImmediate(tempGO);
+                    GameObject.DestroyImmediate(tempGO);
                 };
             }
 
@@ -489,10 +491,9 @@ namespace TinyWalnutGames.StoryTest.Editor
                 GUILayout.Label(violation.ViolationType.ToString(), style);
                 GUILayout.Label($"Member: {violation.Type}.{violation.Member}", EditorStyles.wordWrappedLabel);
                 GUILayout.Label($"Issue: {violation.Violation}", EditorStyles.wordWrappedLabel);
-                GUILayout.Label($"Location: {violation.Location}", EditorStyles.wordWrappedLabel);
-                GUILayout.Label($"Description: {violation.Description}", EditorStyles.wordWrappedLabel);
-                GUILayout.Label($"Severity: {violation.Severity}", EditorStyles.wordWrappedLabel);
-                GUILayout.Label($"Timestamp: {violation.Timestamp}", EditorStyles.wordWrappedLabel);
+                // Debugging requires file and violation line location for best context
+                GUILayout.Label($"File: {violation.FilePath}", EditorStyles.wordWrappedLabel);
+                GUILayout.Label($"Line: {violation.LineNumber}", EditorStyles.wordWrappedLabel);
 
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.Space();

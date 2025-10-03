@@ -1,6 +1,7 @@
 # Story Test Refactoring: Project-Agnostic Configuration System
 
 ## Overview
+
 Refactored Story Test framework from hardcoded "Toxicity" project references to a flexible, project-agnostic configuration system using `StoryTestSettings.json`.
 
 ---
@@ -10,10 +11,12 @@ Refactored Story Test framework from hardcoded "Toxicity" project references to 
 ### 1. Created Configuration System
 
 **New Files:**
+
 - `Assets/Tiny Walnut Games/TheStoryTest/Resources/StoryTestSettings.json` - JSON configuration file
 - `Assets/Tiny Walnut Games/TheStoryTest/Runtime/Shared/StoryTestSettings.cs` - Singleton settings loader
 
 **Configuration Options:**
+
 ```json
 {
   "projectName": "YourProjectName",
@@ -29,6 +32,7 @@ Refactored Story Test framework from hardcoded "Toxicity" project references to 
 ### 2. Removed "Toxicity" Hardcoded References
 
 **Files Modified:**
+
 - ✅ `StrengtheningValidationSuite.cs`
   - Line 253: Assembly filter changed from `Contains("Toxicity")` to settings-based filtering
   - Lines 380-389: EditorPrefs keys changed from `"Toxicity.*"` to `"StoryTest.*"`
@@ -45,6 +49,7 @@ Refactored Story Test framework from hardcoded "Toxicity" project references to 
 ### 3. Updated Documentation
 
 **Files Updated:**
+
 - ✅ `README.md` - Menu path: `Tools/Toxicity` → `Tiny Walnut Games/The Story Test`
 - ✅ `QUICKSTART.md` - Updated all menu references
 - ✅ `MIGRATION_SUMMARY.md` - Updated workflow documentation
@@ -53,6 +58,7 @@ Refactored Story Test framework from hardcoded "Toxicity" project references to 
 ### 4. Fixed Assembly References
 
 **Assembly Definition Files Updated:**
+
 - ✅ `TinyWalnutGames.TheStoryTest.Editor.asmdef` - Now references `Shared` and main assemblies
 - ✅ `TinyWalnutGames.TheStoryTest.asmdef` - Now references `Shared` and `Acts` assemblies  
 - ✅ `TinyWalnutGames.TheStoryTest.Acts.asmdef` - Now references `Shared` assembly
@@ -62,20 +68,25 @@ Refactored Story Test framework from hardcoded "Toxicity" project references to 
 ## How to Configure for Your Project
 
 ### Option 1: Edit Settings File (Recommended)
+
 1. Open `Assets/Tiny Walnut Games/TheStoryTest/Resources/StoryTestSettings.json`
 2. Update `projectName` to your project name (e.g., `"MyAwesomeGame"`)
 3. Set `assemblyFilters` to validate specific assemblies:
+
    ```json
    "assemblyFilters": ["MyGame", "MyGame.Gameplay"]
    ```
+
 4. Leave empty `[]` to validate all non-Unity assemblies
 
 ### Option 2: Override in Inspector
+
 1. Add `ProductionExcellenceStoryTest` component to GameObject
 2. Uncheck "Use Settings File Defaults"
 3. Configure assembly filters directly in Inspector
 
 ### Option 3: Editor Configuration Window
+
 1. Go to `Tiny Walnut Games/The Story Test/Strengthening Configuration`
 2. Modify settings and click "Apply Configuration"
 3. Settings are saved to both `StoryTestSettings.json` and EditorPrefs
@@ -88,6 +99,7 @@ If you were using the "Toxicity" project previously:
 
 1. ✅ **EditorPrefs migration**: Old `Toxicity.*` keys automatically converted to `StoryTest.*`
 2. ✅ **Assembly filtering**: Update your assembly filters in `StoryTestSettings.json`:
+
    ```json
    // Old behavior (hardcoded):
    .Where(a => a.FullName.Contains("Toxicity"))
@@ -104,16 +116,19 @@ If you were using the "Toxicity" project previously:
 ## Technical Details
 
 ### Settings Loading Priority
+
 1. **Primary**: `Resources/StoryTestSettings.json` (project-wide defaults)
 2. **Override**: EditorPrefs (user-specific overrides in configuration window)
 3. **Override**: Inspector values (when `useSettingsFileDefaults = false`)
 
 ### Backward Compatibility
+
 - ✅ Old EditorPrefs keys (`Toxicity.*`) can be manually migrated to new keys (`StoryTest.*`)
 - ✅ Empty assembly filters maintain original "validate all project assemblies" behavior
 - ✅ Menu paths remain constant in code, but configurable via settings
 
 ### Assembly Filtering Logic
+
 ```csharp
 // Default behavior (empty filters):
 // Validates ALL project assemblies (excludes Unity/System/Microsoft assemblies)
@@ -133,14 +148,18 @@ var assemblies = AppDomain.CurrentDomain.GetAssemblies()
 ## Known Issues & Considerations
 
 ### Compile Errors (Expected)
+
 Unity will show temporary compile errors until assembly definitions are recompiled:
+
 - `StoryTestSettings does not exist in the current context`
 - `StoryViolation could not be found`
 
 **Resolution**: Wait for Unity to finish recompiling assemblies (usually < 30 seconds)
 
 ### MenuItem Limitation
+
 Unity's `[MenuItem]` attribute requires compile-time constants, so menu paths cannot be fully dynamic. However:
+
 - Menu paths remain fixed at `"Tiny Walnut Games/The Story Test/*"`
 - This matches the default in `StoryTestSettings.json`
 - Can be customized by changing both the `MenuRoot` constant AND settings file

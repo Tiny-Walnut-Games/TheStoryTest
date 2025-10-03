@@ -158,14 +158,28 @@ namespace TinyWalnutGames.StoryTest
             var assemblies = GetRelevantAssemblies();
             var violations = new List<StoryViolation>();
 
+            // Phase 1a: Core Acts 1-9 validation (Universal tier)
+            Debug.Log("[Story Test] Running universal validation (Acts 1-9)...");
             foreach (var assembly in assemblies)
             {
                 violations.AddRange(StoryIntegrityValidator.ValidateAssemblies(assembly));
                 yield return null; // Yield periodically for long operations
             }
 
+            // Phase 1b: Conceptual validation (if enabled)
+            var settings = StoryTestSettings.Instance;
+            if (settings.conceptualValidation.enableConceptTests)
+            {
+                Debug.Log("[Story Test] Running conceptual validation...");
+                var conceptualViolations = ExtendedConceptualValidator.RunConceptualValidation(settings);
+                violations.AddRange(conceptualViolations);
+                yield return null;
+            }
+
             report.StoryViolations = violations;
             report.StoryIntegrityPassed = violations.Count == 0;
+            
+            Debug.Log($"[Story Test] Story integrity validation complete. Violations: {violations.Count}");
         }
 
         /// <summary>

@@ -240,19 +240,76 @@ namespace TinyWalnutGames.StoryTest.Shared
 
                 if (type == null)
                 {
-                    violations.Add(new StoryViolation(
-                        StoryViolationType.Act1TodoComments,
-                        $"Custom component type not found: {typeName}",
-                        null,
-                        null,
-                        "Configuration Error"
-                    ));
+                    violations.Add(new StoryViolation
+                    {
+                        Type = typeName,
+                        Member = null,
+                        Violation = $"Custom component type not found: {typeName}",
+                        FilePath = "Configuration Error",
+                        LineNumber = 0,
+                        ViolationType = StoryViolationType.Other
+                    });
                     continue;
                 }
 
                 // Validate the type using standard Story Test rules
-                var typeViolations = StoryIntegrityValidator.ValidateType(type);
+                // Note: StoryIntegrityValidator is in TinyWalnutGames.StoryTest namespace
+                // We can't call it directly from Shared assembly due to dependency direction
+                // Instead, provide helper methods here for validation
+                var typeViolations = ValidateTypeStructure(type);
                 violations.AddRange(typeViolations);
+            }
+
+            return violations;
+        }
+
+        /// <summary>
+        /// Validate type structure without depending on StoryIntegrityValidator.
+        /// This provides basic validation that can be called from custom component validation.
+        /// </summary>
+        private static List<StoryViolation> ValidateTypeStructure(Type type)
+        {
+            var violations = new List<StoryViolation>();
+
+            // Check for abstract members in non-abstract classes
+            if (type.IsClass && !type.IsAbstract)
+            {
+                var abstractMethods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                    .Where(m => m.IsAbstract)
+                    .ToList();
+
+                if (abstractMethods.Any())
+                {
+                    violations.Add(new StoryViolation
+                    {
+                        Type = type.FullName,
+                        Member = string.Join(", ", abstractMethods.Select(m => m.Name)),
+                        Violation = "Class has abstract members but is not marked as abstract",
+                        FilePath = type.Assembly.Location,
+                        LineNumber = 0,
+                        ViolationType = StoryViolationType.IncompleteImplementation
+                    });
+                }
+            }
+
+            // Check for empty value types
+            if (type.IsValueType && !type.IsEnum && !type.IsPrimitive)
+            {
+                var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+                var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+                if (fields.Length == 0 && properties.Length == 0)
+                {
+                    violations.Add(new StoryViolation
+                    {
+                        Type = type.FullName,
+                        Member = null,
+                        Violation = "Value type has no public fields or properties - likely a placeholder",
+                        FilePath = type.Assembly.Location,
+                        LineNumber = 0,
+                        ViolationType = StoryViolationType.IncompleteImplementation
+                    });
+                }
             }
 
             return violations;

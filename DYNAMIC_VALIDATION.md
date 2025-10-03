@@ -1,14 +1,17 @@
 # Dynamic Validation Architecture - Story Test Framework
 
 ## Overview
+
 The Story Test framework has been refactored to be **completely project-agnostic** and **environment-agnostic**. It now works with any .NET project without requiring Unity, DOTS, Burst, or specific component types.
 
 ## Three-Tier Validation System
 
 ### Tier 1: Universal Validation (Acts 1-9)
+
 **Always Active** - Works in ANY .NET environment
 
 The core 9 Acts validate fundamental code quality:
+
 - **Act 1**: TODO comments and NotImplementedException
 - **Act 2**: Placeholder implementations (minimal IL bytecode)
 - **Act 3**: Incomplete class implementations
@@ -23,9 +26,11 @@ The core 9 Acts validate fundamental code quality:
 **Configuration**: Controlled by `assemblyFilters` and `includeUnityAssemblies` in settings
 
 ### Tier 2: Conceptual Validation
+
 **Optional** - Enabled via `conceptualValidation.enableConceptTests`
 
 Dynamic validation that discovers and validates project patterns:
+
 - **Enum Validation**: Ensures all enums have ≥2 meaningful values
 - **Value Type Validation**: Verifies structs can be instantiated and have accessible fields
 - **Abstract Member Sealing**: Validates classes with abstract members are marked abstract
@@ -36,9 +41,11 @@ Dynamic validation that discovers and validates project patterns:
 **Configuration**: `conceptualValidation` section in settings
 
 ### Tier 3: Project-Specific Validation
+
 **Opt-In** - Enabled via `conceptualValidation.validationTiers.projectSpecific`
 
 Custom validation for your specific project needs:
+
 - **Custom Component Types**: Validate specific types listed in `customComponentTypes[]`
 - **Enum Patterns**: Additional enum naming/structure rules via `enumValidationPatterns[]`
 - **Project-Specific Rules**: Extend via custom validation classes
@@ -82,27 +89,32 @@ Custom validation for your specific project needs:
 ### Key Configuration Options
 
 #### `conceptualValidation.enableConceptTests`
+
 - **Type**: boolean
 - **Default**: `true`
 - **Purpose**: Enable/disable Tier 2 conceptual validation
 - **Use Case**: Disable if you only want core Acts 1-9
 
 #### `conceptualValidation.autoDetectEnvironment`
+
 - **Type**: boolean
 - **Default**: `true`
 - **Purpose**: Automatically detect Unity/DOTS/Burst at runtime
 - **Use Case**: Disable if you want manual control via `environmentCapabilities`
 
 #### `conceptualValidation.validationTiers.*`
+
 - **universal**: Core Acts 1-9 (always recommended)
 - **unityAware**: Unity-specific pattern validation
 - **projectSpecific**: Custom types validation
 
 #### `conceptualValidation.customComponentTypes`
+
 - **Type**: string[]
 - **Format**: Fully qualified type names (e.g., `"MyNamespace.MyComponent"`)
 - **Purpose**: Explicitly validate specific types in your project
 - **Example**:
+
   ```json
   "customComponentTypes": [
     "MyGame.Player",
@@ -112,6 +124,7 @@ Custom validation for your specific project needs:
   ```
 
 #### `conceptualValidation.fallbackMode`
+
 - **Values**: `"ilAnalysis"` or `"skip"`
 - **Purpose**: Validation strategy when component instantiation fails
 - **ilAnalysis**: Use IL bytecode parsing (recommended)
@@ -127,6 +140,7 @@ var capabilities = ConceptualValidator.DetectEnvironment();
 ```
 
 **Detected Capabilities:**
+
 - `hasUnityEngine`: UnityEngine assembly available
 - `hasDOTS`: Unity.Entities assembly available
 - `hasBurst`: Unity.Burst assembly available  
@@ -136,6 +150,7 @@ var capabilities = ConceptualValidator.DetectEnvironment();
 ## Migration from Hardcoded Validation
 
 ### Before (Project-Specific)
+
 ```csharp
 [Test]
 public void Position_ConstructorsWork() {
@@ -147,6 +162,7 @@ public void Position_ConstructorsWork() {
 ❌ **Problem**: Requires `Position` type and Unity.Mathematics to exist in all projects
 
 ### After (Dynamic/Conceptual)
+
 ```csharp
 [Test]
 public void ValueTypesHaveValidDefaultConstructors() {
@@ -167,6 +183,7 @@ public void ValueTypesHaveValidDefaultConstructors() {
 ## Usage Examples
 
 ### Example 1: Pure .NET Library Validation
+
 ```json
 {
   "projectName": "MyLibrary",
@@ -184,6 +201,7 @@ public void ValueTypesHaveValidDefaultConstructors() {
 ```
 
 ### Example 2: Unity GameObject Project
+
 ```json
 {
   "projectName": "MyUnityGame",
@@ -205,6 +223,7 @@ public void ValueTypesHaveValidDefaultConstructors() {
 ```
 
 ### Example 3: DOTS/ECS Project
+
 ```json
 {
   "projectName": "MyDOTSProject",
@@ -254,18 +273,21 @@ var customViolations = ConceptualValidator.ValidateCustomComponents(
 ## Test Structure
 
 ### Universal Tests (StoryTestValidationTests.cs)
+
 - **StoryIgnoreAttribute_RequiresReason**: Validates attribute contract
 - **StoryIntegrityValidator_ValidatesAssemblies**: Core validator functionality
 - **StoryIntegrityValidator_RespectsStoryIgnoreAttribute**: Opt-out mechanism
 - **ProductionExcellenceStoryTest_ValidatesConfiguration**: MonoBehaviour integration
 
 ### Conceptual Tests (ConceptualValidationTests.cs)
+
 - **AllEnumTypesHaveValidValues**: Dynamic enum validation
 - **ValueTypesHaveValidDefaultConstructors**: Dynamic struct validation
 - **ClassesWithAbstractMembersAreAbstract**: Abstract sealing validation
 - **ConceptualValidator_SettingsLoaded**: Configuration system test
 
 ### Integration Tests (IntegrationTests.cs)
+
 - **StoryTestCompliance_CoreFrameworkHasNoViolations**: Self-validation
 - **EnvironmentDetection_WorksCorrectly**: Capability detection test
 

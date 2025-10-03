@@ -13,6 +13,8 @@ namespace TinyWalnutGames.StoryTest.Shared
         public string Type { get; set; }
         public string Member { get; set; }
         public string Violation { get; set; }
+        public string FilePath { get; set; }
+        public int LineNumber { get; set; }        
         public StoryViolationType ViolationType { get; set; }
     }
 

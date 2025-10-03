@@ -174,8 +174,8 @@ namespace TinyWalnutGames.StoryTest.Tests
                 foreach (var type in types)
                 {
                     var abstractMembers = type.GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                        .Where(m => m is MethodInfo mi && mi.IsAbstract || 
-                                   m is System.Reflection.PropertyInfo pi && (pi.GetMethod?.IsAbstract ?? false || pi.SetMethod?.IsAbstract ?? false))
+                        .Where(m => (m is MethodInfo mi && mi.IsAbstract) || 
+                                   (m is System.Reflection.PropertyInfo pi && ((pi.GetMethod?.IsAbstract ?? false) || (pi.SetMethod?.IsAbstract ?? false))))
                         .ToArray();
 
                     if (abstractMembers.Length > 0 && !type.IsAbstract)
