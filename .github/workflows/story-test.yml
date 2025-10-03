@@ -18,7 +18,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            unity-platform: StandaloneLinux64
+          - os: windows-latest
+            unity-platform: StandaloneWindows64
+          - os: macos-latest
+            unity-platform: StandaloneOSX
         unity-version: ['2022.3.17f1']  # Adjust to your Unity version
     
     steps:
@@ -58,7 +64,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}  # pragma: allowlist secret
         with:
           unityVersion: ${{ matrix.unity-version }}
-          targetPlatform: ${{ matrix.os == 'windows-latest' && 'StandaloneWindows64' || matrix.os == 'macos-latest' && 'StandaloneOSX' || 'Linux64' }}
+          targetPlatform: ${{ matrix.unity-platform }}
           buildName: StoryTestBuild
       
       - name: Run Story Test Validation
