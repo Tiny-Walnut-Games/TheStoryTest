@@ -1,14 +1,24 @@
 {
     "name": "TinyWalnutGames.TheStoryTest.Tests",
     "rootNamespace": "TinyWalnutGames.TheStoryTest.Tests",
-    "references": [],
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "TinyWalnutGames.TheStoryTest",
+        "TinyWalnutGames.TheStoryTest.Shared",
+        "TinyWalnutGames.TheStoryTest.Acts"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }
