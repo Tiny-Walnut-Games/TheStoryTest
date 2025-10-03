@@ -23,7 +23,7 @@ Think of your code as a narrative where every element must serve a purpose. The 
 
 ### Unity Projects - Package Installation
 
-**Option 1: Via Git URL (Recommended)**
+## **Option 1: Via Git URL (Recommended)**
 
 Add this to your project's `Packages/manifest.json`:
 
@@ -35,13 +35,13 @@ Add this to your project's `Packages/manifest.json`:
 }
 ```
 
-**Option 2: Via Unity Package Manager UI**
+## **Option 2: Via Unity Package Manager UI**
 
 1. Open Unity Package Manager (`Window > Package Manager`)
 2. Click the `+` button → "Add package from git URL..."
 3. Enter: `https://github.com/jmeyer1980/TheStoryTest.git?path=Packages/com.tinywalnutgames.storytest`
 
-**Option 3: Manual Installation**
+## **Option 3: Manual Installation**
 
 1. Download from [Releases](https://github.com/jmeyer1980/TheStoryTest/releases)
 2. Extract to your project's `Packages/` folder
