@@ -12,7 +12,7 @@ CI is now green across Windows, macOS, and Linux (workflow run #37), so we can f
 ## Objectives
 
 1. **Document Protective Mechanisms** — Explain `[StoryIgnore]` usage, the 🏳 educational comment shield, and how to justify exemptions without hiding real debt.
-2. **Surface CI Insights** — Record how the Python validator reports file/line data, note GameCI Editor-test limitations, and provide troubleshooting tips.
+2. **Surface CI Insights** — Record how the Python validator reports file/line data, note GameCI Editor-test limitations, capture Linux-as-canonical workflow guidance, and provide troubleshooting tips.
 3. **Consolidate Learning Materials** — Organize tutorials, samples, and Act explanations into `Documentation~/` for UPM consumption while keeping README concise.
 4. **Polish the Narrative** — Ensure every section reinforces "symbol integrity" with real examples, diagrams, or mini walkthroughs.
 

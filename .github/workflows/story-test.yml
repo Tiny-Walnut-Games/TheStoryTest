@@ -9,6 +9,15 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+    inputs:
+      run-windows:
+        description: "Run Windows Story Test job"
+        required: false
+        default: "false"
+      run-macos:
+        description: "Run macOS Story Test job"
+        required: false
+        default: "false"
 
 jobs:
   # Fast feedback job - quick static analysis of source files (completes in ~30 seconds)
@@ -97,48 +106,35 @@ jobs:
       
       # Don't fail on quick validation - it's just a pre-check
   
-  story-test:
-    name: Story Test - ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            unity-platform: StandaloneLinux64
-            unity-version: '2022.3.17f1'
-          - os: windows-latest
-            unity-platform: StandaloneWindows64
-            unity-version: '2022.3.17f1'
-          - os: macos-latest
-            unity-platform: StandaloneOSX
-            unity-version: '2022.3.17f1'
-    
+  # Canonical validation runs automatically on every push/PR (Linux)
+  story-test-linux:
+    name: Story Test - Linux (Canonical)
+    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
           cache-dependency-path: 'requirements.txt'
-      
+
       - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      
+
       - name: Cache Unity Library
         uses: actions/cache@v4
         with:
           path: Samples~/ExampleProject/Library
           key: >-
-            Library-${{ matrix.os }}-${{ matrix.unity-version }}-${{ hashFiles(
+            Library-ubuntu-latest-2022.3.17f1-${{ hashFiles(
               'Packages/com.tinywalnutgames.storytest/**',
               'Samples~/ExampleProject/Assets/**',
               'Samples~/ExampleProject/Packages/manifest.json',
@@ -146,9 +142,9 @@ jobs:
               'Samples~/ExampleProject/ProjectSettings/ProjectVersion.txt'
             ) }}
           restore-keys: |
-            Library-${{ matrix.os }}-${{ matrix.unity-version }}-
-            Library-${{ matrix.os }}-
-      
+            Library-ubuntu-latest-2022.3.17f1-
+            Library-ubuntu-latest-
+
       # Note: Unity secrets (UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD) must be added to repository Settings > Secrets
       # See https://game.ci/docs/github/activation for setup instructions
       # yamllint disable-line rule:line-length
@@ -161,33 +157,33 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}  # pragma: allowlist secret
         with:
           projectPath: Samples~/ExampleProject
-          unityVersion: ${{ matrix.unity-version }}
-          targetPlatform: ${{ matrix.unity-platform }}
+          unityVersion: '2022.3.17f1'
+          targetPlatform: StandaloneLinux64
           buildName: StoryTestSampleBuild
-      
+
       - name: Run Story Test Validation
-        id: story-test
+        id: story-test-linux
         continue-on-error: true
         run: |
           python scripts/story_test.py Samples~/ExampleProject --verbose --output story-test-report.json --fail-on-violations
         shell: bash
-      
+
       - name: Upload Story Test Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: story-test-report-${{ matrix.os }}
+          name: story-test-report-ubuntu
           path: story-test-report.json
-      
+
       - name: Parse and Display Results
         if: always()
         shell: bash
         run: |
           if [ -f story-test-report.json ]; then
-            echo "## Story Test Results - ${{ matrix.os }}" >> $GITHUB_STEP_SUMMARY
-            
+            echo "## Story Test Results - Linux" >> $GITHUB_STEP_SUMMARY
+
             TOTAL=$(jq '.totalViolations' story-test-report.json)
-            
+
             if [ "$TOTAL" -eq 0 ]; then
               echo "✅ **No violations found!** Code narrative is complete." >> $GITHUB_STEP_SUMMARY
             else
@@ -202,9 +198,201 @@ jobs:
           else
             echo "⚠️ Story test report not generated" >> $GITHUB_STEP_SUMMARY
           fi
-      
+
       - name: Fail if violations found
-        if: steps.story-test.outcome == 'failure'
+        if: steps.story-test-linux.outcome == 'failure'
+        run: |
+          echo "Story Test validation failed. Review the violations above."
+          exit 1
+
+  # Optional Windows validation - triggered manually via workflow_dispatch input
+  story-test-windows:
+    name: Story Test - Windows (Manual)
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.run-windows == 'true'
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: 'requirements.txt'
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: Samples~/ExampleProject/Library
+          key: >-
+            Library-windows-latest-2022.3.17f1-${{ hashFiles(
+              'Packages/com.tinywalnutgames.storytest/**',
+              'Samples~/ExampleProject/Assets/**',
+              'Samples~/ExampleProject/Packages/manifest.json',
+              'Samples~/ExampleProject/Packages/packages-lock.json',
+              'Samples~/ExampleProject/ProjectSettings/ProjectVersion.txt'
+            ) }}
+          restore-keys: |
+            Library-windows-latest-2022.3.17f1-
+            Library-windows-latest-
+
+      - name: Build Sample Project (to generate assemblies)
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}  # pragma: allowlist secret
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}  # pragma: allowlist secret
+        with:
+          projectPath: Samples~/ExampleProject
+          unityVersion: '2022.3.17f1'
+          targetPlatform: StandaloneWindows64
+          buildName: StoryTestSampleBuild
+
+      - name: Run Story Test Validation
+        id: story-test-windows
+        continue-on-error: true
+        run: |
+          python scripts/story_test.py Samples~/ExampleProject --verbose --output story-test-report.json --fail-on-violations
+        shell: bash
+
+      - name: Upload Story Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: story-test-report-windows
+          path: story-test-report.json
+
+      - name: Parse and Display Results
+        if: always()
+        shell: bash
+        run: |
+          if [ -f story-test-report.json ]; then
+            echo "## Story Test Results - Windows" >> $GITHUB_STEP_SUMMARY
+
+            TOTAL=$(jq '.totalViolations' story-test-report.json)
+
+            if [ "$TOTAL" -eq 0 ]; then
+              echo "✅ **No violations found!** Code narrative is complete." >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ **Found $TOTAL violation(s)**" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "### Violations by Type" >> $GITHUB_STEP_SUMMARY
+              jq -r '.violationsByType | to_entries[] | "- **\(.key)**: \(.value)"' story-test-report.json >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "### Violation Details" >> $GITHUB_STEP_SUMMARY
+              jq -r '.violations[] | "- `\(.type).\(.member)`: \(.violation)"' story-test-report.json >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⚠️ Story test report not generated" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Fail if violations found
+        if: steps.story-test-windows.outcome == 'failure'
+        run: |
+          echo "Story Test validation failed. Review the violations above."
+          exit 1
+
+  # Optional macOS validation - triggered manually via workflow_dispatch input
+  story-test-macos:
+    name: Story Test - macOS (Manual)
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.run-macos == 'true'
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: 'requirements.txt'
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: Samples~/ExampleProject/Library
+          key: >-
+            Library-macos-latest-2022.3.17f1-${{ hashFiles(
+              'Packages/com.tinywalnutgames.storytest/**',
+              'Samples~/ExampleProject/Assets/**',
+              'Samples~/ExampleProject/Packages/manifest.json',
+              'Samples~/ExampleProject/Packages/packages-lock.json',
+              'Samples~/ExampleProject/ProjectSettings/ProjectVersion.txt'
+            ) }}
+          restore-keys: |
+            Library-macos-latest-2022.3.17f1-
+            Library-macos-latest-
+
+      - name: Build Sample Project (to generate assemblies)
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}  # pragma: allowlist secret
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}  # pragma: allowlist secret
+        with:
+          projectPath: Samples~/ExampleProject
+          unityVersion: '2022.3.17f1'
+          targetPlatform: StandaloneOSX
+          buildName: StoryTestSampleBuild
+
+      - name: Run Story Test Validation
+        id: story-test-macos
+        continue-on-error: true
+        run: |
+          python scripts/story_test.py Samples~/ExampleProject --verbose --output story-test-report.json --fail-on-violations
+        shell: bash
+
+      - name: Upload Story Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: story-test-report-macos
+          path: story-test-report.json
+
+      - name: Parse and Display Results
+        if: always()
+        shell: bash
+        run: |
+          if [ -f story-test-report.json ]; then
+            echo "## Story Test Results - macOS" >> $GITHUB_STEP_SUMMARY
+
+            TOTAL=$(jq '.totalViolations' story-test-report.json)
+
+            if [ "$TOTAL" -eq 0 ]; then
+              echo "✅ **No violations found!** Code narrative is complete." >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ **Found $TOTAL violation(s)**" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "### Violations by Type" >> $GITHUB_STEP_SUMMARY
+              jq -r '.violationsByType | to_entries[] | "- **\(.key)**: \(.value)"' story-test-report.json >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "### Violation Details" >> $GITHUB_STEP_SUMMARY
+              jq -r '.violations[] | "- `\(.type).\(.member)`: \(.violation)"' story-test-report.json >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⚠️ Story test report not generated" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Fail if violations found
+        if: steps.story-test-macos.outcome == 'failure'
         run: |
           echo "Story Test validation failed. Review the violations above."
           exit 1
