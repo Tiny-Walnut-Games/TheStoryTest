@@ -1,10 +1,12 @@
 # Quick Start Guide
 
-## Installation
+Welcome to **The Story Test Framework**! This guide walks you from installation to your first validation run—whether you stay inside the Unity Editor or drive everything from CI.
 
-### Method 1: Git URL (Recommended)
+## 1. Install the package
 
-Add to your `Packages/manifest.json`:
+### Git URL (recommended)
+
+Add the dependency to your project's `Packages/manifest.json`:
 
 ```json
 {
@@ -14,106 +16,85 @@ Add to your `Packages/manifest.json`:
 }
 ```
 
-### Method 2: Unity Package Manager UI
+### Unity Package Manager UI
 
 1. Open `Window > Package Manager`
-2. Click `+` → "Add package from git URL..."
-3. Enter: `https://github.com/jmeyer1980/TheStoryTest.git?path=Packages/com.tinywalnutgames.storytest`
+2. Click the `+` button → **Add package from git URL...**
+3. Paste `https://github.com/jmeyer1980/TheStoryTest.git?path=Packages/com.tinywalnutgames.storytest`
 
-## Basic Usage
+### Manual install
 
-### Running Validation via Menu
+1. Download the latest release archive
+2. Extract `Packages/com.tinywalnutgames.storytest` into your Unity project
+3. Unity imports the package automatically
 
-1. Open Unity menu: `Tiny Walnut Games > The Story Test > Run Story Test and Export Report`
-2. Check console for results
-3. Review report in `.debug/storytest_report.txt`
+## 2. Run your first validation
 
-### Running Validation in Scene
+### Unity menu (one-off check)
 
-1. Add `ProductionExcellenceStoryTest` component to any GameObject
-2. Right-click component → `Validate Production Excellence`
-3. Review console output
+1. Open the menu: `Tiny Walnut Games > The Story Test > Run Story Test and Export Report`
+2. Watch the Console for a summary
+3. Inspect `.debug/storytest_report.txt` for detailed violations
 
-## The 9 Acts
+### In-scene validator (repeatable in play mode)
 
-The Story Test Framework enforces 9 validation rules:
+1. Add `ProductionExcellenceStoryTest` to a GameObject in your scene
+2. Configure which phases to run (Story Integrity, Code Coverage, Architectural Compliance, etc.)
+3. Use the component context menu **Validate Production Excellence** or call `ValidateProductionExcellence()` at runtime
 
-1. **Act 1: Todo Comments** - No `NotImplementedException` or default-only returns
-2. **Act 2: Placeholder Implementations** - No stub methods with minimal IL bytecode
-3. **Act 3: Incomplete Classes** - Non-abstract classes must implement all abstract methods
-4. **Act 4: Unsealed Abstract Members** - No abstract methods in non-abstract classes
-5. **Act 5: Debug Only Implementations** - Debug methods must have `[Obsolete]` attribute
-6. **Act 6: Phantom Props** - Auto-properties must be meaningfully used
-7. **Act 7: Cold Methods** - No empty or minimal methods
-8. **Act 8: Hollow Enums** - Enums must have meaningful values
-9. **Act 9: Premature Celebrations** - Complete code can't throw `NotImplementedException`
+### CLI validator (Unity optional)
 
-## Opt-Out with StoryIgnore
-
-Use `[StoryIgnore]` for infrastructure code:
-
-```csharp
-[StoryIgnore("Test infrastructure component")]
-public class MyTestHelper : MonoBehaviour { }
+```bash
+python story_test.py /path/to/UnityProject --verbose
 ```
 
-**Important:** Must provide non-empty reason string.
+- Works on Windows, Linux, and macOS
+- Auto-discovers compiled assemblies under `Library/ScriptAssemblies`
+- Add `--fail-on-violations` in CI to break builds when any Act fails
 
-## Example: Correct Usage
+> 🧭 **Canonical pipeline:** Our GitHub Actions workflow runs the Linux job automatically for every push/PR. Treat that job as the source of truth for Story Test compliance. Trigger the optional Windows/macOS jobs when you need platform-specific assurance.
 
-```csharp
-// ✅ All parameters used
-public void RenderScene(Scene scene, Camera camera, int quality) {
-    scene.Draw(camera, quality);
-}
+## 3. Configure the narrative
 
-// ✅ Debug method marked temporary
-[Obsolete("Debug visualization only")]
-public void DebugDrawGizmos() {
-    Gizmos.DrawWireSphere(transform.position, 1.0f);
-}
-```
-
-## Example: Violations
-
-```csharp
-// ❌ Act 1: Placeholder
-public float Calculate() {
-    throw new NotImplementedException();
-}
-
-// ❌ Act 2: Unused parameter
-public void RenderScene(Scene scene, Camera camera, int quality) {
-    scene.Draw(camera); // quality ignored!
-}
-
-// ❌ Act 5: Debug method not marked
-public void DebugDrawGizmos() {
-    // Missing [Obsolete]
-}
-```
-
-## Configuration
-
-Customize validation in `Resources/StoryTestSettings.json`:
+`Assets/Tiny Walnut Games/TheStoryTest/Resources/StoryTestSettings.json` controls validation phases, assembly filters, and DOTS/ECS checks. Document intentional exclusions with inline comments or `[StoryIgnore]` so future readers understand the story.
 
 ```json
 {
-  "EnableStoryIntegrity": true,
-  "EnableCodeCoverage": true,
-  "EnableArchitecturalCompliance": true,
-  "EnableProductionReadiness": true,
-  "EnableSyncPointPerformance": true,
-  "EnableDOTSValidation": false
+  "projectName": "Sample Narrative",
+  "assemblyFilters": {
+    "include": ["Assembly-CSharp"],
+    "exclude": ["Unity", "System", "Mono"]
+  },
+  "phases": {
+    "enableStoryIntegrity": true,
+    "enableCodeCoverage": true,
+    "enableArchitecturalCompliance": false,
+    "enableProductionReadiness": true,
+    "enableSyncPointPerformance": false
+  },
+  "enableDotsValidation": false
 }
 ```
 
-## CI/CD Integration
+## 4. Know your Acts
 
-See [GitHub Actions Workflow](.github/workflows/story-test.yml) for automated validation.
+Each violation maps to one of the **Nine Acts**. Learn the intent, detection heuristics, and remediation tips in the [Acts Guide](ActsGuide.md) before silencing anything with `[StoryIgnore]`.
 
-## Next Steps
+## 5. Platform-specific code paths
 
-- Review [Dynamic Validation](DynamicValidation.md) for runtime validation
-- Explore [Assembly Structure](AssemblyStructure.md) for architecture details
-- Check the [Example Project](../../Samples~/ExampleProject/) for practical examples
+- Guard Windows/macOS APIs behind `#if UNITY_STANDALONE_WIN` / `#if UNITY_STANDALONE_OSX`
+- Provide Linux-safe defaults so the canonical pipeline stays green
+- When a violation only reproduces on another OS, re-run the workflow with the `run-windows` or `run-macos` dispatch inputs or execute the CLI on that platform
+
+## 6. Next steps
+
+- Dive into [Dynamic Validation](DynamicValidation.md) for multi-phase runtime checks
+- Explore [AssemblyStructure](AssemblyStructure.md) to understand how the package hangs together
+- Automate everything with the [CI & Automation guide](CI.md)
+- Open the [Example Project](../../Samples~/ExampleProject/) for a guided walkthrough
+- Prep team training with the [FAQ & Demo Playbook](FAQ.md)
+- Share your story in GitHub Discussions if you uncover new narrative patterns
+
+---
+
+**Narrative rule of thumb:** Every symbol in your assembly should read like a finished chapter. If a parameter, method, or enum feels like foreshadowing, seal it with intent or finish the scene before shipping.

@@ -5,8 +5,29 @@ All notable changes to The Story Test Framework will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-10-04
+
+<!-- markdownlint-disable-next-line MD024 -->
+### Added
+
+- **Documentation bundle**: New `Documentation~/` guides for Quick Start, Acts Guide, and CI & Automation shipped with the UPM package.
+- **Linux-first CI guidance**: Documented canonical Linux workflow plus optional Windows/macOS dispatch triggers.
+- **Sample walkthrough**: Expanded `Samples~/ExampleProject/README.md` with CLI rehearsal steps and platform notes.
+
+<!-- markdownlint-disable-next-line MD024 -->
+### Changed
+
+- **Package manifest**: `documentationUrl` now points at the packaged Quick Start and registers the sample via UPM metadata.
+- **README references**: Package README links to the new internal documentation set for offline consumption.
+
+<!-- markdownlint-disable-next-line MD024 -->
+### Fixed
+
+- Clarified platform-conditional best practices to avoid false positives in Linux builds.
+
 ## [1.0.0] - 2025-10-03
 
+<!-- markdownlint-disable-next-line MD024 -->
 ### Added
 
 - **Package-based distribution**: Converted from full Unity project to UPM package
@@ -34,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **StoryIgnoreAttribute**: Opt-out mechanism with required justification
 - **Clean Assembly Architecture**: Shared → Acts → Main → Editor/Tests
 
+<!-- markdownlint-disable-next-line MD024 -->
 ### Changed
 
 - **Repository Structure**: Moved from Unity project to package-based repo
@@ -41,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Documentation**: Reorganized for package format
 - **Assembly Definitions**: Updated with proper package references
 
+<!-- markdownlint-disable-next-line MD024 -->
 ### Fixed
 
 - **Compilation Errors**: Resolved all C# compilation issues

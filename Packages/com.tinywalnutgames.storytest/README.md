@@ -135,10 +135,12 @@ public void DebugDrawGizmos() { }
 
 ## Documentation
 
-- [Assembly Structure](https://github.com/jmeyer1980/TheStoryTest/blob/main/docs/assembly-structure.md)
-- [Dynamic Validation](https://github.com/jmeyer1980/TheStoryTest/blob/main/docs/dynamic-validation.md)
-- [Quick Start Guide](https://github.com/jmeyer1980/TheStoryTest/blob/main/docs/quickstart.md)
-- [Full Documentation](https://github.com/jmeyer1980/TheStoryTest#readme)
+- [Quick Start Guide](Documentation~/QuickStart.md)
+- [Acts Guide](Documentation~/ActsGuide.md)
+- [CI & Automation](Documentation~/CI.md)
+- [Dynamic Validation](Documentation~/DynamicValidation.md)
+- [Assembly Structure](Documentation~/AssemblyStructure.md)
+- [FAQ & Demo Playbook](Documentation~/FAQ.md)
 
 ## License
 
