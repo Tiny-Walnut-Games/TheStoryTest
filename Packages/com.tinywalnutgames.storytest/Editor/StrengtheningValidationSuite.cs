@@ -330,135 +330,345 @@ namespace TinyWalnutGames.StoryTest.Editor
     /// </summary>
     public class StrengtheningConfigurationWindow : EditorWindow
     {
+        private const string SettingsRelativePath = "Assets/Tiny Walnut Games/TheStoryTest/Resources/StoryTestSettings.json";
+
         private Vector2 scrollPosition;
-        private bool validateOnBuild = true;
-        private bool strictMode = false;
-        private string[] assemblyFilters = { "" };
+        private StoryTestSettings editableSettings;
+        private bool settingsFileExists;
+        private bool showConceptualSection = true;
+        private bool showEnvironmentSection = false;
+        private bool showCustomComponentTypes = false;
+        private bool showEnumPatterns = false;
 
         public static void ShowWindow()
         {
             var window = GetWindow<StrengtheningConfigurationWindow>("Strengthening Config");
-            window.minSize = new Vector2(400, 300);
+            window.minSize = new Vector2(480, 420);
             window.Show();
+        }
+
+        private void OnEnable()
+        {
+            ReloadSettings();
+        }
+
+        private void ReloadSettings()
+        {
+            StoryTestSettings.ReloadSettings();
+            editableSettings = CloneSettings(StoryTestSettings.Instance);
+            EnsureDefaults(editableSettings);
+            settingsFileExists = File.Exists(GetSettingsAbsolutePath());
         }
 
         private void OnGUI()
         {
+            if (editableSettings == null)
+            {
+                ReloadSettings();
+            }
+
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 
             GUILayout.Label("Strengthening Validation Configuration", EditorStyles.largeLabel);
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField("Validation Settings", EditorStyles.boldLabel);
-            validateOnBuild = EditorGUILayout.Toggle("Validate on Build", validateOnBuild);
-            strictMode = EditorGUILayout.Toggle("Strict Mode", strictMode);
-
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Assembly Filters", EditorStyles.boldLabel);
-
-            if (assemblyFilters != null)
+            EditorGUILayout.HelpBox($"Editing Story Test settings at: {SettingsRelativePath}", MessageType.Info);
+            if (!settingsFileExists)
             {
-                for (int i = 0; i < assemblyFilters.Length; i++)
-                {
-                    EditorGUILayout.BeginHorizontal();
-                    assemblyFilters[i] = EditorGUILayout.TextField($"Filter {i + 1}", assemblyFilters[i]);
-                    if (GUILayout.Button("Remove", GUILayout.Width(60)))
-                    {
-                        var newFilters = new string[assemblyFilters.Length - 1];
-                        System.Array.Copy(assemblyFilters, 0, newFilters, 0, i);
-                        System.Array.Copy(assemblyFilters, i + 1, newFilters, i, assemblyFilters.Length - i - 1);
-                        assemblyFilters = newFilters;
-                    }
-                    EditorGUILayout.EndHorizontal();
-                }
+                EditorGUILayout.HelpBox("Settings file not found. A new StoryTestSettings.json will be created when you apply changes.", MessageType.Warning);
             }
 
-            if (GUILayout.Button("Add Filter"))
-            {
-                var newFilters = new string[assemblyFilters?.Length + 1 ?? 1];
-                if (assemblyFilters != null)
-                {
-                    System.Array.Copy(assemblyFilters, newFilters, assemblyFilters.Length);
-                }
-                newFilters[newFilters.Length - 1] = "";
-                assemblyFilters = newFilters;
-            }
+            DrawGeneralSettings();
+            DrawAssemblyFilters();
+            DrawConceptualValidation();
 
             EditorGUILayout.Space();
 
-            if (GUILayout.Button("Apply Configuration"))
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Reload From Disk"))
             {
-                ApplyConfiguration();
+                ReloadSettings();
             }
 
+            if (GUILayout.Button("Open Settings File"))
+            {
+                OpenSettingsLocation();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Reset to Defaults"))
             {
                 ResetToDefaults();
             }
 
+            if (GUILayout.Button("Apply Configuration"))
+            {
+                ApplyConfiguration();
+            }
+            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.EndScrollView();
+        }
+
+        private void DrawGeneralSettings()
+        {
+            EditorGUILayout.LabelField("General Settings", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+
+            editableSettings.projectName = EditorGUILayout.TextField("Project Name", editableSettings.projectName);
+            editableSettings.menuPath = EditorGUILayout.TextField("Menu Path", editableSettings.menuPath);
+            editableSettings.exportPath = EditorGUILayout.TextField("Export Path", editableSettings.exportPath);
+
+            editableSettings.validateOnStart = EditorGUILayout.Toggle("Validate on Start", editableSettings.validateOnStart);
+            editableSettings.strictMode = EditorGUILayout.Toggle("Strict Mode", editableSettings.strictMode);
+            editableSettings.includeUnityAssemblies = EditorGUILayout.Toggle("Include Unity Assemblies", editableSettings.includeUnityAssemblies);
+
+            EditorGUI.indentLevel--;
+            EditorGUILayout.Space();
+        }
+
+        private void DrawAssemblyFilters()
+        {
+            EditorGUILayout.LabelField("Assembly Filters", EditorStyles.boldLabel);
+            DrawStringList(ref editableSettings.assemblyFilters, "Filter", "Filter");
+            EditorGUILayout.Space();
+        }
+
+        private void DrawConceptualValidation()
+        {
+            var config = editableSettings.conceptualValidation;
+            showConceptualSection = EditorGUILayout.Foldout(showConceptualSection, "Conceptual Validation", true);
+            if (!showConceptualSection)
+            {
+                return;
+            }
+
+            EditorGUI.indentLevel++;
+            config.enableConceptTests = EditorGUILayout.Toggle("Enable Concept Tests", config.enableConceptTests);
+            config.autoDetectEnvironment = EditorGUILayout.Toggle("Auto Detect Environment", config.autoDetectEnvironment);
+
+            EditorGUILayout.LabelField("Validation Tiers", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            config.validationTiers.universal = EditorGUILayout.Toggle("Universal", config.validationTiers.universal);
+            config.validationTiers.unityAware = EditorGUILayout.Toggle("Unity-Aware", config.validationTiers.unityAware);
+            config.validationTiers.projectSpecific = EditorGUILayout.Toggle("Project-Specific", config.validationTiers.projectSpecific);
+            EditorGUI.indentLevel--;
+
+            var fallbackModes = new[] { "ilAnalysis", "skip" };
+            var fallbackIndex = Array.IndexOf(fallbackModes, config.fallbackMode);
+            if (fallbackIndex < 0)
+            {
+                fallbackIndex = 0;
+            }
+            fallbackIndex = EditorGUILayout.Popup("Fallback Mode", fallbackIndex, fallbackModes);
+            config.fallbackMode = fallbackModes[fallbackIndex];
+
+            EditorGUILayout.Space();
+
+            showCustomComponentTypes = EditorGUILayout.Foldout(showCustomComponentTypes, "Custom Component Types", true);
+            if (showCustomComponentTypes)
+            {
+                EditorGUI.indentLevel++;
+                DrawStringList(ref config.customComponentTypes, "Component", "Component");
+                EditorGUI.indentLevel--;
+            }
+
+            showEnumPatterns = EditorGUILayout.Foldout(showEnumPatterns, "Enum Validation Patterns", true);
+            if (showEnumPatterns)
+            {
+                EditorGUI.indentLevel++;
+                DrawStringList(ref config.enumValidationPatterns, "Pattern", "Pattern");
+                EditorGUI.indentLevel--;
+            }
+
+            EditorGUILayout.Space();
+
+            showEnvironmentSection = EditorGUILayout.Foldout(showEnvironmentSection, "Environment Capabilities Overrides", true);
+            if (showEnvironmentSection)
+            {
+                EditorGUI.indentLevel++;
+                var environment = config.environmentCapabilities;
+                environment.hasUnityEngine = EditorGUILayout.Toggle("Has UnityEngine", environment.hasUnityEngine);
+                environment.hasDOTS = EditorGUILayout.Toggle("Has DOTS", environment.hasDOTS);
+                environment.hasBurst = EditorGUILayout.Toggle("Has Burst", environment.hasBurst);
+                environment.hasEntities = EditorGUILayout.Toggle("Has Entities", environment.hasEntities);
+                environment.canInstantiateComponents = EditorGUILayout.Toggle("Can Instantiate Components", environment.canInstantiateComponents);
+                EditorGUI.indentLevel--;
+            }
+
+            EditorGUI.indentLevel--;
+            EditorGUILayout.Space();
         }
 
         private void ApplyConfiguration()
         {
-            var settings = StoryTestSettings.Instance;
-            settings.validateOnStart = validateOnBuild;
-            settings.strictMode = strictMode;
-            settings.assemblyFilters = assemblyFilters ?? new string[0];
-            settings.SaveSettings();
-
-            // Also save to EditorPrefs for backwards compatibility
-            EditorPrefs.SetBool("StoryTest.ValidateOnBuild", validateOnBuild);
-            EditorPrefs.SetBool("StoryTest.StrictMode", strictMode);
-
-            if (assemblyFilters != null)
+            if (editableSettings == null)
             {
-                for (int i = 0; i < assemblyFilters.Length; i++)
-                {
-                    EditorPrefs.SetString($"StoryTest.AssemblyFilter.{i}", assemblyFilters[i]);
-                }
-                EditorPrefs.SetInt("StoryTest.AssemblyFilters.Count", assemblyFilters.Length);
+                return;
             }
 
-            Debug.Log("Story Test configuration applied and saved to StoryTestSettings.json");
+            var runtimeSettings = StoryTestSettings.Instance;
+            CopySettings(editableSettings, runtimeSettings);
+            runtimeSettings.SaveSettings();
+            StoryTestSettings.ReloadSettings();
+            settingsFileExists = true;
+            AssetDatabase.Refresh();
+
+            Debug.Log($"[Story Test] Settings saved to {SettingsRelativePath}");
+            ReloadSettings();
         }
 
         private void ResetToDefaults()
         {
-            validateOnBuild = true;
-            strictMode = false;
-            assemblyFilters = new[] { "" };
+            editableSettings = new StoryTestSettings();
+            EnsureDefaults(editableSettings);
         }
 
-        private void OnEnable()
+        private void OpenSettingsLocation()
         {
-            LoadConfiguration();
-        }
-
-        private void LoadConfiguration()
-        {
-            var settings = StoryTestSettings.Instance;
-            
-            // Load from settings file first
-            validateOnBuild = settings.validateOnStart;
-            strictMode = settings.strictMode;
-            assemblyFilters = settings.assemblyFilters.Length > 0 
-                ? settings.assemblyFilters 
-                : new string[] { "" };
-            
-            // Override with EditorPrefs if they exist (user-specific overrides)
-            validateOnBuild = EditorPrefs.GetBool("StoryTest.ValidateOnBuild", validateOnBuild);
-            strictMode = EditorPrefs.GetBool("StoryTest.StrictMode", strictMode);
-
-            var filterCount = EditorPrefs.GetInt("StoryTest.AssemblyFilters.Count", -1);
-            if (filterCount > 0)
+            var absolutePath = GetSettingsAbsolutePath();
+            if (File.Exists(absolutePath))
             {
-                assemblyFilters = new string[filterCount];
-                for (int i = 0; i < filterCount; i++)
-                {
-                    assemblyFilters[i] = EditorPrefs.GetString($"StoryTest.AssemblyFilter.{i}", "");
-                }
+                EditorUtility.RevealInFinder(absolutePath);
             }
+            else
+            {
+                EditorUtility.DisplayDialog("Story Test Settings", $"No settings file found at: {absolutePath}\nApply the configuration to create it.", "OK");
+            }
+        }
+
+        private void DrawStringList(ref string[] items, string label, string addLabel)
+        {
+            if (items == null)
+            {
+                items = new string[0];
+            }
+
+            EditorGUI.indentLevel++;
+            var list = new List<string>(items);
+            bool removed = false;
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                EditorGUILayout.BeginHorizontal();
+                list[i] = EditorGUILayout.TextField($"{label} {i + 1}", list[i]);
+                if (GUILayout.Button("Remove", GUILayout.Width(70)))
+                {
+                    list.RemoveAt(i);
+                    removed = true;
+                    EditorGUILayout.EndHorizontal();
+                    break;
+                }
+                EditorGUILayout.EndHorizontal();
+            }
+
+            if (!removed && GUILayout.Button($"Add {addLabel}"))
+            {
+                list.Add(string.Empty);
+            }
+
+            items = list.ToArray();
+            EditorGUI.indentLevel--;
+
+            if (removed)
+            {
+                // Trigger a repaint so the removed element disappears immediately.
+                Repaint();
+            }
+        }
+
+        private static StoryTestSettings CloneSettings(StoryTestSettings source)
+        {
+            if (source == null)
+            {
+                return new StoryTestSettings();
+            }
+
+            var json = JsonUtility.ToJson(source);
+            var clone = JsonUtility.FromJson<StoryTestSettings>(json) ?? new StoryTestSettings();
+            return clone;
+        }
+
+        private static void EnsureDefaults(StoryTestSettings settings)
+        {
+            if (settings == null)
+            {
+                return;
+            }
+
+            settings.projectName ??= "YourProjectName";
+            settings.menuPath ??= "Tiny Walnut Games/The Story Test/";
+            settings.exportPath ??= ".debug/storytest_report.txt";
+            settings.assemblyFilters = settings.assemblyFilters ?? new string[0];
+
+            settings.conceptualValidation ??= new ConceptualValidationConfig();
+            var concept = settings.conceptualValidation;
+            concept.validationTiers ??= new ValidationTiers();
+            concept.environmentCapabilities ??= new EnvironmentCapabilities();
+            concept.customComponentTypes = concept.customComponentTypes ?? new string[0];
+            concept.enumValidationPatterns = concept.enumValidationPatterns ?? new string[0];
+            concept.fallbackMode ??= "ilAnalysis";
+        }
+
+        private static void CopySettings(StoryTestSettings source, StoryTestSettings target)
+        {
+            if (source == null || target == null)
+            {
+                return;
+            }
+
+            target.projectName = source.projectName;
+            target.menuPath = source.menuPath;
+            target.exportPath = source.exportPath;
+            target.includeUnityAssemblies = source.includeUnityAssemblies;
+            target.validateOnStart = source.validateOnStart;
+            target.strictMode = source.strictMode;
+            target.assemblyFilters = CloneArray(source.assemblyFilters);
+
+            target.conceptualValidation ??= new ConceptualValidationConfig();
+            var targetConcept = target.conceptualValidation;
+            var sourceConcept = source.conceptualValidation ?? new ConceptualValidationConfig();
+
+            targetConcept.enableConceptTests = sourceConcept.enableConceptTests;
+            targetConcept.autoDetectEnvironment = sourceConcept.autoDetectEnvironment;
+            targetConcept.fallbackMode = string.IsNullOrWhiteSpace(sourceConcept.fallbackMode) ? "ilAnalysis" : sourceConcept.fallbackMode;
+
+            targetConcept.validationTiers ??= new ValidationTiers();
+            var sourceTiers = sourceConcept.validationTiers ?? new ValidationTiers();
+            targetConcept.validationTiers.universal = sourceTiers.universal;
+            targetConcept.validationTiers.unityAware = sourceTiers.unityAware;
+            targetConcept.validationTiers.projectSpecific = sourceTiers.projectSpecific;
+
+            targetConcept.environmentCapabilities ??= new EnvironmentCapabilities();
+            var sourceEnv = sourceConcept.environmentCapabilities ?? new EnvironmentCapabilities();
+            targetConcept.environmentCapabilities.hasUnityEngine = sourceEnv.hasUnityEngine;
+            targetConcept.environmentCapabilities.hasDOTS = sourceEnv.hasDOTS;
+            targetConcept.environmentCapabilities.hasBurst = sourceEnv.hasBurst;
+            targetConcept.environmentCapabilities.hasEntities = sourceEnv.hasEntities;
+            targetConcept.environmentCapabilities.canInstantiateComponents = sourceEnv.canInstantiateComponents;
+
+            targetConcept.customComponentTypes = CloneArray(sourceConcept.customComponentTypes);
+            targetConcept.enumValidationPatterns = CloneArray(sourceConcept.enumValidationPatterns);
+        }
+
+        private static string[] CloneArray(string[] source)
+        {
+            if (source == null || source.Length == 0)
+            {
+                return new string[0];
+            }
+
+            var clone = new string[source.Length];
+            Array.Copy(source, clone, source.Length);
+            return clone;
+        }
+
+        private static string GetSettingsAbsolutePath()
+        {
+            return Path.Combine(Application.dataPath, "Tiny Walnut Games", "TheStoryTest", "Resources", "StoryTestSettings.json");
         }
     }
 
