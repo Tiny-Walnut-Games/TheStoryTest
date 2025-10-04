@@ -137,7 +137,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: Samples~/ExampleProject/Library
-          key: Library-${{ matrix.os }}-${{ matrix.unity-version }}-${{ hashFiles('Samples~/ExampleProject/**') }}
+          key: >-
+            Library-${{ matrix.os }}-${{ matrix.unity-version }}-${{ hashFiles(
+              'Packages/com.tinywalnutgames.storytest/**',
+              'Samples~/ExampleProject/Assets/**',
+              'Samples~/ExampleProject/Packages/manifest.json',
+              'Samples~/ExampleProject/Packages/packages-lock.json',
+              'Samples~/ExampleProject/ProjectSettings/ProjectVersion.txt'
+            ) }}
           restore-keys: |
             Library-${{ matrix.os }}-${{ matrix.unity-version }}-
             Library-${{ matrix.os }}-
