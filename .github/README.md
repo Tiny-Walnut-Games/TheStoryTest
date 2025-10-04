@@ -49,22 +49,6 @@ Add this to your project's `Packages/manifest.json`:
 2. Extract to your project's `Packages/` folder
 3. Unity will auto-import
 
-## **Option 4: Local Tarball (Offline)**
-
-1. Build the package locally (see [Building the UPM package](#building-the-upm-package))
-2. In Unity Package Manager choose `+` → "Add package from tarball..."
-3. Select the generated `dist/com.tinywalnutgames.storytest-<version>.tgz`
-
-### Building the UPM package
-
-```bash
-npm pack ./Packages/com.tinywalnutgames.storytest --pack-destination dist
-```
-
-- Requires Node.js 14+ (or newer) and npm.
-- The command collects everything under `Packages/com.tinywalnutgames.storytest` and writes the archive to `dist/`.
-- Re-run the command whenever package contents change to refresh the tarball.
-
 ### Using the Framework
 
 Once installed, run validation via Unity menu:
@@ -100,8 +84,7 @@ python story_test.py ./bin/Release --output report.json
 
 The repository includes a ready-to-use workflow (`.github/workflows/story-test.yml`) that:
 
-- ✅ Runs Linux validation automatically on every push/PR (canonical authority for Story Test compliance)
-- ✅ Provides optional manual triggers for Windows and macOS when you need additional platform coverage
+- ✅ Runs on Windows, Linux, and macOS
 - ✅ Compiles Unity projects automatically
 - ✅ Generates violation reports
 - ✅ Includes per-violation file paths and line numbers in the job summary (verified in run #37)
@@ -112,20 +95,12 @@ The repository includes a ready-to-use workflow (`.github/workflows/story-test.y
 
 1. Copy `.github/workflows/story-test.yml` to your repository
 2. Set Unity secrets: `UNITY_LICENSE`, `UNITY_EMAIL`, `UNITY_PASSWORD`
-3. Push to trigger validation (Linux job runs automatically; use the workflow dispatch inputs `run-windows` / `run-macos` when you need those jobs)
-
-> 🧭 **Canonical validator:** Treat the Linux job as the source of truth for Story Test pass/fail. Windows and macOS jobs are available on demand for confidence checks without consuming extra minutes on every run.
+3. Push to trigger validation
 
 #### Known Limitations
 
 - **Unity Editor tests remain experimental in headless CI.** GameCI's builder currently omits `UnityEditor.*` modules from the player build, so invoking the Editor Test Runner in workflows logs `FileNotFoundException: Could not load file or assembly 'UnityEditor.CoreModule'`. Treat editor-mode tests as opt-in and prefer playmode or standalone assembly coverage until GameCI ships full Editor support.
 - The Story Test workflow still validates assemblies successfully—the Python validator runs against the generated player assemblies, which include all runtime IL needed for Acts 1-9.
-
-### Platform-specific APIs & Conditional Compilation
-
-- Linux builds are the baseline: platform conditionals such as `#if UNITY_STANDALONE_WIN` are excluded from the canonical CI run. Guard Windows-/macOS-only code behind platform directives and provide Linux-safe code paths to keep validation deterministic.
-- When Story Test flags missing implementations that are only relevant on another OS, verify the report by re-running the workflow with `run-windows` or `run-macos` enabled, or execute the validator locally on that platform's assemblies.
-- Avoid assuming Windows-only APIs are available in the Linux build pipeline. If a symbol is intentionally platform-specific, wrap it in `#if` directives and document the rationale so the canonical Linux validator understands the narrative intent.
 
 ## 📋 The 9 Acts of Validation
 

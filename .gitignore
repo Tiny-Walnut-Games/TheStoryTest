@@ -1,6 +1,6 @@
-# This .gitignore file should be placed at the root of your Unity project directory
+# This .gitignore file for Story Test Framework Package
 #
-# Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
+# Unity Package with Samples
 #
 .utmp/
 /[Ll]ibrary/
@@ -11,6 +11,16 @@
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 *.log
+
+# Sample project build artifacts
+/Samples~/ExampleProject/[Ll]ibrary/
+/Samples~/ExampleProject/[Tt]emp/
+/Samples~/ExampleProject/[Ll]ogs/
+/Samples~/ExampleProject/[Uu]ser[Ss]ettings/
+/Samples~/ExampleProject/[Bb]uild/
+/Samples~/ExampleProject/[Bb]uilds/
+/Samples~/ExampleProject/[Mm]emoryCaptures/
+/Samples~/ExampleProject/[Rr]ecordings/
 
 # By default unity supports Blender asset imports, *.blend1 blender files do not need to be commited to version control.
 *.blend1
