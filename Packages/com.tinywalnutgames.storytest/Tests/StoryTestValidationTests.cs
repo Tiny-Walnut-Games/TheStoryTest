@@ -1,3 +1,4 @@
+using TinyWalnutGames.StoryTest;
 using TinyWalnutGames.StoryTest.Shared;
 using NUnit.Framework;
 using System.Reflection;
@@ -37,6 +38,16 @@ namespace TinyWalnutGames.StoryTest.Tests
             {
                 UnityEngine.Debug.LogWarning($"Story violations found: {string.Join(", ", violations.Select(v => v.ToString()))}");
             }
+        }
+
+        [Test]
+        public void StoryIntegrityValidator_AutoRegistersRules()
+        {
+            StoryIntegrityValidator.ClearRules();
+            var rules = StoryIntegrityValidator.GetRegisteredRules();
+
+            Assert.IsNotNull(rules, "Registered rules collection should never be null");
+            Assert.Greater(rules.Count, 0, "StoryIntegrityValidator should auto-register validation rules from the Acts assembly");
         }
 
         [Test]

@@ -49,6 +49,22 @@ Add this to your project's `Packages/manifest.json`:
 2. Extract to your project's `Packages/` folder
 3. Unity will auto-import
 
+## **Option 4: Local Tarball (Offline)**
+
+1. Build the package locally (see [Building the UPM package](#building-the-upm-package))
+2. In Unity Package Manager choose `+` → "Add package from tarball..."
+3. Select the generated `dist/com.tinywalnutgames.storytest-<version>.tgz`
+
+### Building the UPM package
+
+```bash
+npm pack ./Packages/com.tinywalnutgames.storytest --pack-destination dist
+```
+
+- Requires Node.js 14+ (or newer) and npm.
+- The command collects everything under `Packages/com.tinywalnutgames.storytest` and writes the archive to `dist/`.
+- Re-run the command whenever package contents change to refresh the tarball.
+
 ### Using the Framework
 
 Once installed, run validation via Unity menu:
