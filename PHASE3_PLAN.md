@@ -77,6 +77,13 @@ CI is now green across Windows, macOS, and Linux (workflow run #37), so we can f
 - [ ] Python validator usage matches documented commands and outputs
 - [ ] CI still green after docs-only PR (build matrix untouched)
 
+## Exit Criteria → Phase 4 Handoff
+
+- ✅ Documentation tasks above completed and merged through `jmeyer1980/issue2`
+- ✅ Branch rebased/merged so `main` reflects Phase 3 deliverables before starting Phase 4
+- ✅ Stage 4 prerequisites captured: package validation in a clean Unity project and external repo workflow rehearsal (see `PHASE4_PLAN.md`)
+- ✅ Any open doc issues triaged so CI/CD updates can proceed without documentation blockers
+
 ---
 
 *Phase 3 is about telling the Story Test story as clearly as we enforce it—every symbol, every doc section, every example should reinforce narrative completeness.*
