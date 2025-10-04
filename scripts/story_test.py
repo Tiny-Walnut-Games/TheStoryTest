@@ -201,6 +201,14 @@ class StoryTestValidator:
         if method_name.startswith("<") or method.IsSpecialName:
             return
         
+        # Skip inherited methods - only validate methods declared in the current type
+        # This filters out Object.GetHashCode, Attribute.GetObjectData, etc.
+        try:
+            if method.DeclaringType != type_obj:
+                return
+        except:
+            pass
+        
         # Act 1: TODO Comments (NotImplementedException)
         # Act 2: Placeholder Implementations
         self._check_todo_and_placeholders(method, type_name, method_name, file_path)
