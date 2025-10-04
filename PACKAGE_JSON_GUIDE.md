@@ -2,6 +2,8 @@
 
 This repository contains **two separate `package.json` files** for different package ecosystems:
 
+> 🔎 **NuGet vs. npm:** The Node-based `package.json` exists purely to drive CLI tooling and CI scripts. Actual .NET distribution will target NuGet in a later phase, while Unity distribution flows through UPM. Don't confuse the CLI helper package with a public npm release.
+
 ## 1. NPM package.json (Root)
 
 **Location:** `/package.json`

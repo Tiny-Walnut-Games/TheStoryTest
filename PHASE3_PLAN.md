@@ -72,7 +72,7 @@ CI is now green across Windows, macOS, and Linux (workflow run #37), so we can f
 
 ## Validation Checklist
 
-- [ ] `npm pack` / UPM inspection shows Documentation~/ content shipping correctly
+- [ ] `npm pack` (UPM tarball check, not npm distribution) / UPM inspection shows Documentation~/ content shipping correctly
 - [ ] README quick start matches sample project instructions
 - [ ] Python validator usage matches documented commands and outputs
 - [ ] CI still green after docs-only PR (build matrix untouched)

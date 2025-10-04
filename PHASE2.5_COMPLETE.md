@@ -207,10 +207,11 @@ Workflow will:
 }
 ```
 
-**NPM (Future):**
+**NuGet (Future):**
 
-```bash
-npm install @tinywalnutgames/storytest
+```powershell
+# Planned NuGet distribution target (package name TBD)
+dotnet add package TinyWalnutGames.StoryTest
 ```
 
 **OpenUPM (Future):**
@@ -256,7 +257,7 @@ openupm add com.tinywalnutgames.storytest
 
 - ⏳ Publish to OpenUPM
 - ⏳ Create GitHub Release
-- ⏳ NPM package (optional)
+- ⏳ NuGet package (planned)
 
 ## Success Criteria
 
