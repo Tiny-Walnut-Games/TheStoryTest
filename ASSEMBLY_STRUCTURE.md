@@ -4,7 +4,7 @@
 
 The Story Test framework uses a modular assembly structure for clean dependencies and Unity compatibility:
 
-```
+```flow
 TinyWalnutGames.TheStoryTest.Shared (Foundation)
     ↑
     ├── TinyWalnutGames.TheStoryTest.Acts (Validation Rules)
@@ -149,7 +149,7 @@ TinyWalnutGames.TheStoryTest (Core Framework)
 
 ## Dependency Graph
 
-```
+```flow
 Shared (no deps)
   ↓
 Acts (→ Shared)

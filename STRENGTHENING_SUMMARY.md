@@ -28,13 +28,13 @@
 
 ### Before: Weak Layering
 
-```
+```flow
 Shared ──X─> Main (StoryIntegrityValidator)  ❌ Circular dependency risk
 ```
 
 ### After: Clean Dependency Flow
 
-```
+```flow
 Shared (ConceptualValidator)
    ↓
 Acts (Validation Rules)
@@ -192,7 +192,7 @@ catch (ReflectionTypeLoadException ex) {
 
 ### New Log Messages
 
-```
+```log
 [Story Test] Running universal validation (Acts 1-9)...
 [Story Test] Running conceptual validation...
 [Story Test] Running conceptual enum validation...
@@ -308,14 +308,15 @@ if (stopOnFirstViolation && report.StoryViolations.Any()) {
    - Fixed nullable bool operator precedence
    - Added explicit parentheses for clarity
 
-### New Files
+   ### New Files
 
 3. **ExtendedConceptualValidator.cs** (Main) - NEW! ⭐
+
    - 248 lines of validation orchestration
    - Bridges Shared and Main assemblies
    - Full three-tier validation support
 
-### Integrations
+   ### Integrations
 
 4. **ProductionExcellenceStoryTest.cs** (Main)
    - Integrated conceptual validation

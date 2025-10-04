@@ -242,7 +242,7 @@ npm publish --access public
 
 **Git URL Installation:** Already supported!
 
-```
+```ref
 https://github.com/jmeyer1980/TheStoryTest.git?path=Packages/com.tinywalnutgames.storytest
 ```
 
@@ -262,7 +262,7 @@ Submit to [OpenUPM Registry](https://openupm.com/packages/add/)
 
 **Symptom:** `npm run validate` fails
 
-**Solution:** 
+**Solution:**
 
 1. Ensure you have Python installed: `python --version`
 2. Install dependencies: `pip install -r requirements.txt`

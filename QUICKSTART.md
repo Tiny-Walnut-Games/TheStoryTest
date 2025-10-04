@@ -68,7 +68,7 @@ The validator will:
 **GitHub Actions:**
 Copy `.github/workflows/story-test.yml` to your repository and set secrets:
 
-```
+```secrets
 UNITY_LICENSE
 UNITY_EMAIL  
 UNITY_PASSWORD

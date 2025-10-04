@@ -68,7 +68,7 @@ using Debug = System.Diagnostics.Debug;
 
 #### Python Validator Architecture
 
-```
+```flow
 StoryTestValidator
 ├── ILAnalyzer (bytecode pattern detection)
 │   ├── contains_throw_not_implemented()
@@ -188,7 +188,7 @@ python story_test.py ./bin/Release --output report.json
 
 ### Repository Root
 
-```
+```flow
 TheStoryTest/
 ├── .github/
 │   ├── copilot-instructions.md     # AI coding agent guidance
@@ -208,7 +208,7 @@ TheStoryTest/
 
 ### Unity Package Structure
 
-```
+```flow
 Assets/Tiny Walnut Games/TheStoryTest/
 ├── Runtime/
 │   ├── Acts/                       # 9 validation rule Acts (NO Unity deps)

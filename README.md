@@ -85,6 +85,7 @@ The repository includes a ready-to-use workflow (`.github/workflows/story-test.y
 - ✅ Runs on Windows, Linux, and macOS
 - ✅ Compiles Unity projects automatically
 - ✅ Generates violation reports
+- ✅ Includes per-violation file paths and line numbers in the job summary (verified in run #37)
 - ✅ Fails builds when violations are found
 - ✅ Posts results to PR summaries
 
@@ -93,6 +94,11 @@ The repository includes a ready-to-use workflow (`.github/workflows/story-test.y
 1. Copy `.github/workflows/story-test.yml` to your repository
 2. Set Unity secrets: `UNITY_LICENSE`, `UNITY_EMAIL`, `UNITY_PASSWORD`
 3. Push to trigger validation
+
+#### Known Limitations
+
+- **Unity Editor tests remain experimental in headless CI.** GameCI's builder currently omits `UnityEditor.*` modules from the player build, so invoking the Editor Test Runner in workflows logs `FileNotFoundException: Could not load file or assembly 'UnityEditor.CoreModule'`. Treat editor-mode tests as opt-in and prefer playmode or standalone assembly coverage until GameCI ships full Editor support.
+- The Story Test workflow still validates assemblies successfully—the Python validator runs against the generated player assemblies, which include all runtime IL needed for Acts 1-9.
 
 ## 📋 The 9 Acts of Validation
 
@@ -161,6 +167,14 @@ public class ProductionExcellenceStoryTest : MonoBehaviour { }
 - ✅ MUST provide non-empty reason string
 - ✅ Use only for technical infrastructure
 - ❌ Don't use to bypass legitimate code quality issues
+
+#### Infrastructure Usage
+
+Core framework symbols that exist purely to report violations—like `StoryViolationShared` and `StoryIgnoreAttribute`—carry `[StoryIgnore("Story test validation infrastructure")]` so the validator never flags itself. Follow the same pattern for future infrastructure helpers and always document the exemption reason inline.
+
+#### Educational Comment Shield
+
+Documentation may reference violation keywords ("TODO", "placeholder", etc.) when teaching best practices. Prefix those words with the 🏳 emoji to signal "education only" and keep Acts 1 & 2 from firing on your docs or inline guidance. Example: `// Use IL analysis to detect 🏳placeholder implementations`.
 
 ### Sealing Unused Parameters
 
@@ -280,6 +294,16 @@ See [LICENSE](LICENSE) file for details.
 - **GitHub Repository**: [https://github.com/jmeyer1980/TheStoryTest](https://github.com/jmeyer1980/TheStoryTest)
 - **Unity Asset Store**: *(Coming soon)*
 - **Documentation**: See `.github/copilot-instructions.md` for AI coding agent guidance
+
+## 📘 Phase 3: Documentation & Polish
+
+We're now focusing on richer guidance, storyteller-friendly documentation, and improved developer ergonomics. Track progress and upcoming tasks in `PHASE3_PLAN.md`, including:
+
+- Consolidating docs into `Documentation~/` for UPM consumption
+- Capturing CI nuances (file/line reporting, editor test limitations)
+- Expanding tutorials and storytelling examples that highlight each Act
+
+Phase 3 builds on the stable CI foundation established in run #37—no violations reported across Windows, macOS, and Linux.
 
 ---
 
