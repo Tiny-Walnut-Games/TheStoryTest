@@ -16,7 +16,10 @@ from typing import List, Dict, Any, Tuple
 from enum import Enum
 
 try:
-    # Configure pythonnet to use CoreCLR instead of Mono (cross-platform)
+    # Configure pythonnet to use CoreCLR instead of Mono for .NET reflection.
+    # CoreCLR delivers better performance, broader .NET compatibility, and
+    # improved support for Unity projects compared to the legacy Mono runtime.
+    # This ensures reliable cross-platform analysis on Windows, Linux, and macOS.
     from pythonnet import set_runtime  # type: ignore
     from clr_loader import get_coreclr  # type: ignore
     
@@ -150,7 +153,7 @@ class StoryTestValidator:
             for attr in attrs:
                 if "StoryIgnore" in str(attr.GetType()):
                     return True
-        except:
+        except Exception:
             pass
         return False
     
@@ -164,7 +167,7 @@ class StoryTestValidator:
         # Extract assembly file path for violation reporting
         try:
             file_path = str(type_obj.Assembly.Location) if hasattr(type_obj, 'Assembly') else ""
-        except:
+        except Exception:
             file_path = ""
         
         # Act 3: Incomplete Classes
@@ -179,7 +182,7 @@ class StoryTestValidator:
             methods = type_obj.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
             for method in methods:
                 self._validate_method(type_obj, method, type_name, file_path)
-        except:
+        except Exception:
             pass
         
         # Validate properties
@@ -187,7 +190,7 @@ class StoryTestValidator:
             properties = type_obj.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
             for prop in properties:
                 self._validate_property(type_obj, prop, type_name, file_path)
-        except:
+        except Exception:
             pass
     
     def _validate_method(self, type_obj, method, type_name: str, file_path: str):
@@ -206,7 +209,7 @@ class StoryTestValidator:
         try:
             if method.DeclaringType != type_obj:
                 return
-        except:
+        except Exception:
             pass
         
         # Act 1: TODO Comments (NotImplementedException)
@@ -262,7 +265,7 @@ class StoryTestValidator:
                     StoryViolationType.INCOMPLETE_IMPLEMENTATION,
                     file_path=file_path
                 ))
-        except:
+        except Exception:
             pass
     
     def _check_incomplete_classes(self, type_obj, type_name: str, file_path: str):
@@ -282,7 +285,7 @@ class StoryTestValidator:
                     StoryViolationType.INCOMPLETE_IMPLEMENTATION,
                     file_path=file_path
                 ))
-        except:
+        except Exception:
             pass
     
     def _check_unsealed_abstract(self, method, type_obj, type_name: str, method_name: str, file_path: str):
@@ -295,7 +298,7 @@ class StoryTestValidator:
                     StoryViolationType.INCOMPLETE_IMPLEMENTATION,
                     file_path=file_path
                 ))
-        except:
+        except Exception:
             pass
     
     def _check_debug_only(self, method, type_name: str, method_name: str, file_path: str):
@@ -313,7 +316,7 @@ class StoryTestValidator:
                         StoryViolationType.DEBUGGING_CODE,
                         file_path=file_path
                     ))
-            except:
+            except Exception:
                 pass
     
     def _check_phantom_props(self, prop, type_name: str, prop_name: str, file_path: str):
@@ -347,7 +350,7 @@ class StoryTestValidator:
                     StoryViolationType.UNUSED_CODE,
                     file_path=file_path
                 ))
-        except:
+        except Exception:
             pass
     
     def _check_hollow_enums(self, type_obj, type_name: str, file_path: str):
@@ -374,7 +377,7 @@ class StoryTestValidator:
                     StoryViolationType.UNUSED_CODE,
                     file_path=file_path
                 ))
-        except:
+        except Exception:
             pass
     
     def _check_premature_celebrations(self, method, type_name: str, method_name: str, file_path: str):
@@ -400,7 +403,7 @@ class StoryTestValidator:
                             StoryViolationType.PREMATURE_CELEBRATION,
                             file_path=file_path
                         ))
-        except:
+        except Exception:
             pass
 
 

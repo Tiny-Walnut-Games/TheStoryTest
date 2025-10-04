@@ -40,10 +40,5 @@
     "python": ">=3.8",
     "node": ">=14.0.0"
   },
-  "devDependencies": {},
-  "python": {
-    "dependencies": [
-      "pythonnet>=3.0.0"
-    ]
-  }
+  "devDependencies": {}
 }

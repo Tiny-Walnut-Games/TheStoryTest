@@ -43,7 +43,7 @@ This is a minimal Unity project demonstrating how to use **The Story Test Framew
 
 Story Test settings are loaded from:
 
-```ts
+```text
 Assets/Tiny Walnut Games/TheStoryTest/Resources/StoryTestSettings.json
 ```
 
