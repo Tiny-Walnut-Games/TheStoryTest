@@ -262,34 +262,34 @@ public void ValidateAssemblies_FindsAllViolations() {
 
 ### Adding New Acts
 
-1. Create `ActXYourRule.cs` in `Runtime/Acts/`
-2. Implement `ValidationRule` delegate:
+1) Create `ActXYourRule.cs` in `Runtime/Acts/`
+2) Implement `ValidationRule` delegate:
 
-```csharp
-namespace TinyWalnutGames.StoryTest.Acts {
-    public static class Act10YourRule {
-        public static readonly ValidationRule Rule = ValidateYourRule;
+    ```csharp
+        namespace TinyWalnutGames.StoryTest.Acts {
+        public static class Act10YourRule {
+            public static readonly ValidationRule Rule = ValidateYourRule;
 
-        private static List<StoryViolation> ValidateYourRule(Type type) {
-            var violations = new List<StoryViolation>();
-            
-            // Your validation logic
-            if (HasViolation(type)) {
-                violations.Add(new StoryViolation {
-                    ActNumber = 10,
-                    ViolationType = StoryViolationType.YourRuleType,
-                    Message = "Your rule violation message",
-                    Location = type.FullName
-                });
+            private static List<StoryViolation> ValidateYourRule(Type type) {
+                var violations = new List<StoryViolation>();
+                
+                // Your validation logic
+                if (HasViolation(type)) {
+                    violations.Add(new StoryViolation {
+                        ActNumber = 10,
+                        ViolationType = StoryViolationType.YourRuleType,
+                        Message = "Your rule violation message",
+                        Location = type.FullName
+                    });
+                }
+                
+                return violations;
             }
-            
-            return violations;
         }
     }
-}
-```
+    ```
 
-3. `StoryTestRuleBootstrapper` auto-discovers it on Editor load
+3) The `StoryTestRuleBootstrapper` auto-discovers it on Editor load
 
 ### Adding Violation Types
 
