@@ -8,6 +8,7 @@ namespace TinyWalnutGames.StoryTest.Shared
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Property |
                     AttributeTargets.Field | AttributeTargets.Interface | AttributeTargets.Enum)]
+    [StoryIgnore("Story Test framework attribute infrastructure - cannot self-validate")]
     public sealed class StoryIgnoreAttribute : Attribute
     {
         /// <summary>
