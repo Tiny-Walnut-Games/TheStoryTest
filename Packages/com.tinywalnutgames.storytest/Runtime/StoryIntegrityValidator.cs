@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TinyWalnutGames.StoryTest.Shared;
+using UnityEngine;
 
 namespace TinyWalnutGames.StoryTest
 {
@@ -72,6 +73,20 @@ namespace TinyWalnutGames.StoryTest
 
             foreach (var assembly in targetAssemblies.Distinct())
             {
+                // CRITICAL SAFETY CHECK: Never validate test assemblies
+                // They contain async state machines, lambda closures, and test fixtures
+                // that create massive false positives and performance issues
+                var name = assembly.GetName().Name;
+
+                // Only skip assemblies that END with .Tests or .Test (actual test assemblies)
+                // Don't skip assemblies that just contain "Test" in the name (like "TheStoryTest")
+                if (name.EndsWith(".Tests") || name.EndsWith(".Test") ||
+                    name.EndsWith("Tests") && !name.Contains("StoryTest"))
+                {
+                    Debug.Log($"[Story Test] Skipping test assembly: {name}");
+                    continue;
+                }
+
                 violations.AddRange(ValidateAssemblyInternal(assembly));
             }
 
@@ -301,7 +316,7 @@ namespace TinyWalnutGames.StoryTest
             }
         }
 
-        private static bool IsProjectAssembly(Assembly assembly, StoryTestSettings settings)
+        public static bool IsProjectAssembly(Assembly assembly, StoryTestSettings settings)
         {
             if (assembly == null)
             {
@@ -310,6 +325,7 @@ namespace TinyWalnutGames.StoryTest
 
             var name = assembly.GetName().Name;
 
+            // Always exclude core/BCL and common third-party libs
             if (name.StartsWith("System", StringComparison.OrdinalIgnoreCase) ||
                 name.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) ||
                 name.StartsWith("mscorlib", StringComparison.OrdinalIgnoreCase) ||
@@ -320,19 +336,29 @@ namespace TinyWalnutGames.StoryTest
                 return false;
             }
 
+            // Unity assemblies are optional based on settings
             if (name.StartsWith("Unity", StringComparison.OrdinalIgnoreCase) ||
                 name.StartsWith("UnityEngine", StringComparison.OrdinalIgnoreCase) ||
                 name.StartsWith("UnityEditor", StringComparison.OrdinalIgnoreCase))
             {
-                return settings is { includeUnityAssemblies: true };
+                if (settings is { includeUnityAssemblies: true })
+                {
+                    // Will still be subject to include-only list below if provided
+                }
+                else
+                {
+                    return false;
+                }
             }
 
+            // Include-only semantics: when filters provided, only include exact name matches
             if (settings is { assemblyFilters: { Length: > 0 } })
             {
-                return settings.assemblyFilters.Any(filter =>
-                    name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
+                var includeSet = new HashSet<string>(settings.assemblyFilters.Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()), StringComparer.OrdinalIgnoreCase);
+                return includeSet.Contains(name);
             }
 
+            // No filters specified: include by default (subject to exclusions above)
             return true;
         }
 

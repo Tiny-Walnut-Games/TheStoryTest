@@ -98,7 +98,7 @@ namespace TinyWalnutGames.StoryTest.Tests
             foreach (var assembly in assemblies)
             {
                 var enumTypes = assembly.GetTypes()
-                    .Where(t => t.IsEnum && !HasStoryIgnore(t) && !IsCompilerOrSystemGenerated(t))
+                    .Where(t => t.IsEnum && !HasStoryIgnore(t) && !IsCompilerOrSystemGenerated(t) && !IsTestFixtureType(t))
                     .ToArray();
 
                 foreach (var enumType in enumTypes)
@@ -300,6 +300,27 @@ namespace TinyWalnutGames.StoryTest.Tests
 
             // Skip generic type definitions (they can't be instantiated)
             if (type.ContainsGenericParameters)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsTestFixtureType(Type type)
+        {
+            // Skip types that are part of test fixtures (nested in test classes)
+            if (type.DeclaringType != null)
+            {
+                var declaringTypeName = type.DeclaringType.Name;
+                if (declaringTypeName.Contains("Test") || declaringTypeName.Contains("Tests"))
+                {
+                    return true;
+                }
+            }
+
+            // Skip types in the Tests namespace
+            if (type.Namespace != null && type.Namespace.Contains("Tests"))
             {
                 return true;
             }

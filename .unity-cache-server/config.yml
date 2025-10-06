@@ -1,0 +1,15 @@
+# Unity Cache Server Configuration
+# This configuration provides a local cache server for faster Unity imports/builds
+
+# Cache storage path
+cachePath: "./cache"
+
+# Network settings
+host: "127.0.0.1"  # Listen on localhost only
+port: 8126         # Default Unity Cache Server port
+
+# Performance
+workers: 2         # Number of worker threads (adjust based on CPU cores)
+
+# Logging
+logLevel: 3        # 0=silent, 1=error, 2=warn, 3=info, 4=verbose, 5=debug

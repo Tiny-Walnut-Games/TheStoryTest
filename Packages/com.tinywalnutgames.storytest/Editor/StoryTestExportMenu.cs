@@ -29,7 +29,10 @@ namespace TinyWalnutGames.StoryTest.Editor
         [MenuItem(MenuPath, true)]
         public static bool ValidateRunAndExportStoryTest()
         {
-            return _currentRun is not { IsActive: true };
+            // DISABLED: This menu option is unreliable due to PlayMode timing issues
+            // Use the in-scene component + manual trigger button instead
+            // See: "Add Story Test Component to Scene" menu
+            return false;
         }
 
         private sealed class MenuValidationRun
@@ -50,6 +53,7 @@ namespace TinyWalnutGames.StoryTest.Editor
 
             private bool runnerSubscribed;
             private bool playModeSubscribed;
+            private bool editorUpdateSubscribed;
 
             private bool previousExportReport;
             private string previousExportPath;
@@ -89,7 +93,9 @@ namespace TinyWalnutGames.StoryTest.Editor
                     startedPlayMode = true;
                     waitingForPlayMode = true;
                     SubscribePlayModeEvents();
+                    SubscribeEditorUpdate(); // Start progress updates immediately
                     EditorUtility.DisplayProgressBar(ProgressTitle, "Entering Play Mode…", 0.1f);
+                    Debug.Log("[Story Test] Requesting Play Mode entry for validation...");
                     EditorApplication.isPlaying = true;
                 }
                 else
@@ -101,26 +107,34 @@ namespace TinyWalnutGames.StoryTest.Editor
 
             private void StartValidation()
             {
+                Debug.Log("[Story Test] StartValidation() called");
+
                 if (!IsActive)
                 {
+                    Debug.LogWarning("[Story Test] StartValidation aborted: IsActive = false");
                     return;
                 }
 
                 if (!EditorApplication.isPlaying)
                 {
+                    Debug.LogWarning("[Story Test] StartValidation aborted: Not in Play Mode");
                     Fail("Play Mode ended before validation could start.");
                     return;
                 }
+
+                Debug.Log("[Story Test] Setting up validation runner...");
 
                 try
                 {
                     if (runner == null)
                     {
+                        Debug.Log("[Story Test] Locating existing runner...");
                         runner = LocateRunner();
                     }
 
                     if (runner == null)
                     {
+                        Debug.Log("[Story Test] Creating temporary runner GameObject...");
                         runnerGameObject = new GameObject("Story Test Runner (Temp)")
                         {
                             hideFlags = HideFlags.DontSave
@@ -128,6 +142,11 @@ namespace TinyWalnutGames.StoryTest.Editor
                         runner = runnerGameObject.AddComponent<ProductionExcellenceStoryTest>();
                         ConfigureTempRunner(runner);
                         createdRunner = true;
+                        Debug.Log("[Story Test] Temporary runner created");
+                    }
+                    else
+                    {
+                        Debug.Log($"[Story Test] Using existing runner: {runner.gameObject.name}");
                     }
 
                     CaptureRunnerState(runner);
@@ -141,7 +160,13 @@ namespace TinyWalnutGames.StoryTest.Editor
 
                     EditorUtility.DisplayProgressBar(ProgressTitle, "Running validation…", 0.4f);
                     Debug.Log("[Story Test] Play Mode validation triggered from menu.");
+
+                    // Subscribe to editor updates to show progress
+                    SubscribeEditorUpdate();
+
+                    Debug.Log("[Story Test] Calling runner.ValidateOnDemand()...");
                     runner.ValidateOnDemand();
+                    Debug.Log("[Story Test] ValidateOnDemand() returned");
                 }
                 catch (Exception ex)
                 {
@@ -160,6 +185,8 @@ namespace TinyWalnutGames.StoryTest.Editor
                 pendingReport = report;
 
                 Debug.Log("[Story Test] Play Mode validation completed. Preparing report feedback…");
+
+                UnsubscribeEditorUpdate();
 
                 RestoreRunnerState();
                 if (createdRunner && runnerGameObject is not null)
@@ -213,11 +240,28 @@ namespace TinyWalnutGames.StoryTest.Editor
                     switch (change)
                     {
                         case PlayModeStateChange.EnteredPlayMode:
+                            Debug.Log("[Story Test] ✓ Play Mode entered successfully. Waiting for stability...");
                             waitingForPlayMode = false;
-                            EditorUtility.DisplayProgressBar(ProgressTitle, "Starting validation…", 0.2f);
-                            EditorApplication.delayCall += StartValidation;
+                            EditorUtility.DisplayProgressBar(ProgressTitle, "Waiting for PlayMode to stabilize…", 0.2f);
+
+                            // Wait multiple frames after PlayMode entry to ensure all domain reload/import is complete
+                            EditorApplication.delayCall += () =>
+                            {
+                                EditorApplication.delayCall += () =>
+                                {
+                                    EditorApplication.delayCall += () =>
+                                    {
+                                        EditorApplication.delayCall += () =>
+                                        {
+                                            Debug.Log("[Story Test] PlayMode stabilized. Starting validation...");
+                                            StartValidation();
+                                        };
+                                    };
+                                };
+                            };
                             break;
                         case PlayModeStateChange.ExitingPlayMode:
+                            Debug.LogWarning("[Story Test] Play Mode exited unexpectedly before validation started.");
                             waitingForPlayMode = false;
                             Fail("Play Mode exited before validation could start.");
                             break;
@@ -234,6 +278,7 @@ namespace TinyWalnutGames.StoryTest.Editor
                 if (awaitingExit)
                 {
                     if (change != PlayModeStateChange.EnteredEditMode) return;
+                    Debug.Log("[Story Test] ✓ Exited Play Mode. Showing validation results...");
                     awaitingExit = false;
                     ShowSummaryAndFinish();
 
@@ -242,6 +287,7 @@ namespace TinyWalnutGames.StoryTest.Editor
 
                 if (!completed && change == PlayModeStateChange.ExitingPlayMode)
                 {
+                    Debug.LogWarning("[Story Test] Play Mode exited before validation completed.");
                     Fail("Play Mode exited before validation completed.");
                 }
             }
@@ -258,22 +304,27 @@ namespace TinyWalnutGames.StoryTest.Editor
 
                 if (pendingReport != null)
                 {
+                    var status = pendingReport.IsFullyCompliant ? "✓ PASSED" : "✗ FAILED";
+                    var violationCount = pendingReport.StoryViolations.Count;
+
                     message = pendingReport.IsFullyCompliant
                         ? "Production validation passed with no violations."
-                        : $"Validation detected {pendingReport.StoryViolations.Count} violation(s).";
+                        : $"Validation detected {violationCount} violation(s).";
                     message += "\n\n";
                     message += reportExists
                         ? $"Report saved to:\n{exportPathAbsolute}"
                         : $"⚠️ Report file was not found at:\n{exportPathAbsolute}";
+
+                    Debug.Log($"[Story Test] {status} - Validation completed with {violationCount} violation(s). Report: {exportPathAbsolute}");
                 }
                 else
                 {
                     message = string.IsNullOrEmpty(failureMessage)
                         ? "Validation did not complete."
                         : failureMessage;
-                }
 
-                Debug.Log($"[Story Test] Validation summary ready. Report path: {exportPathAbsolute}");
+                    Debug.LogWarning($"[Story Test] Validation did not complete. {failureMessage}");
+                }
 
                 if (reportExists)
                 {
@@ -336,6 +387,7 @@ namespace TinyWalnutGames.StoryTest.Editor
             private void Cleanup()
             {
                 UnsubscribePlayModeEvents();
+                UnsubscribeEditorUpdate();
                 EditorUtility.ClearProgressBar();
                 runner = null;
                 runnerGameObject = null;
@@ -365,6 +417,53 @@ namespace TinyWalnutGames.StoryTest.Editor
                 playModeSubscribed = false;
             }
 
+            private void SubscribeEditorUpdate()
+            {
+                if (editorUpdateSubscribed)
+                {
+                    return;
+                }
+
+                EditorApplication.update += OnEditorUpdate;
+                editorUpdateSubscribed = true;
+            }
+
+            private void UnsubscribeEditorUpdate()
+            {
+                if (!editorUpdateSubscribed)
+                {
+                    return;
+                }
+
+                EditorApplication.update -= OnEditorUpdate;
+                editorUpdateSubscribed = false;
+            }
+
+            private void OnEditorUpdate()
+            {
+                if (!IsActive || completed)
+                {
+                    return;
+                }
+
+                // Animate progress bar during wait states
+                if (waitingForPlayMode)
+                {
+                    // Waiting for PlayMode to start
+                    var progress = 0.1f + (float)(EditorApplication.timeSinceStartup % 1.0) * 0.05f;
+                    EditorUtility.DisplayProgressBar(ProgressTitle, "Entering Play Mode…", progress);
+                    return;
+                }
+
+                // Update progress bar to show validation is running
+                if (runner != null && runner.IsValidating)
+                {
+                    // Animate the progress bar to show activity
+                    var progress = 0.4f + (float)(EditorApplication.timeSinceStartup % 1.0) * 0.2f;
+                    EditorUtility.DisplayProgressBar(ProgressTitle, "Validating code integrity…", progress);
+                }
+            }
+
             private void CaptureRunnerState(ProductionExcellenceStoryTest instance)
             {
                 previousExportReport = instance.exportReport;
@@ -385,7 +484,9 @@ namespace TinyWalnutGames.StoryTest.Editor
 
             private static void ConfigureTempRunner(ProductionExcellenceStoryTest instance)
             {
-                instance.enableStoryIntegrity = true;
+                // Disable Story Integrity in PlayMode - it's too heavy and causes frame budget overruns
+                // Use the non-PlayMode "Validate Story Integrity" or "Generate Detailed Report" menus instead
+                instance.enableStoryIntegrity = false;
                 instance.enableConceptualValidation = true;
                 instance.enableArchitecturalCompliance = true;
                 instance.enableCodeCoverage = false;

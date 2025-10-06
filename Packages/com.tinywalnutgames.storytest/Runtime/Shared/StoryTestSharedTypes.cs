@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 
 namespace TinyWalnutGames.StoryTest.Shared
@@ -49,6 +50,8 @@ namespace TinyWalnutGames.StoryTest.Shared
             // Violation messages contain the real words without the 🏳 prefix
             if (violation.Contains("TODO") || violation.Contains("NotImplementedException"))
                 return StoryViolationType.IncompleteImplementation;
+            if (violation.Contains("placeholder", StringComparison.OrdinalIgnoreCase))
+                return StoryViolationType.PlaceholderCode;
             if (violation.Contains("Phantom") || violation.Contains("Cold") || violation.Contains("Hollow"))
                 return StoryViolationType.UnusedCode;
             if (violation.Contains("Abstract") || violation.Contains("Unsealed"))
@@ -57,6 +60,8 @@ namespace TinyWalnutGames.StoryTest.Shared
                 return StoryViolationType.DebuggingCode;
             if (violation.Contains("Premature"))
                 return StoryViolationType.PrematureCelebration;
+            if (violation.Contains("naming", StringComparison.OrdinalIgnoreCase))
+                return StoryViolationType.NamingConvention;
             return StoryViolationType.Other;
         }
     }

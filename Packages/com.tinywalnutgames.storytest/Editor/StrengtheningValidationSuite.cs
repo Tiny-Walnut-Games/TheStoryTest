@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using TinyWalnutGames.StoryTest.Shared;
+using Object = UnityEngine.Object;
 
 namespace TinyWalnutGames.StoryTest.Editor
 {
@@ -25,40 +26,101 @@ namespace TinyWalnutGames.StoryTest.Editor
         private static string GetMenuPath() => StoryTestSettings.Instance.menuPath ?? MenuRoot;
 
         /// <summary>
-        /// Runs the complete strengthening validation pipeline.
+        /// Adds a Story Test component to the current scene for manual validation.
         /// </summary>
-        [MenuItem(MenuRoot + "Run Complete Validation Pipeline", false, 1)]
-        public static void RunCompleteValidationPipeline()
+        [MenuItem(MenuRoot + "Add Story Test Component to Scene", false, 1)]
+        public static void AddStoryTestComponentToScene()
         {
-            Debug.Log($"[{GetMenuPath()}] Starting Complete Validation Pipeline...");
+            if (!Application.isPlaying)
+            {
+                var go = new GameObject("Story Test Runner");
+                var component = go.AddComponent<ProductionExcellenceStoryTest>();
 
-            if (EditorApplication.isPlaying) return;
-            if (!EditorUtility.DisplayDialog("Validation Pipeline",
-                    "The validation pipeline requires Play Mode to run properly. Enter Play Mode now?",
-                    "Yes", "Cancel")) return;
-            EditorApplication.isPlaying = true;
-            EditorApplication.playModeStateChanged += OnPlayModeChanged;
+                // Configure with sensible defaults
+                component.enableStoryIntegrity = true;
+                component.enableConceptualValidation = true;
+                component.enableArchitecturalCompliance = true;
+                component.enableSyncPointPerformance = true;
+                component.enableCodeCoverage = false;
+                component.validateAutomaticallyOnStart = false;
+                component.stopOnFirstViolation = false;
+                component.exportReport = true;
 
-            // 🚧 PLANNED FEATURE: Complete validation pipeline
-            // Will be implemented in Phase 3+ when ProductionExcellenceStoryTest and ValidationReport are available
-            // RunValidation();
+                Selection.activeGameObject = go;
+                EditorGUIUtility.PingObject(go);
+
+                Debug.Log("[Story Test] Added Story Test Runner to scene. Enter PlayMode, then click 'Run Validation' in the Inspector.");
+            }
+            else
+            {
+                Debug.LogWarning("[Story Test] Cannot add component during PlayMode. Exit PlayMode first.");
+            }
+        }
+
+        [MenuItem(MenuRoot + "Add Story Test Component to Scene", true)]
+        public static bool ValidateAddStoryTestComponentToScene()
+        {
+            return !Application.isPlaying;
+        }
+
+        /// <summary>
+        /// Triggers validation on the Story Test component in the scene (PlayMode only).
+        /// </summary>
+        [MenuItem(MenuRoot + "Run Validation (PlayMode)", false, 3)]
+        public static void RunValidationInPlayMode()
+        {
+            if (!Application.isPlaying)
+            {
+                Debug.LogWarning("[Story Test] This menu option only works during PlayMode");
+                return;
+            }
+
+            var runner = Object.FindFirstObjectByType<ProductionExcellenceStoryTest>();
+            if (runner is null)
+            {
+                EditorUtility.DisplayDialog("Story Test",
+                    "No Story Test Runner found in scene.\n\nUse 'Add Story Test Component to Scene' first.",
+                    "OK");
+                return;
+            }
+
+            if (runner.IsValidating)
+            {
+                Debug.LogWarning("[Story Test] Validation already running");
+                return;
+            }
+
+            runner.ValidateOnDemand();
+            Debug.Log("[Story Test] Validation triggered from menu during PlayMode");
+        }
+
+        [MenuItem(MenuRoot + "Run Validation (PlayMode)", true)]
+        public static bool ValidateRunValidationInPlayMode()
+        {
+            return Application.isPlaying;
         }
 
         /// <summary>
         /// Runs story integrity validation only.
         /// </summary>
-        [MenuItem(MenuRoot + "Validate Story Integrity", false, 2)]
+        [MenuItem(MenuRoot + "Validate Story Integrity", false, 10)]
         public static void ValidateStoryIntegrity()
         {
             Debug.Log($"[{GetMenuPath()}] Running Story Integrity Validation...");
-            
-            // We don't want to include Unity assemblies in the integrity check as Unity's own code is out of our control.
-            // 📜 This is a best-effort approach and may need adjustments based on the project structure.
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => !a.FullName.Contains("Unity") && !a.FullName.Contains("UnityEngine") && !a.FullName.Contains("UnityEditor"))
+
+            // Ensure validation rules are loaded (lazy-load to avoid blocking domain reload)
+            StoryTestRuleBootstrapper.EnsureBootstrapped();
+
+            // Use settings to get properly filtered assemblies - respects assemblyFilters and includeUnityAssemblies
+            var settings = StoryTestSettings.Instance;
+            var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            // Let StoryIntegrityValidator handle filtering according to settings
+            var assemblies = allAssemblies
+                .Where(a => StoryIntegrityValidator.IsProjectAssembly(a, settings))
                 .ToArray();
 
-            Debug.Log($"Running Story Integrity validation on {assemblies.Length} assemblies:");
+            Debug.Log($"Running Story Integrity validation on {assemblies.Length} assemblies (filtered by settings):");
             foreach (var assembly in assemblies)
             {
                 Debug.Log($"  • {assembly.GetName().Name}");
@@ -70,9 +132,8 @@ namespace TinyWalnutGames.StoryTest.Editor
             Debug.Log("   Good examples: 'TestPlayerMovement', 'ValidateInventorySystem'");
             Debug.Log("   Bad examples: 'ISSUE-2', 'BUG-123'\n");
 
-            // � PLANNED FEATURE: Will use StoryIntegrityValidator in Phase 3+
-            // var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
-            var violations = new List<StoryViolation>();
+            // Run the actual Story Integrity validation with filtered assemblies
+            var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
 
             // Validate test naming conventions
             ValidateTestNamingConventions(violations, assemblies);
@@ -158,7 +219,10 @@ namespace TinyWalnutGames.StoryTest.Editor
         public static void GenerateDetailedReport()
         {
             Debug.Log($"[{GetMenuPath()}] Generating detailed validation report...");
-            
+
+            // Ensure validation rules are loaded (lazy-load to avoid blocking domain reload)
+            StoryTestRuleBootstrapper.EnsureBootstrapped();
+
             var reportPath = EditorUtility.SaveFilePanel(
                 "Save Validation Report",
                 Application.dataPath,
@@ -272,31 +336,27 @@ namespace TinyWalnutGames.StoryTest.Editor
 
         private static void OnPlayModeChanged(PlayModeStateChange state)
         {
-            if (state == PlayModeStateChange.EnteredPlayMode)
-            {
-                EditorApplication.playModeStateChanged -= OnPlayModeChanged;
-                // Delay to allow the scene to initialize
-                // EditorApplication.delayCall += () => RunValidation();
-                // � PLANNED FEATURE: Will be implemented in Phase 3+ when ProductionExcellenceStoryTest is available
-                Debug.LogWarning("🏳Complete validation pipeline not yet implemented");
-            }
+            if (state != PlayModeStateChange.EnteredPlayMode) return;
+            EditorApplication.playModeStateChanged -= OnPlayModeChanged;
+            // Delay to allow the scene to initialize
+            // EditorApplication.delayCall += () => RunValidation();
+            // � PLANNED FEATURE: Will be implemented in Phase 3+ when ProductionExcellenceStoryTest is available
+            Debug.LogWarning("🏳Complete validation pipeline not yet implemented");
         }
-
-        // � PLANNED FEATURE: Will be implemented in Phase 3+ when ProductionExcellenceStoryTest and ValidationReport are available
-        /*
+        
         private static void RunValidation()
         {
-            var testObject = GameObject.FindFirstObjectByType<ProductionExcellenceStoryTest>();
-            if (testObject == null)
+            var testObject = Object.FindFirstObjectByType<ProductionExcellenceStoryTest>();
+            if (testObject is null)
             {
-                // Create temporary test object
-                var tempGO = new GameObject("TempValidationRunner");
-                testObject = tempGO.AddComponent<ProductionExcellenceStoryTest>();
+                // Create a temporary test object
+                var tempGo = new GameObject("TempValidationRunner");
+                testObject = tempGo.AddComponent<ProductionExcellenceStoryTest>();
 
                 testObject.OnValidationComplete += (report) =>
                 {
                     ShowValidationResults(report);
-                    GameObject.DestroyImmediate(tempGO);
+                    Object.DestroyImmediate(tempGo);
                 };
             }
 
@@ -323,7 +383,6 @@ namespace TinyWalnutGames.StoryTest.Editor
                     "Fix Issues");
             }
         }
-        */
 
         private static void ShowValidationWindow(List<StoryViolation> violations)
         {
@@ -338,27 +397,32 @@ namespace TinyWalnutGames.StoryTest.Editor
             report += $"Unity Version: {Application.unityVersion}\n";
             report += $"Target Platform: {EditorUserBuildSettings.activeBuildTarget}\n\n";
 
-            // Story integrity analysis
+            // Story integrity analysis - use proper settings-based filtering
             var settings = StoryTestSettings.Instance;
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => !a.FullName.StartsWith("Unity") && 
-                           !a.FullName.StartsWith("UnityEngine") && 
-                           !a.FullName.StartsWith("UnityEditor") &&
-                           (settings.assemblyFilters.Length == 0 || 
-                            settings.assemblyFilters.Any(filter => a.FullName.Contains(filter))))
+            var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            // Let StoryIntegrityValidator handle filtering according to settings
+            var assemblies = allAssemblies
+                .Where(a => StoryIntegrityValidator.IsProjectAssembly(a, settings))
                 .ToArray();
 
-            // � PLANNED FEATURE: Will use StoryIntegrityValidator in Phase 3+
             var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
-            // var violations = new List<StoryViolation>();
 
             report += "STORY INTEGRITY ANALYSIS\n";
             report += new string('-', 25) + "\n";
             if (violations.Any())
             {
-                report += $"Status: FAILED ({violations.Count()} violations)\n\n";
+                report += $"Status: FAILED ({violations.Count} violations)\n\n";
                 report += "Violations:\n";
-                report = violations.Aggregate(report, (current, violation) => current + $"  • {violation}\n");
+                foreach (var violation in violations)
+                {
+                    var file = string.IsNullOrWhiteSpace(violation.FilePath) ? "<unknown>" : violation.FilePath;
+                    var line = violation.LineNumber > 0 ? violation.LineNumber.ToString() : "?";
+                    var typeName = string.IsNullOrWhiteSpace(violation.Type) ? "<UnknownType>" : violation.Type;
+                    var member = string.IsNullOrWhiteSpace(violation.Member) ? "<UnknownMember>" : violation.Member;
+                    var message = string.IsNullOrWhiteSpace(violation.Violation) ? "<No details provided>" : violation.Violation;
+                    report += $"  • [{violation.ViolationType}] {typeName}.{member} - {message} (File: {file}, Line: {line})\n";
+                }
             }
             else
             {
@@ -373,7 +437,10 @@ namespace TinyWalnutGames.StoryTest.Editor
             foreach (var assembly in assemblies)
             {
                 report += $"Assembly: {assembly.FullName}\n";
-                report += $"Types: {assembly.GetTypes().Length}\n";
+                // Guard GetTypes; some assemblies may throw
+                int typeCount;
+                try { typeCount = assembly.GetTypes().Length; } catch { typeCount = -1; }
+                report += $"Types: {typeCount}\n";
 
                 // Dynamic assemblies don't have a Location property
                 try
@@ -391,6 +458,10 @@ namespace TinyWalnutGames.StoryTest.Editor
                 {
                     report += "Location: (not supported)\n";
                 }
+                catch
+                {
+                    report += "Location: (unavailable)\n";
+                }
 
                 report += "\n";
             }
@@ -399,7 +470,9 @@ namespace TinyWalnutGames.StoryTest.Editor
             report += "PROJECT STRUCTURE\n";
             report += new string('-', 17) + "\n";
             report += "Folder Structure:\n";
-            var directories = Directory.GetDirectories("Assets", "*", SearchOption.AllDirectories);
+            string[] directories;
+            try { directories = Directory.GetDirectories("Assets", "*", SearchOption.AllDirectories); }
+            catch { directories = Array.Empty<string>(); }
             foreach (var dir in directories.Take(20))
             {
                 report += $"  {dir}\n";
@@ -520,8 +593,51 @@ namespace TinyWalnutGames.StoryTest.Editor
 
         private void DrawAssemblyFilters()
         {
-            EditorGUILayout.LabelField("Assembly Filters", EditorStyles.boldLabel);
-            DrawStringList(ref editableSettings.assemblyFilters, "Filter", "Filter");
+            EditorGUILayout.LabelField("Assembly Include Filters", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox("Select the assemblies to INCLUDE in validation. Assemblies not selected will be ignored.", MessageType.Info);
+
+            if (editableSettings == null)
+            {
+                return;
+            }
+
+            // Build list of available assemblies
+            var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var includeUnity = editableSettings.includeUnityAssemblies;
+            var names = allAssemblies
+                .Where(a => includeUnity || (
+                    !a.FullName.StartsWith("Unity") &&
+                    !a.FullName.StartsWith("UnityEngine") &&
+                    !a.FullName.StartsWith("UnityEditor")))
+                .Select(a => a.GetName().Name)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            var selected = new HashSet<string>(editableSettings.assemblyFilters ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Select All", GUILayout.Width(100)))
+            {
+                selected = new HashSet<string>(names, StringComparer.OrdinalIgnoreCase);
+            }
+            if (GUILayout.Button("Clear All", GUILayout.Width(100)))
+            {
+                selected.Clear();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUI.indentLevel++;
+            foreach (var label in names)
+            {
+                var isSelected = selected.Contains(label);
+                var toggled = EditorGUILayout.ToggleLeft(label, isSelected);
+                if (toggled == isSelected) continue;
+                if (toggled) selected.Add(label); else selected.Remove(label);
+            }
+            EditorGUI.indentLevel--;
+
+            editableSettings.assemblyFilters = selected.ToArray();
             EditorGUILayout.Space();
         }
 
