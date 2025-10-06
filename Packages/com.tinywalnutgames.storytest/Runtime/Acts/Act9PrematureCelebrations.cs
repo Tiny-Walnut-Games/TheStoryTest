@@ -6,7 +6,7 @@ namespace TinyWalnutGames.StoryTest.Acts
 {
     /// <summary>
     /// Story Test Act 9: Checks for "Premature Celebrations" - code that claims to be complete but isn't.
-    /// Enhanced from original TinyWalnutGames implementation.
+    /// Enhanced from the original TinyWalnutGames implementation.
     /// This act identifies code marked as complete but still containing 🏳placeholder implementations.
     /// </summary>
     [StoryIgnore("Story test validation infrastructure")]
@@ -15,11 +15,11 @@ namespace TinyWalnutGames.StoryTest.Acts
         /// <summary>
         /// The validation rule for this act.
         /// </summary>
-    public static readonly ValidationRule Rule = CheckForPrematureCelebrations;
+        public static readonly ValidationRule Rule = CheckForPrematureCelebrations;
 
         /// <summary>
         /// Checks for "Premature Celebrations" - code that claims to be complete but isn't.
-        /// Enhanced from original TinyWalnutGames implementation.
+        /// Enhanced from the original TinyWalnutGames implementation.
         /// </summary>
         private static bool CheckForPrematureCelebrations(MemberInfo member, out string violation)
         {
@@ -31,29 +31,22 @@ namespace TinyWalnutGames.StoryTest.Acts
             foreach (var attr in attributes)
             {
                 var attrName = attr.GetType().Name;
-                if (attrName.Contains("Complete") || attrName.Contains("Finished") || attrName.Contains("Done"))
+                if (!attrName.Contains("Complete") && !attrName.Contains("Finished") &&
+                    !attrName.Contains("Done")) continue;
+                // If it's marked as complete, do additional validation
+                if (member is not MethodInfo method) continue;
+                try
                 {
-                    // If it's marked as complete, do additional validation
-                    if (member is MethodInfo method)
-                    {
-                        try
-                        {
-                            var methodBody = method.GetMethodBody();
-                            if (methodBody != null)
-                            {
-                                var ilBytes = methodBody.GetILAsByteArray();
-                                if (StoryTestUtilities.ContainsThrowNotImplementedException(ilBytes))
-                                {
-                                    violation = "Premature celebration - marked as complete but throws NotImplementedException";
-                                    return true;
-                                }
-                            }
-                        }
-                        catch
-                        {
-                            // If IL analysis fails, skip this check
-                        }
-                    }
+                    var methodBody = method.GetMethodBody();
+                    if (methodBody == null) continue;
+                    var ilBytes = methodBody.GetILAsByteArray();
+                    if (!StoryTestUtilities.ContainsThrowNotImplementedException(ilBytes)) continue;
+                    violation = "Premature celebration - marked as complete but throws NotImplementedException";
+                    return true;
+                }
+                catch
+                {
+                    // If IL analysis fails, skip this check
                 }
             }
 

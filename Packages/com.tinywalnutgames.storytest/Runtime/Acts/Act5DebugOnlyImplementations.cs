@@ -23,17 +23,13 @@ namespace TinyWalnutGames.StoryTest.Acts
         {
             violation = null;
 
-            if (member.Name.StartsWith("Debug") || member.Name.StartsWith("Test") || member.Name.Contains("Temp"))
-            {
-                var obsoleteAttr = member.GetCustomAttribute<ObsoleteAttribute>();
-                if (obsoleteAttr == null)
-                {
-                    violation = "🏳Debug/🏳Test method without Obsolete attribute (should be 🏳temporary)";
-                    return true;
-                }
-            }
+            if (!member.Name.StartsWith("Debug") && !member.Name.StartsWith("Test") &&
+                !member.Name.Contains("Temp")) return false;
+            var obsoleteAttr = member.GetCustomAttribute<ObsoleteAttribute>();
+            if (obsoleteAttr != null) return false;
+            violation = "🏳Debug/🏳Test method without Obsolete attribute (should be 🏳temporary)";
+            return true;
 
-            return false;
         }
     }
 }

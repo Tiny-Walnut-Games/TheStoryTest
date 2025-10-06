@@ -63,14 +63,11 @@ Add this to your project's `Packages/manifest.json`:
 
 ### In Unity Editor
 
-1. **Menu**: `Tiny Walnut Games/The Story Test/Run Story Test and Export Report`
-   - Exports report to `.debug/storytest_report.txt`
+1. **Menu**: `Tiny Walnut Games/The Story Test/Run Story Test and Export Report` – automatically enters Play Mode when required, spins up `ProductionExcellenceStoryTest`, runs the full validation pipeline, and then saves a summary to `.debug/storytest_report.txt` with a prompt to reveal the file when finished.
 
-2. **In-Scene**: Add `ProductionExcellenceStoryTest` MonoBehaviour
-   - Configure validation phases
-   - Run via Context Menu or on Start
+1. **In-Scene**: Add `ProductionExcellenceStoryTest` MonoBehaviour and configure the phases you care about; you can trigger validation from the component context menu or on Start.
 
-3. **Tests**: Use included NUnit tests as examples
+1. **Tests**: Use the included NUnit tests as reference examples for extending or integrating the framework.
 
 ### Configuration
 

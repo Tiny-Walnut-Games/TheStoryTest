@@ -1,0 +1,33 @@
+{
+    "projectName": "TheStoryTest",
+    "menuPath": "Tiny Walnut Games/The Story Test/",
+    "assemblyFilters": [
+        "TinyWalnutGames.TheStoryTest.Acts",
+        "TinyWalnutGames.TheStoryTest",
+        "TinyWalnutGames.TheStoryTest.Editor",
+        "TinyWalnutGames.TheStoryTest.Shared"
+    ],
+    "includeUnityAssemblies": false,
+    "validateOnStart": false,
+    "strictMode": true,
+    "exportPath": ".debug/storytest_report.txt",
+    "conceptualValidation": {
+        "enableConceptTests": true,
+        "autoDetectEnvironment": true,
+        "validationTiers": {
+            "universal": true,
+            "unityAware": true,
+            "projectSpecific": true
+        },
+        "environmentCapabilities": {
+            "hasUnityEngine": false,
+            "hasDots": false,
+            "hasBurst": false,
+            "hasEntities": false,
+            "canInstantiateComponents": false
+        },
+        "customComponentTypes": [],
+        "enumValidationPatterns": [],
+        "fallbackMode": "ilAnalysis"
+    }
+}

@@ -1,10 +1,3 @@
-// Use Unity Debug in Unity, System.Diagnostics.Debug otherwise
-#if UNITY_EDITOR || UNITY_ENGINE
-using Debug = UnityEngine.Debug;
-#else
-using Debug = System.Diagnostics.Debug;
-
-#endif
 using System.Reflection;
 using TinyWalnutGames.StoryTest.Shared;
 
@@ -12,7 +5,7 @@ namespace TinyWalnutGames.StoryTest.Acts
 {
     /// <summary>
     /// Story Test Act 1: Checks for 🏳TODO comments in method implementations.
-    /// Enhanced with IL analysis capabilities from original implementation.
+    /// Enhanced with IL analysis capabilities from the original implementation.
     /// This act ensures that no 🏳placeholder 🏳TODO implementations remain in production code.
     /// </summary>
     [StoryIgnore("Story test validation infrastructure")]
@@ -25,7 +18,7 @@ namespace TinyWalnutGames.StoryTest.Acts
         /// <summary>
         /// The validation rule for this act.
         /// Checks for 🏳TODO comments in method implementations.
-        /// Enhanced with IL analysis capabilities from original implementation.
+        /// Enhanced with IL analysis capabilities from the original implementation.
         /// </summary>
         private static bool CheckForTodoComments(MemberInfo member, out string violation)
         {

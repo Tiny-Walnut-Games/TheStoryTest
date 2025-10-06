@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using TinyWalnutGames.StoryTest;
 using TinyWalnutGames.StoryTest.Shared;
+using Object = UnityEngine.Object;
 
 namespace TinyWalnutGames.StoryTest.Editor
 {
     /// <summary>
-    /// Editor suite for running comprehensive strengthening validation pipeline.
+    /// Editor suite for running the comprehensive strengthening validation pipeline.
     /// Provides menu access to >95% validation tooling.
     /// </summary>
     [StoryIgnore("Editor tooling for story test infrastructure")]
@@ -21,47 +21,122 @@ namespace TinyWalnutGames.StoryTest.Editor
         
         /// <summary>
         /// Gets the configured menu path from settings. Falls back to MenuRoot if not configured.
+        /// Used for runtime logging, display messages, and debugging output.
         /// </summary>
         private static string GetMenuPath() => StoryTestSettings.Instance.menuPath ?? MenuRoot;
 
         /// <summary>
-        /// Runs the complete strengthening validation pipeline.
+        /// Adds a Story Test component to the current scene for manual validation.
         /// </summary>
-        [MenuItem(MenuRoot + "Run Complete Validation Pipeline", false, 1)]
-        public static void RunCompleteValidationPipeline()
+        [MenuItem(MenuRoot + "Add Story Test Component to Scene", false, 1)]
+        public static void AddStoryTestComponentToScene()
         {
-            if (!EditorApplication.isPlaying)
+            if (!Application.isPlaying)
             {
-                if (EditorUtility.DisplayDialog("Validation Pipeline",
-                    "The validation pipeline requires Play Mode to run properly. Enter Play Mode now?",
-                    "Yes", "Cancel"))
-                {
-                    EditorApplication.isPlaying = true;
-                    EditorApplication.playModeStateChanged += OnPlayModeChanged;
-                }
+                var go = new GameObject("Story Test Runner");
+                var component = go.AddComponent<ProductionExcellenceStoryTest>();
+
+                // Configure with sensible defaults
+                component.enableStoryIntegrity = true;
+                component.enableConceptualValidation = true;
+                component.enableArchitecturalCompliance = true;
+                component.enableSyncPointPerformance = true;
+                component.enableCodeCoverage = false;
+                component.validateAutomaticallyOnStart = false;
+                component.stopOnFirstViolation = false;
+                component.exportReport = true;
+
+                Selection.activeGameObject = go;
+                EditorGUIUtility.PingObject(go);
+
+                Debug.Log("[Story Test] Added Story Test Runner to scene. Enter PlayMode, then click 'Run Validation' in the Inspector.");
+            }
+            else
+            {
+                Debug.LogWarning("[Story Test] Cannot add component during PlayMode. Exit PlayMode first.");
+            }
+        }
+
+        [MenuItem(MenuRoot + "Add Story Test Component to Scene", true)]
+        public static bool ValidateAddStoryTestComponentToScene()
+        {
+            return !Application.isPlaying;
+        }
+
+        /// <summary>
+        /// Triggers validation on the Story Test component in the scene (PlayMode only).
+        /// </summary>
+        [MenuItem(MenuRoot + "Run Validation (PlayMode)", false, 3)]
+        public static void RunValidationInPlayMode()
+        {
+            if (!Application.isPlaying)
+            {
+                Debug.LogWarning("[Story Test] This menu option only works during PlayMode");
                 return;
             }
 
-            // 🚧 PLANNED FEATURE: Complete validation pipeline
-            // Will be implemented in Phase 3+ when ProductionExcellenceStoryTest and ValidationReport are available
-            // RunValidation();
+            var runner = Object.FindFirstObjectByType<ProductionExcellenceStoryTest>();
+            if (runner is null)
+            {
+                EditorUtility.DisplayDialog("Story Test",
+                    "No Story Test Runner found in scene.\n\nUse 'Add Story Test Component to Scene' first.",
+                    "OK");
+                return;
+            }
+
+            if (runner.IsValidating)
+            {
+                Debug.LogWarning("[Story Test] Validation already running");
+                return;
+            }
+
+            runner.ValidateOnDemand();
+            Debug.Log("[Story Test] Validation triggered from menu during PlayMode");
+        }
+
+        [MenuItem(MenuRoot + "Run Validation (PlayMode)", true)]
+        public static bool ValidateRunValidationInPlayMode()
+        {
+            return Application.isPlaying;
         }
 
         /// <summary>
         /// Runs story integrity validation only.
         /// </summary>
-        [MenuItem(MenuRoot + "Validate Story Integrity", false, 2)]
+        [MenuItem(MenuRoot + "Validate Story Integrity", false, 10)]
         public static void ValidateStoryIntegrity()
         {
-            // We don't want to include Unity assemblies in the integrity check as Unity's own code is out of our control.
-            // 📜 This is a best-effort approach and may need adjustments based on project structure.
-            var assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => !a.FullName.Contains("Unity") && !a.FullName.Contains("UnityEngine") && !a.FullName.Contains("UnityEditor"))
+            Debug.Log($"[{GetMenuPath()}] Running Story Integrity Validation...");
+
+            // Ensure validation rules are loaded (lazy-load to avoid blocking domain reload)
+            StoryTestRuleBootstrapper.EnsureBootstrapped();
+
+            // Use settings to get properly filtered assemblies - respects assemblyFilters and includeUnityAssemblies
+            var settings = StoryTestSettings.Instance;
+            var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            // Let StoryIntegrityValidator handle filtering according to settings
+            var assemblies = allAssemblies
+                .Where(a => StoryIntegrityValidator.IsProjectAssembly(a, settings))
                 .ToArray();
 
-            // � PLANNED FEATURE: Will use StoryIntegrityValidator in Phase 3+
-            // var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
-            var violations = new System.Collections.Generic.List<TinyWalnutGames.StoryTest.Shared.StoryViolation>();
+            Debug.Log($"Running Story Integrity validation on {assemblies.Length} assemblies (filtered by settings):");
+            foreach (var assembly in assemblies)
+            {
+                Debug.Log($"  • {assembly.GetName().Name}");
+            }
+
+            Debug.Log("\n📋 Test Naming Convention Check:");
+            Debug.Log("   Tests should use descriptive names that clearly explain what is being tested.");
+            Debug.Log("   Avoid using issue tracker prefixes (like 'ISSUE-2') as test names.");
+            Debug.Log("   Good examples: 'TestPlayerMovement', 'ValidateInventorySystem'");
+            Debug.Log("   Bad examples: 'ISSUE-2', 'BUG-123'\n");
+
+            // Run the actual Story Integrity validation with filtered assemblies
+            var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
+
+            // Validate test naming conventions
+            ValidateTestNamingConventions(violations, assemblies);
 
             if (violations.Any())
             {
@@ -83,22 +158,82 @@ namespace TinyWalnutGames.StoryTest.Editor
         }
 
         /// <summary>
+        /// Validates test naming conventions, specifically checking for ISSUE-prefixes.
+        /// </summary>
+        private static void ValidateTestNamingConventions(List<StoryViolation> violations, System.Reflection.Assembly[] assemblies)
+        {
+            foreach (var assembly in assemblies)
+            {
+                try
+                {
+                    var types = assembly.GetTypes();
+                    foreach (var type in types)
+                    {
+                        // Check if the type name starts with ISSUE-
+                        if (type.Name.StartsWith("ISSUE-", StringComparison.OrdinalIgnoreCase))
+                        {
+                            violations.Add(new StoryViolation
+                            {
+                                ViolationType = StoryViolationType.NamingConvention,
+                                Type = type.FullName ?? type.Name,
+                                Member = type.Name,
+                                Violation = "Test class names should not start with 'ISSUE-' prefix. Use descriptive names that explain what is being tested.",
+                                FilePath = string.Empty,
+                                LineNumber = 0
+                            });
+                        }
+
+                        // Check methods for ISSUE-prefix
+                        var methods = type.GetMethods(System.Reflection.BindingFlags.Public |
+                                                     System.Reflection.BindingFlags.NonPublic |
+                                                     System.Reflection.BindingFlags.Instance |
+                                                     System.Reflection.BindingFlags.Static);
+                        foreach (var method in methods)
+                        {
+                            if (method.Name.StartsWith("ISSUE-", StringComparison.OrdinalIgnoreCase))
+                            {
+                                violations.Add(new StoryViolation
+                                {
+                                    ViolationType = StoryViolationType.NamingConvention,
+                                    Type = type.FullName ?? type.Name,
+                                    Member = method.Name,
+                                    Violation = "Test method names should not start with 'ISSUE-' prefix. Use descriptive names that explain what is being tested.",
+                                    FilePath = string.Empty,
+                                    LineNumber = 0
+                                });
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"Could not validate types in assembly {assembly.GetName().Name}: {ex.Message}");
+                }
+            }
+        }
+
+        /// <summary>
         /// Generates a detailed validation report.
         /// </summary>
         [MenuItem(MenuRoot + "Generate Detailed Report", false, 11)]
         public static void GenerateDetailedReport()
         {
+            Debug.Log($"[{GetMenuPath()}] Generating detailed validation report...");
+
+            // Ensure validation rules are loaded (lazy-load to avoid blocking domain reload)
+            StoryTestRuleBootstrapper.EnsureBootstrapped();
+
             var reportPath = EditorUtility.SaveFilePanel(
                 "Save Validation Report",
                 Application.dataPath,
-                $"StoryTestValidationReport_{System.DateTime.Now:yyyyMMdd_HHmmss}",
+                $"StoryTestValidationReport_{DateTime.Now:yyyyMMdd_HHmmss}",
                 "txt");
 
             if (string.IsNullOrEmpty(reportPath))
                 return;
 
             var report = GenerateReport();
-            System.IO.File.WriteAllText(reportPath, report);
+            File.WriteAllText(reportPath, report);
 
             Debug.Log($"Validation report saved to: {reportPath}");
             EditorUtility.DisplayDialog("Report Generated",
@@ -107,7 +242,7 @@ namespace TinyWalnutGames.StoryTest.Editor
         }
 
         /// <summary>
-        /// Shows strengthening configuration window.
+        /// Shows the strengthening configuration window.
         /// </summary>
         [MenuItem(MenuRoot + "Strengthening Configuration", false, 21)]
         public static void ShowStrengtheningConfiguration()
@@ -121,6 +256,8 @@ namespace TinyWalnutGames.StoryTest.Editor
         [MenuItem(MenuRoot + "Validate Project Structure", false, 31)]
         public static void ValidateProjectStructure()
         {
+            Debug.Log($"[{GetMenuPath()}] Validating project structure...");
+            
             var issues = new List<string>();
 
             // Check for proper assembly organization
@@ -130,10 +267,10 @@ namespace TinyWalnutGames.StoryTest.Editor
                 issues.Add("DOTS/ECS assemblies not properly referenced");
             }
 
-            // Check for proper folder structure?            
+            // Check for the proper folder structure?            
             // 👀 - A better approach would be to load a config file defining the expected structure.
             /* I am not sure of the string over-ride syntax here, but as an example:
-            storysettings.json
+            story-settings.json
             {
                 "projectName": "MyGame",
                 "requiredFolders": [
@@ -170,7 +307,7 @@ namespace TinyWalnutGames.StoryTest.Editor
 
             foreach (var folder in requiredFolders)
             {
-                if (!System.IO.Directory.Exists(folder))
+                if (!Directory.Exists(folder))
                 {
                     issues.Add($"Required folder missing: {folder}");
                 }
@@ -199,31 +336,27 @@ namespace TinyWalnutGames.StoryTest.Editor
 
         private static void OnPlayModeChanged(PlayModeStateChange state)
         {
-            if (state == PlayModeStateChange.EnteredPlayMode)
-            {
-                EditorApplication.playModeStateChanged -= OnPlayModeChanged;
-                // Delay to allow scene to initialize
-                // EditorApplication.delayCall += () => RunValidation();
-                // � PLANNED FEATURE: Will be implemented in Phase 3+ when ProductionExcellenceStoryTest is available
-                Debug.LogWarning("🏳Complete validation pipeline not yet implemented");
-            }
+            if (state != PlayModeStateChange.EnteredPlayMode) return;
+            EditorApplication.playModeStateChanged -= OnPlayModeChanged;
+            // Delay to allow the scene to initialize
+            // EditorApplication.delayCall += () => RunValidation();
+            // � PLANNED FEATURE: Will be implemented in Phase 3+ when ProductionExcellenceStoryTest is available
+            Debug.LogWarning("🏳Complete validation pipeline not yet implemented");
         }
-
-        // � PLANNED FEATURE: Will be implemented in Phase 3+ when ProductionExcellenceStoryTest and ValidationReport are available
-        /*
+        
         private static void RunValidation()
         {
-            var testObject = GameObject.FindFirstObjectByType<ProductionExcellenceStoryTest>();
-            if (testObject == null)
+            var testObject = Object.FindFirstObjectByType<ProductionExcellenceStoryTest>();
+            if (testObject is null)
             {
-                // Create temporary test object
-                var tempGO = new GameObject("TempValidationRunner");
-                testObject = tempGO.AddComponent<ProductionExcellenceStoryTest>();
+                // Create a temporary test object
+                var tempGo = new GameObject("TempValidationRunner");
+                testObject = tempGo.AddComponent<ProductionExcellenceStoryTest>();
 
                 testObject.OnValidationComplete += (report) =>
                 {
                     ShowValidationResults(report);
-                    GameObject.DestroyImmediate(tempGO);
+                    Object.DestroyImmediate(tempGo);
                 };
             }
 
@@ -250,7 +383,6 @@ namespace TinyWalnutGames.StoryTest.Editor
                     "Fix Issues");
             }
         }
-        */
 
         private static void ShowValidationWindow(List<StoryViolation> violations)
         {
@@ -261,33 +393,35 @@ namespace TinyWalnutGames.StoryTest.Editor
         {
             var report = "THE STORY-TEST FRAMEWORK STRENGTHENING VALIDATION REPORT\n";
             report += new string('=', 50) + "\n\n";
-            report += $"Generated: {System.DateTime.Now:yyyy-MM-dd HH:mm:ss}\n";
+            report += $"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n";
             report += $"Unity Version: {Application.unityVersion}\n";
             report += $"Target Platform: {EditorUserBuildSettings.activeBuildTarget}\n\n";
 
-            // Story integrity analysis
+            // Story integrity analysis - use proper settings-based filtering
             var settings = StoryTestSettings.Instance;
-            var assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => !a.FullName.StartsWith("Unity") && 
-                           !a.FullName.StartsWith("UnityEngine") && 
-                           !a.FullName.StartsWith("UnityEditor") &&
-                           (settings.assemblyFilters.Length == 0 || 
-                            settings.assemblyFilters.Any(filter => a.FullName.Contains(filter))))
+            var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            // Let StoryIntegrityValidator handle filtering according to settings
+            var assemblies = allAssemblies
+                .Where(a => StoryIntegrityValidator.IsProjectAssembly(a, settings))
                 .ToArray();
 
-            // � PLANNED FEATURE: Will use StoryIntegrityValidator in Phase 3+
-            // var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
-            var violations = new System.Collections.Generic.List<TinyWalnutGames.StoryTest.Shared.StoryViolation>();
+            var violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
 
             report += "STORY INTEGRITY ANALYSIS\n";
             report += new string('-', 25) + "\n";
             if (violations.Any())
             {
-                report += $"Status: FAILED ({violations.Count()} violations)\n\n";
+                report += $"Status: FAILED ({violations.Count} violations)\n\n";
                 report += "Violations:\n";
                 foreach (var violation in violations)
                 {
-                    report += $"  • {violation}\n";
+                    var file = string.IsNullOrWhiteSpace(violation.FilePath) ? "<unknown>" : violation.FilePath;
+                    var line = violation.LineNumber > 0 ? violation.LineNumber.ToString() : "?";
+                    var typeName = string.IsNullOrWhiteSpace(violation.Type) ? "<UnknownType>" : violation.Type;
+                    var member = string.IsNullOrWhiteSpace(violation.Member) ? "<UnknownMember>" : violation.Member;
+                    var message = string.IsNullOrWhiteSpace(violation.Violation) ? "<No details provided>" : violation.Violation;
+                    report += $"  • [{violation.ViolationType}] {typeName}.{member} - {message} (File: {file}, Line: {line})\n";
                 }
             }
             else
@@ -303,15 +437,42 @@ namespace TinyWalnutGames.StoryTest.Editor
             foreach (var assembly in assemblies)
             {
                 report += $"Assembly: {assembly.FullName}\n";
-                report += $"Types: {assembly.GetTypes().Length}\n";
-                report += $"Location: {assembly.Location}\n\n";
+                // Guard GetTypes; some assemblies may throw
+                int typeCount;
+                try { typeCount = assembly.GetTypes().Length; } catch { typeCount = -1; }
+                report += $"Types: {typeCount}\n";
+
+                // Dynamic assemblies don't have a Location property
+                try
+                {
+                    if (!assembly.IsDynamic)
+                    {
+                        report += $"Location: {assembly.Location}\n";
+                    }
+                    else
+                    {
+                        report += "Location: (dynamic assembly)\n";
+                    }
+                }
+                catch (NotSupportedException)
+                {
+                    report += "Location: (not supported)\n";
+                }
+                catch
+                {
+                    report += "Location: (unavailable)\n";
+                }
+
+                report += "\n";
             }
 
             // Project structure analysis
             report += "PROJECT STRUCTURE\n";
             report += new string('-', 17) + "\n";
             report += "Folder Structure:\n";
-            var directories = System.IO.Directory.GetDirectories("Assets", "*", System.IO.SearchOption.AllDirectories);
+            string[] directories;
+            try { directories = Directory.GetDirectories("Assets", "*", SearchOption.AllDirectories); }
+            catch { directories = Array.Empty<string>(); }
             foreach (var dir in directories.Take(20))
             {
                 report += $"  {dir}\n";
@@ -330,135 +491,385 @@ namespace TinyWalnutGames.StoryTest.Editor
     /// </summary>
     public class StrengtheningConfigurationWindow : EditorWindow
     {
+        private const string SettingsRelativePath = "Assets/Tiny Walnut Games/TheStoryTest/Resources/StoryTestSettings.json";
+
         private Vector2 scrollPosition;
-        private bool validateOnBuild = true;
-        private bool strictMode = false;
-        private string[] assemblyFilters = { "" };
+        private StoryTestSettings editableSettings;
+        private bool settingsFileExists;
+        private bool showConceptualSection = true;
+        private bool showEnvironmentSection;
+        private bool showCustomComponentTypes;
+        private bool showEnumPatterns;
 
         public static void ShowWindow()
         {
             var window = GetWindow<StrengtheningConfigurationWindow>("Strengthening Config");
-            window.minSize = new Vector2(400, 300);
+            window.minSize = new Vector2(480, 420);
             window.Show();
+        }
+
+        private void OnEnable()
+        {
+            ReloadSettings();
+        }
+
+        private void ReloadSettings()
+        {
+            StoryTestSettings.ReloadSettings();
+            editableSettings = CloneSettings(StoryTestSettings.Instance);
+            EnsureDefaults(editableSettings);
+            settingsFileExists = File.Exists(GetSettingsAbsolutePath());
         }
 
         private void OnGUI()
         {
+            if (editableSettings == null)
+            {
+                ReloadSettings();
+            }
+
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 
             GUILayout.Label("Strengthening Validation Configuration", EditorStyles.largeLabel);
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField("Validation Settings", EditorStyles.boldLabel);
-            validateOnBuild = EditorGUILayout.Toggle("Validate on Build", validateOnBuild);
-            strictMode = EditorGUILayout.Toggle("Strict Mode", strictMode);
-
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Assembly Filters", EditorStyles.boldLabel);
-
-            if (assemblyFilters != null)
+            EditorGUILayout.HelpBox($"Editing Story Test settings at: {SettingsRelativePath}", MessageType.Info);
+            if (!settingsFileExists)
             {
-                for (int i = 0; i < assemblyFilters.Length; i++)
-                {
-                    EditorGUILayout.BeginHorizontal();
-                    assemblyFilters[i] = EditorGUILayout.TextField($"Filter {i + 1}", assemblyFilters[i]);
-                    if (GUILayout.Button("Remove", GUILayout.Width(60)))
-                    {
-                        var newFilters = new string[assemblyFilters.Length - 1];
-                        System.Array.Copy(assemblyFilters, 0, newFilters, 0, i);
-                        System.Array.Copy(assemblyFilters, i + 1, newFilters, i, assemblyFilters.Length - i - 1);
-                        assemblyFilters = newFilters;
-                    }
-                    EditorGUILayout.EndHorizontal();
-                }
+                EditorGUILayout.HelpBox("Settings file not found. A new StoryTestSettings.json will be created when you apply changes.", MessageType.Warning);
             }
 
-            if (GUILayout.Button("Add Filter"))
-            {
-                var newFilters = new string[assemblyFilters?.Length + 1 ?? 1];
-                if (assemblyFilters != null)
-                {
-                    System.Array.Copy(assemblyFilters, newFilters, assemblyFilters.Length);
-                }
-                newFilters[newFilters.Length - 1] = "";
-                assemblyFilters = newFilters;
-            }
+            DrawGeneralSettings();
+            DrawAssemblyFilters();
+            DrawConceptualValidation();
 
             EditorGUILayout.Space();
 
-            if (GUILayout.Button("Apply Configuration"))
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Reload From Disk"))
             {
-                ApplyConfiguration();
+                ReloadSettings();
             }
 
+            if (GUILayout.Button("Open Settings File"))
+            {
+                OpenSettingsLocation();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Reset to Defaults"))
             {
                 ResetToDefaults();
             }
 
+            if (GUILayout.Button("Apply Configuration"))
+            {
+                ApplyConfiguration();
+            }
+            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.EndScrollView();
+        }
+
+        private void DrawGeneralSettings()
+        {
+            EditorGUILayout.LabelField("General Settings", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+
+            editableSettings.projectName = EditorGUILayout.TextField("Project Name", editableSettings.projectName);
+            editableSettings.menuPath = EditorGUILayout.TextField("Menu Path", editableSettings.menuPath);
+            editableSettings.exportPath = EditorGUILayout.TextField("Export Path", editableSettings.exportPath);
+
+            editableSettings.validateOnStart = EditorGUILayout.Toggle("Validate on Start", editableSettings.validateOnStart);
+            editableSettings.strictMode = EditorGUILayout.Toggle("Strict Mode", editableSettings.strictMode);
+            editableSettings.includeUnityAssemblies = EditorGUILayout.Toggle("Include Unity Assemblies", editableSettings.includeUnityAssemblies);
+
+            EditorGUI.indentLevel--;
+            EditorGUILayout.Space();
+        }
+
+        private void DrawAssemblyFilters()
+        {
+            EditorGUILayout.LabelField("Assembly Include Filters", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox("Select the assemblies to INCLUDE in validation. Assemblies not selected will be ignored.", MessageType.Info);
+
+            if (editableSettings == null)
+            {
+                return;
+            }
+
+            // Build list of available assemblies
+            var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var includeUnity = editableSettings.includeUnityAssemblies;
+            var names = allAssemblies
+                .Where(a => includeUnity || (
+                    !a.FullName.StartsWith("Unity") &&
+                    !a.FullName.StartsWith("UnityEngine") &&
+                    !a.FullName.StartsWith("UnityEditor")))
+                .Select(a => a.GetName().Name)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            var selected = new HashSet<string>(editableSettings.assemblyFilters ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Select All", GUILayout.Width(100)))
+            {
+                selected = new HashSet<string>(names, StringComparer.OrdinalIgnoreCase);
+            }
+            if (GUILayout.Button("Clear All", GUILayout.Width(100)))
+            {
+                selected.Clear();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUI.indentLevel++;
+            foreach (var label in names)
+            {
+                var isSelected = selected.Contains(label);
+                var toggled = EditorGUILayout.ToggleLeft(label, isSelected);
+                if (toggled == isSelected) continue;
+                if (toggled) selected.Add(label); else selected.Remove(label);
+            }
+            EditorGUI.indentLevel--;
+
+            editableSettings.assemblyFilters = selected.ToArray();
+            EditorGUILayout.Space();
+        }
+
+        private void DrawConceptualValidation()
+        {
+            var config = editableSettings.conceptualValidation;
+            showConceptualSection = EditorGUILayout.Foldout(showConceptualSection, "Conceptual Validation", true);
+            if (!showConceptualSection)
+            {
+                return;
+            }
+
+            EditorGUI.indentLevel++;
+            config.enableConceptTests = EditorGUILayout.Toggle("Enable Concept Tests", config.enableConceptTests);
+            config.autoDetectEnvironment = EditorGUILayout.Toggle("Auto Detect Environment", config.autoDetectEnvironment);
+
+            EditorGUILayout.LabelField("Validation Tiers", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            config.validationTiers.universal = EditorGUILayout.Toggle("Universal", config.validationTiers.universal);
+            config.validationTiers.unityAware = EditorGUILayout.Toggle("Unity-Aware", config.validationTiers.unityAware);
+            config.validationTiers.projectSpecific = EditorGUILayout.Toggle("Project-Specific", config.validationTiers.projectSpecific);
+            EditorGUI.indentLevel--;
+
+            var fallbackModes = new[] { "ilAnalysis", "skip" };
+            var fallbackIndex = Array.IndexOf(fallbackModes, config.fallbackMode);
+            if (fallbackIndex < 0)
+            {
+                fallbackIndex = 0;
+            }
+            fallbackIndex = EditorGUILayout.Popup("Fallback Mode", fallbackIndex, fallbackModes);
+            config.fallbackMode = fallbackModes[fallbackIndex];
+
+            EditorGUILayout.Space();
+
+            showCustomComponentTypes = EditorGUILayout.Foldout(showCustomComponentTypes, "Custom Component Types", true);
+            if (showCustomComponentTypes)
+            {
+                EditorGUI.indentLevel++;
+                DrawStringList(ref config.customComponentTypes, "Component", "Component");
+                EditorGUI.indentLevel--;
+            }
+
+            showEnumPatterns = EditorGUILayout.Foldout(showEnumPatterns, "Enum Validation Patterns", true);
+            if (showEnumPatterns)
+            {
+                EditorGUI.indentLevel++;
+                DrawStringList(ref config.enumValidationPatterns, "Pattern", "Pattern");
+                EditorGUI.indentLevel--;
+            }
+
+            EditorGUILayout.Space();
+
+            showEnvironmentSection = EditorGUILayout.Foldout(showEnvironmentSection, "Environment Capabilities Overrides", true);
+            if (showEnvironmentSection)
+            {
+                EditorGUI.indentLevel++;
+                var environment = config.environmentCapabilities;
+                environment.hasUnityEngine = EditorGUILayout.Toggle("Has UnityEngine", environment.hasUnityEngine);
+                environment.hasDots = EditorGUILayout.Toggle("Has DOTS", environment.hasDots);
+                environment.hasBurst = EditorGUILayout.Toggle("Has Burst", environment.hasBurst);
+                environment.hasEntities = EditorGUILayout.Toggle("Has Entities", environment.hasEntities);
+                environment.canInstantiateComponents = EditorGUILayout.Toggle("Can Instantiate Components", environment.canInstantiateComponents);
+                EditorGUI.indentLevel--;
+            }
+
+            EditorGUI.indentLevel--;
+            EditorGUILayout.Space();
         }
 
         private void ApplyConfiguration()
         {
-            var settings = StoryTestSettings.Instance;
-            settings.validateOnStart = validateOnBuild;
-            settings.strictMode = strictMode;
-            settings.assemblyFilters = assemblyFilters ?? new string[0];
-            settings.SaveSettings();
-
-            // Also save to EditorPrefs for backwards compatibility
-            EditorPrefs.SetBool("StoryTest.ValidateOnBuild", validateOnBuild);
-            EditorPrefs.SetBool("StoryTest.StrictMode", strictMode);
-
-            if (assemblyFilters != null)
+            if (editableSettings == null)
             {
-                for (int i = 0; i < assemblyFilters.Length; i++)
-                {
-                    EditorPrefs.SetString($"StoryTest.AssemblyFilter.{i}", assemblyFilters[i]);
-                }
-                EditorPrefs.SetInt("StoryTest.AssemblyFilters.Count", assemblyFilters.Length);
+                return;
             }
 
-            Debug.Log("Story Test configuration applied and saved to StoryTestSettings.json");
+            var runtimeSettings = StoryTestSettings.Instance;
+            CopySettings(editableSettings, runtimeSettings);
+            runtimeSettings.SaveSettings();
+            StoryTestSettings.ReloadSettings();
+            settingsFileExists = true;
+            AssetDatabase.Refresh();
+
+            Debug.Log($"[Story Test] Settings saved to {SettingsRelativePath}");
+            ReloadSettings();
         }
 
         private void ResetToDefaults()
         {
-            validateOnBuild = true;
-            strictMode = false;
-            assemblyFilters = new[] { "" };
+            editableSettings = new StoryTestSettings();
+            EnsureDefaults(editableSettings);
         }
 
-        private void OnEnable()
+        private void OpenSettingsLocation()
         {
-            LoadConfiguration();
-        }
-
-        private void LoadConfiguration()
-        {
-            var settings = StoryTestSettings.Instance;
-            
-            // Load from settings file first
-            validateOnBuild = settings.validateOnStart;
-            strictMode = settings.strictMode;
-            assemblyFilters = settings.assemblyFilters.Length > 0 
-                ? settings.assemblyFilters 
-                : new string[] { "" };
-            
-            // Override with EditorPrefs if they exist (user-specific overrides)
-            validateOnBuild = EditorPrefs.GetBool("StoryTest.ValidateOnBuild", validateOnBuild);
-            strictMode = EditorPrefs.GetBool("StoryTest.StrictMode", strictMode);
-
-            var filterCount = EditorPrefs.GetInt("StoryTest.AssemblyFilters.Count", -1);
-            if (filterCount > 0)
+            var absolutePath = GetSettingsAbsolutePath();
+            if (File.Exists(absolutePath))
             {
-                assemblyFilters = new string[filterCount];
-                for (int i = 0; i < filterCount; i++)
-                {
-                    assemblyFilters[i] = EditorPrefs.GetString($"StoryTest.AssemblyFilter.{i}", "");
-                }
+                EditorUtility.RevealInFinder(absolutePath);
             }
+            else
+            {
+                EditorUtility.DisplayDialog("Story Test Settings", $"No settings file found at: {absolutePath}\nApply the configuration to create it.", "OK");
+            }
+        }
+
+        private void DrawStringList(ref string[] items, string label, string addLabel)
+        {
+            items ??= Array.Empty<string>();
+
+            EditorGUI.indentLevel++;
+            var list = new List<string>(items);
+            var removed = false;
+
+            for (var i = 0; i < list.Count; i++)
+            {
+                EditorGUILayout.BeginHorizontal();
+                list[i] = EditorGUILayout.TextField($"{label} {i + 1}", list[i]);
+                if (GUILayout.Button("Remove", GUILayout.Width(70)))
+                {
+                    list.RemoveAt(i);
+                    removed = true;
+                    EditorGUILayout.EndHorizontal();
+                    break;
+                }
+                EditorGUILayout.EndHorizontal();
+            }
+
+            if (!removed && GUILayout.Button($"Add {addLabel}"))
+            {
+                list.Add(string.Empty);
+            }
+
+            items = list.ToArray();
+            EditorGUI.indentLevel--;
+
+            if (removed)
+            {
+                // Trigger a repaint so the removed element disappears immediately.
+                Repaint();
+            }
+        }
+
+        private static StoryTestSettings CloneSettings(StoryTestSettings source)
+        {
+            if (source == null)
+            {
+                return new StoryTestSettings();
+            }
+
+            var json = JsonUtility.ToJson(source);
+            var clone = JsonUtility.FromJson<StoryTestSettings>(json) ?? new StoryTestSettings();
+            return clone;
+        }
+
+        private static void EnsureDefaults(StoryTestSettings settings)
+        {
+            if (settings == null)
+            {
+                return;
+            }
+
+            settings.projectName ??= "YourProjectName";
+            settings.menuPath ??= "Tiny Walnut Games/The Story Test/";
+            settings.exportPath ??= ".debug/storytest_report.txt";
+            settings.assemblyFilters = settings.assemblyFilters ?? Array.Empty<string>();
+
+            settings.conceptualValidation ??= new ConceptualValidationConfig();
+            var concept = settings.conceptualValidation;
+            concept.validationTiers ??= new ValidationTiers();
+            concept.environmentCapabilities ??= new EnvironmentCapabilities();
+            concept.customComponentTypes = concept.customComponentTypes ?? Array.Empty<string>();
+            concept.enumValidationPatterns = concept.enumValidationPatterns ?? Array.Empty<string>();
+            concept.fallbackMode ??= "ilAnalysis";
+        }
+
+        private static void CopySettings(StoryTestSettings source, StoryTestSettings target)
+        {
+            if (source == null || target == null)
+            {
+                return;
+            }
+
+            target.projectName = source.projectName;
+            target.menuPath = source.menuPath;
+            target.exportPath = source.exportPath;
+            target.includeUnityAssemblies = source.includeUnityAssemblies;
+            target.validateOnStart = source.validateOnStart;
+            target.strictMode = source.strictMode;
+            target.assemblyFilters = CloneArray(source.assemblyFilters);
+
+            target.conceptualValidation ??= new ConceptualValidationConfig();
+            var targetConcept = target.conceptualValidation;
+            var sourceConcept = source.conceptualValidation ?? new ConceptualValidationConfig();
+
+            targetConcept.enableConceptTests = sourceConcept.enableConceptTests;
+            targetConcept.autoDetectEnvironment = sourceConcept.autoDetectEnvironment;
+            targetConcept.fallbackMode = string.IsNullOrWhiteSpace(sourceConcept.fallbackMode) ? "ilAnalysis" : sourceConcept.fallbackMode;
+
+            targetConcept.validationTiers ??= new ValidationTiers();
+            var sourceTiers = sourceConcept.validationTiers ?? new ValidationTiers();
+            targetConcept.validationTiers.universal = sourceTiers.universal;
+            targetConcept.validationTiers.unityAware = sourceTiers.unityAware;
+            targetConcept.validationTiers.projectSpecific = sourceTiers.projectSpecific;
+
+            targetConcept.environmentCapabilities ??= new EnvironmentCapabilities();
+            var sourceEnv = sourceConcept.environmentCapabilities ?? new EnvironmentCapabilities();
+            targetConcept.environmentCapabilities.hasUnityEngine = sourceEnv.hasUnityEngine;
+            targetConcept.environmentCapabilities.hasDots = sourceEnv.hasDots;
+            targetConcept.environmentCapabilities.hasBurst = sourceEnv.hasBurst;
+            targetConcept.environmentCapabilities.hasEntities = sourceEnv.hasEntities;
+            targetConcept.environmentCapabilities.canInstantiateComponents = sourceEnv.canInstantiateComponents;
+
+            targetConcept.customComponentTypes = CloneArray(sourceConcept.customComponentTypes);
+            targetConcept.enumValidationPatterns = CloneArray(sourceConcept.enumValidationPatterns);
+        }
+
+        private static string[] CloneArray(string[] source)
+        {
+            if (source == null || source.Length == 0)
+            {
+                return Array.Empty<string>();
+            }
+
+            var clone = new string[source.Length];
+            Array.Copy(source, clone, source.Length);
+            return clone;
+        }
+
+        private static string GetSettingsAbsolutePath()
+        {
+            return Path.Combine(Application.dataPath, "Tiny Walnut Games", "TheStoryTest", "Resources", "StoryTestSettings.json");
         }
     }
 
@@ -495,14 +906,19 @@ namespace TinyWalnutGames.StoryTest.Editor
             {
                 EditorGUILayout.BeginVertical("Box");
 
-                var style = new GUIStyle(EditorStyles.label);
-                style.fontStyle = FontStyle.Bold;
-                style.normal.textColor = Color.red;
+                var style = new GUIStyle(EditorStyles.label)
+                {
+                    fontStyle = FontStyle.Bold,
+                    normal =
+                    {
+                        textColor = Color.red
+                    }
+                };
 
                 GUILayout.Label(violation.ViolationType.ToString(), style);
                 GUILayout.Label($"Member: {violation.Type}.{violation.Member}", EditorStyles.wordWrappedLabel);
                 GUILayout.Label($"Issue: {violation.Violation}", EditorStyles.wordWrappedLabel);
-                // Debugging requires file and violation line location for best context
+                // Debugging requires file and violation line location for the best context
                 GUILayout.Label($"File: {violation.FilePath}", EditorStyles.wordWrappedLabel);
                 GUILayout.Label($"Line: {violation.LineNumber}", EditorStyles.wordWrappedLabel);
 

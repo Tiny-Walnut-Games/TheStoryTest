@@ -9,75 +9,81 @@ using System.Text;
 using System.Threading.Tasks;
 using TinyWalnutGames.StoryTest.Shared;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace TinyWalnutGames.StoryTest
 {
     /// <summary>
-    /// MonoBehaviour orchestrating multi-phase Story Test validation inside Unity.
+    /// MonoBehaviour orchestrating multiphase Story Test validation inside Unity.
     /// Keeps validation workflow agnostic to specific project architectures while
     /// still accommodating DOTS/ECS environments when present.
     /// </summary>
     [DisallowMultipleComponent]
     public class ProductionExcellenceStoryTest : MonoBehaviour
     {
+        [FormerlySerializedAs("EnableStoryIntegrity")]
         [Header("Validation Phases")]
         [Tooltip("Run the 9 Acts IL validation against target assemblies.")]
-        public bool EnableStoryIntegrity = true;
+        public bool enableStoryIntegrity = true;
 
-        [Tooltip("Run conceptual validation (enums, structs, abstract sealing) using ExtendedConceptualValidator.")]
-        public bool EnableConceptualValidation = true;
+        [FormerlySerializedAs("EnableConceptualValidation")] [Tooltip("Run conceptual validation (enums, structs, abstract sealing) using ExtendedConceptualValidator.")]
+        public bool enableConceptualValidation = true;
 
-        [Tooltip("Placeholder toggle for future coverage integration. Adds informational notes when enabled.")]
-        public bool EnableCodeCoverage = false;
+        [FormerlySerializedAs("EnableCodeCoverage")] [Tooltip("Placeholder toggle for future coverage integration. Adds informational notes when enabled.")]
+        public bool enableCodeCoverage;
 
-        [Tooltip("Perform architectural compliance checks when conceptual validation runs. Currently adds ECS awareness notes.")]
-        public bool EnableArchitecturalCompliance = false;
+        [FormerlySerializedAs("EnableArchitecturalCompliance")] [Tooltip("Perform architectural compliance checks when conceptual validation runs. Currently adds ECS awareness notes.")]
+        public bool enableArchitecturalCompliance;
 
-        [Tooltip("Benchmark validation sync-points to ensure smooth parallel execution.")]
-        public bool EnableSyncPointPerformance = false;
+        [FormerlySerializedAs("EnableSyncPointPerformance")] [Tooltip("Benchmark validation sync-points to ensure smooth parallel execution.")]
+        public bool enableSyncPointPerformance;
 
+        [FormerlySerializedAs("OverrideUnityAssemblies")]
         [Header("Assembly Selection")]
         [Tooltip("Override StoryTestSettings includeUnityAssemblies value.")]
-        public bool OverrideUnityAssemblies = false;
+        public bool overrideUnityAssemblies;
 
-        [Tooltip("Include Unity assemblies when OverrideUnityAssemblies is enabled.")]
-        public bool IncludeUnityAssemblies = false;
+        [FormerlySerializedAs("IncludeUnityAssemblies")] [Tooltip("Include Unity assemblies when OverrideUnityAssemblies is enabled.")]
+        public bool includeUnityAssemblies;
 
-        [Tooltip("Additional assembly name filters (contains). Leave empty to validate all project assemblies.")]
-        public string[] AssemblyFilters = Array.Empty<string>();
+        [FormerlySerializedAs("AssemblyFilters")] [Tooltip("Additional assembly name filters (contains). Leave empty to validate all project assemblies.")]
+        public string[] assemblyFilters = Array.Empty<string>();
 
+        [FormerlySerializedAs("ValidateAutomaticallyOnStart")]
         [Header("Execution")]
         [Tooltip("Runs validation automatically on Start in addition to StoryTestSettings.validateOnStart.")]
-        public bool ValidateAutomaticallyOnStart = false;
+        public bool validateAutomaticallyOnStart;
 
-        [Tooltip("Stop validation after the first violation is encountered. Useful for fast feedback.")]
-        public bool StopOnFirstViolation = false;
+        [FormerlySerializedAs("StopOnFirstViolation")] [Tooltip("Stop validation after the first violation is encountered. Useful for fast feedback.")]
+        public bool stopOnFirstViolation;
 
+        [FormerlySerializedAs("ExportReport")]
         [Header("Reporting")]
         [Tooltip("Export a human-readable report after validation completes.")]
-        public bool ExportReport = true;
+        public bool exportReport = true;
 
-        [Tooltip("Report export path (relative to project root).")]
-        public string ExportPath = ".debug/storytest_report.txt";
+        [FormerlySerializedAs("ExportPath")] [Tooltip("Report export path (relative to project root).")]
+        public string exportPath = ".debug/storytest_report.txt";
 
         /// <summary>
         /// Raised when validation completes. Provides the generated report.
         /// </summary>
         public event Action<ValidationReport> OnValidationComplete;
 
-        private bool _isValidating;
-        private Coroutine _validationRoutine;
-        private ValidationReport _lastReport;
+        private bool isValidating;
+        private Coroutine validationRoutine;
+        private ValidationReport lastReport;
+        private ValidationProgressUI progressUI;
 
         /// <summary>
         /// Indicates whether a validation run is currently in progress.
         /// </summary>
-        public bool IsValidating => _isValidating;
+        public bool IsValidating => isValidating;
 
         /// <summary>
         /// Gets the report from the most recent validation run.
         /// </summary>
-        public ValidationReport LastReport => _lastReport;
+        public ValidationReport LastReport => lastReport;
 
         private void Start()
         {
@@ -87,20 +93,27 @@ namespace TinyWalnutGames.StoryTest
                 return;
             }
 
-            if ((settings?.validateOnStart ?? false) || ValidateAutomaticallyOnStart)
+            // NEVER auto-start validation - it causes domain reload freezes
+            // Validation must be triggered manually via ValidateOnDemand() or UI button
+            // This prevents validation from running during asset import/domain reload
+
+            // Create progress UI
+            if (progressUI == null)
             {
-                ValidateProductionExcellence();
+                progressUI = gameObject.AddComponent<ValidationProgressUI>();
             }
+
+            UnityEngine.Debug.Log("[Story Test] Runner ready. Waiting for manual validation trigger...");
         }
 
         private void OnDisable()
         {
-            if (_validationRoutine != null)
+            if (validationRoutine != null)
             {
-                StopCoroutine(_validationRoutine);
-                _validationRoutine = null;
+                StopCoroutine(validationRoutine);
+                validationRoutine = null;
             }
-            _isValidating = false;
+            isValidating = false;
         }
 
         /// <summary>
@@ -115,13 +128,13 @@ namespace TinyWalnutGames.StoryTest
                 return;
             }
 
-            if (_isValidating)
+            if (isValidating)
             {
                 UnityEngine.Debug.LogWarning("[Story Test] Validation already running.");
                 return;
             }
 
-            _validationRoutine = StartCoroutine(RunValidation());
+            validationRoutine = StartCoroutine(RunValidation());
         }
 
         /// <summary>
@@ -131,8 +144,16 @@ namespace TinyWalnutGames.StoryTest
 
         private IEnumerator RunValidation()
         {
-            _isValidating = true;
+            isValidating = true;
             var stopwatch = Stopwatch.StartNew();
+
+            // Show progress UI
+            if (progressUI != null)
+            {
+                progressUI.Show();
+                progressUI.UpdateStatus("Validation Running...");
+                progressUI.UpdateProgress("Initializing...");
+            }
 
             var report = new ValidationReport
             {
@@ -142,21 +163,42 @@ namespace TinyWalnutGames.StoryTest
 
             var assemblies = ResolveAssemblies();
 
+            if (progressUI != null)
+            {
+                progressUI.UpdateProgress($"Phase 1/4: Story Integrity ({assemblies.Length} assemblies)");
+            }
+
             yield return RunStoryIntegrityPhase(report, assemblies);
-            if (report.ShouldStop(StopOnFirstViolation))
+            if (report.ShouldStop(stopOnFirstViolation))
             {
                 FinishValidation(report, stopwatch);
                 yield break;
+            }
+
+            if (progressUI != null)
+            {
+                progressUI.UpdateProgress("Phase 2/4: Conceptual Validation");
             }
 
             yield return RunConceptualPhase(report);
-            if (report.ShouldStop(StopOnFirstViolation))
+            if (report.ShouldStop(stopOnFirstViolation))
             {
                 FinishValidation(report, stopwatch);
                 yield break;
             }
 
+            if (progressUI != null)
+            {
+                progressUI.UpdateProgress("Phase 3/4: Code Coverage");
+            }
+
             yield return RunCodeCoveragePhase(report);
+
+            if (progressUI != null)
+            {
+                progressUI.UpdateProgress("Phase 4/4: Sync Point Performance");
+            }
+
             yield return RunSyncPointPhase(report);
 
             stopwatch.Stop();
@@ -165,7 +207,7 @@ namespace TinyWalnutGames.StoryTest
 
         private IEnumerator RunStoryIntegrityPhase(ValidationReport report, Assembly[] assemblies)
         {
-            if (!EnableStoryIntegrity)
+            if (!enableStoryIntegrity)
             {
                 yield break;
             }
@@ -173,22 +215,38 @@ namespace TinyWalnutGames.StoryTest
             LogPhaseStart("Story Integrity");
             yield return null; // allow frame update before heavy work
 
-            List<StoryViolation> violations;
-            try
+            var allViolations = new List<StoryViolation>();
+
+            // Process assemblies one at a time with yields to prevent frame budget overruns
+            for (int i = 0; i < assemblies.Length; i++)
             {
-                violations = StoryIntegrityValidator.ValidateAssemblies(assemblies);
-            }
-            catch (Exception ex)
-            {
-                UnityEngine.Debug.LogError($"[Story Test] Story Integrity validation failed: {ex.Message}");
-                report.AddNote("StoryIntegrity", $"Validation failed: {ex.Message}");
-                yield break;
+                UnityEngine.Debug.Log($"[Story Test] Validating assembly {i + 1}/{assemblies.Length}: {assemblies[i].GetName().Name}");
+
+                List<StoryViolation> violations;
+                try
+                {
+                    // Validate single assembly
+                    violations = StoryIntegrityValidator.ValidateAssemblies(new[] { assemblies[i] });
+                    allViolations.AddRange(violations);
+                }
+                catch (Exception ex)
+                {
+                    UnityEngine.Debug.LogError($"[Story Test] Story Integrity validation failed for {assemblies[i].GetName().Name}: {ex.Message}");
+                    report.AddNote("StoryIntegrity", $"Validation failed for {assemblies[i].GetName().Name}: {ex.Message}");
+                }
+
+                // Yield every assembly to avoid allocation lifetime errors
+                yield return null;
             }
 
-            report.AddViolations("StoryIntegrity", violations);
-            if (violations.Count == 0)
+            report.AddViolations("StoryIntegrity", allViolations);
+            if (allViolations.Count == 0)
             {
                 report.AddNote("StoryIntegrity", "No violations detected – narrative is complete.");
+            }
+            else
+            {
+                UnityEngine.Debug.Log($"[Story Test] Story Integrity phase complete: {allViolations.Count} violations found");
             }
 
             yield return null;
@@ -196,7 +254,7 @@ namespace TinyWalnutGames.StoryTest
 
         private IEnumerator RunConceptualPhase(ValidationReport report)
         {
-            if (!EnableConceptualValidation && !EnableArchitecturalCompliance)
+            if (!enableConceptualValidation && !enableArchitecturalCompliance)
             {
                 yield break;
             }
@@ -219,16 +277,12 @@ namespace TinyWalnutGames.StoryTest
             report.AddViolations("Conceptual", conceptualViolations);
 
             var config = SafeGetSettings()?.conceptualValidation;
-            if (EnableArchitecturalCompliance)
+            if (enableArchitecturalCompliance)
             {
-                if (config?.environmentCapabilities?.hasEntities == true)
-                {
-                    report.AddNote("Conceptual", "DOTS/ECS environment detected – ensure hybrid patterns are intentional.");
-                }
-                else
-                {
-                    report.AddNote("Conceptual", "Architectural compliance ran in non-ECS environment.");
-                }
+                report.AddNote("Conceptual",
+                    config?.environmentCapabilities?.hasEntities == true
+                        ? "DOTS/ECS environment detected – ensure hybrid patterns are intentional."
+                        : "Architectural compliance ran in non-ECS environment.");
             }
 
             if (conceptualViolations.Count == 0)
@@ -241,7 +295,7 @@ namespace TinyWalnutGames.StoryTest
 
         private IEnumerator RunCodeCoveragePhase(ValidationReport report)
         {
-            if (!EnableCodeCoverage)
+            if (!enableCodeCoverage)
             {
                 yield break;
             }
@@ -255,7 +309,7 @@ namespace TinyWalnutGames.StoryTest
 
         private IEnumerator RunSyncPointPhase(ValidationReport report)
         {
-            if (!EnableSyncPointPerformance)
+            if (!enableSyncPointPerformance)
             {
                 yield break;
             }
@@ -275,9 +329,22 @@ namespace TinyWalnutGames.StoryTest
                 yield break;
             }
 
-            while (!validationTask.IsCompleted)
+            // Wait for task completion with timeout (30 seconds max)
+            var timeout = 30f;
+            var elapsed = 0f;
+            while (!validationTask.IsCompleted && elapsed < timeout)
             {
                 yield return null;
+                elapsed += Time.deltaTime;
+            }
+
+            // Check if we timed out
+            if (!validationTask.IsCompleted)
+            {
+                UnityEngine.Debug.LogWarning($"[Story Test] Sync-point performance test timed out after {timeout}s");
+                report.Performance.SyncPointPassed = false;
+                report.AddNote("SyncPointPerformance", $"Performance test timed out after {timeout}s");
+                yield break;
             }
 
             if (validationTask.IsFaulted)
@@ -300,15 +367,21 @@ namespace TinyWalnutGames.StoryTest
 
         private void FinishValidation(ValidationReport report, Stopwatch stopwatch)
         {
-            _isValidating = false;
-            _validationRoutine = null;
+            isValidating = false;
+            validationRoutine = null;
 
             report.CompletedAtUtc = DateTime.UtcNow;
             report.Duration = stopwatch.Elapsed;
-            _lastReport = report;
+            lastReport = report;
+
+            // Update progress UI with final result
+            if (progressUI != null)
+            {
+                progressUI.SetComplete(report.StoryViolations.Count);
+            }
 
             LogReport(report);
-            if (ExportReport)
+            if (exportReport)
             {
                 ExportReportToDisk(report);
             }
@@ -324,21 +397,21 @@ namespace TinyWalnutGames.StoryTest
             {
                 filters.AddRange(settings.assemblyFilters);
             }
-            if (AssemblyFilters != null && AssemblyFilters.Length > 0)
+            if (assemblyFilters is { Length: > 0 })
             {
-                filters.AddRange(AssemblyFilters);
+                filters.AddRange(assemblyFilters);
             }
 
             return new ValidationConfigurationSnapshot
             {
-                StoryIntegrity = EnableStoryIntegrity,
-                ConceptualValidation = EnableConceptualValidation,
-                CodeCoverage = EnableCodeCoverage,
-                ArchitecturalCompliance = EnableArchitecturalCompliance,
-                SyncPointPerformance = EnableSyncPointPerformance,
-                StopOnFirstViolation = StopOnFirstViolation,
-                IncludeUnityAssemblies = OverrideUnityAssemblies ? IncludeUnityAssemblies : settings?.includeUnityAssemblies ?? false,
-                AssemblyFilters = filters.Distinct(StringComparer.OrdinalIgnoreCase).ToArray()
+                storyIntegrity = enableStoryIntegrity,
+                conceptualValidation = enableConceptualValidation,
+                codeCoverage = enableCodeCoverage,
+                architecturalCompliance = enableArchitecturalCompliance,
+                syncPointPerformance = enableSyncPointPerformance,
+                stopOnFirstViolation = stopOnFirstViolation,
+                includeUnityAssemblies = overrideUnityAssemblies ? includeUnityAssemblies : settings?.includeUnityAssemblies ?? false,
+                assemblyFilters = filters.Distinct(StringComparer.OrdinalIgnoreCase).ToArray()
             };
         }
 
@@ -346,10 +419,10 @@ namespace TinyWalnutGames.StoryTest
         {
             var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
             var settings = SafeGetSettings();
-            bool includeUnity = settings?.includeUnityAssemblies ?? false;
-            if (OverrideUnityAssemblies)
+            var includeUnity = settings?.includeUnityAssemblies ?? false;
+            if (overrideUnityAssemblies)
             {
-                includeUnity = IncludeUnityAssemblies;
+                includeUnity = includeUnityAssemblies;
             }
 
             var filters = new List<string>();
@@ -357,12 +430,12 @@ namespace TinyWalnutGames.StoryTest
             {
                 filters.AddRange(settings.assemblyFilters);
             }
-            if (AssemblyFilters != null && AssemblyFilters.Length > 0)
+            if (assemblyFilters is { Length: > 0 })
             {
-                filters.AddRange(AssemblyFilters);
+                filters.AddRange(assemblyFilters);
             }
 
-            bool usingFilters = filters.Count > 0;
+            var usingFilters = filters.Count > 0;
 
             return allAssemblies
                 .Where(a => ShouldIncludeAssembly(a, includeUnity, filters, usingFilters))
@@ -392,8 +465,9 @@ namespace TinyWalnutGames.StoryTest
 
             if (usingFilters)
             {
-                return filters.Any(filter =>
-                    name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
+                // Include-only semantics: when filters provided, only include exact name matches
+                var includeSet = new HashSet<string>(filters.Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()), StringComparer.OrdinalIgnoreCase);
+                return includeSet.Contains(name);
             }
 
             return true;
@@ -438,7 +512,7 @@ namespace TinyWalnutGames.StoryTest
         {
             try
             {
-                var path = ExportPath;
+                var path = exportPath;
                 if (!Path.IsPathRooted(path))
                 {
                     path = Path.Combine(Application.dataPath, "..", path);
@@ -451,7 +525,7 @@ namespace TinyWalnutGames.StoryTest
                 }
 
                 File.WriteAllText(path, report.GenerateSummary());
-                report.Performance.SyncPointReportPath = path;
+                report.Performance.syncPointReportPath = path;
                 UnityEngine.Debug.Log($"[Story Test] Validation report exported to: {Path.GetFullPath(path)}");
             }
             catch (Exception ex)
@@ -472,8 +546,8 @@ namespace TinyWalnutGames.StoryTest
     [Serializable]
     public class ValidationReport
     {
-        private readonly Dictionary<string, List<StoryViolation>> _phaseViolations = new Dictionary<string, List<StoryViolation>>(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, List<string>> _phaseNotes = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, List<StoryViolation>> phaseViolations = new Dictionary<string, List<StoryViolation>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, List<string>> phaseNotes = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
         public DateTime StartedAtUtc { get; set; }
         public DateTime CompletedAtUtc { get; set; }
@@ -482,8 +556,8 @@ namespace TinyWalnutGames.StoryTest
         public ValidationPerformanceSnapshot Performance { get; } = new ValidationPerformanceSnapshot();
         public List<StoryViolation> StoryViolations { get; } = new List<StoryViolation>();
 
-        public IReadOnlyDictionary<string, List<StoryViolation>> PhaseViolations => _phaseViolations;
-        public IReadOnlyDictionary<string, List<string>> PhaseNotes => _phaseNotes;
+        public IReadOnlyDictionary<string, List<StoryViolation>> PhaseViolations => phaseViolations;
+        public IReadOnlyDictionary<string, List<string>> PhaseNotes => phaseNotes;
 
         public bool IsFullyCompliant => StoryViolations.Count == 0;
         public float ProductionReadinessScore => Mathf.Clamp(100f - StoryViolations.Count * 5f, 0f, 100f);
@@ -495,10 +569,10 @@ namespace TinyWalnutGames.StoryTest
                 return;
             }
 
-            if (!_phaseViolations.TryGetValue(phase, out var list))
+            if (!phaseViolations.TryGetValue(phase, out var list))
             {
                 list = new List<StoryViolation>();
-                _phaseViolations[phase] = list;
+                phaseViolations[phase] = list;
             }
 
             foreach (var violation in violations)
@@ -520,10 +594,10 @@ namespace TinyWalnutGames.StoryTest
                 return;
             }
 
-            if (!_phaseNotes.TryGetValue(phase, out var list))
+            if (!phaseNotes.TryGetValue(phase, out var list))
             {
                 list = new List<string>();
-                _phaseNotes[phase] = list;
+                phaseNotes[phase] = list;
             }
 
             list.Add(note);
@@ -542,15 +616,15 @@ namespace TinyWalnutGames.StoryTest
             builder.AppendLine($"Production Readiness Score: {ProductionReadinessScore:F1}%");
             builder.AppendLine();
 
-            foreach (var phase in _phaseViolations.Keys.OrderBy(k => k, StringComparer.OrdinalIgnoreCase))
+            foreach (var phase in phaseViolations.Keys.OrderBy(k => k, StringComparer.OrdinalIgnoreCase))
             {
-                builder.AppendLine($"[{phase}] {_phaseViolations[phase].Count} violation(s)");
-                foreach (var violation in _phaseViolations[phase])
+                builder.AppendLine($"[{phase}] {phaseViolations[phase].Count} violation(s)");
+                foreach (var violation in phaseViolations[phase])
                 {
                     builder.AppendLine($"  - {violation.Type}.{violation.Member}: {violation.Violation}");
                 }
 
-                if (_phaseNotes.TryGetValue(phase, out var notes) && notes.Count > 0)
+                if (phaseNotes.TryGetValue(phase, out var notes) && notes.Count > 0)
                 {
                     foreach (var note in notes)
                     {
@@ -561,8 +635,8 @@ namespace TinyWalnutGames.StoryTest
                 builder.AppendLine();
             }
 
-            var extraNotes = _phaseNotes.Keys
-                .Where(k => !_phaseViolations.ContainsKey(k))
+            var extraNotes = phaseNotes.Keys
+                .Where(k => !phaseViolations.ContainsKey(k))
                 .OrderBy(k => k, StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
@@ -571,7 +645,7 @@ namespace TinyWalnutGames.StoryTest
                 builder.AppendLine("Additional Notes:");
                 foreach (var phase in extraNotes)
                 {
-                    foreach (var note in _phaseNotes[phase])
+                    foreach (var note in phaseNotes[phase])
                     {
                         builder.AppendLine($"[{phase}] {note}");
                     }
@@ -589,14 +663,14 @@ namespace TinyWalnutGames.StoryTest
     [Serializable]
     public class ValidationConfigurationSnapshot
     {
-        public bool StoryIntegrity;
-        public bool ConceptualValidation;
-        public bool CodeCoverage;
-        public bool ArchitecturalCompliance;
-        public bool SyncPointPerformance;
-        public bool StopOnFirstViolation;
-        public bool IncludeUnityAssemblies;
-        public string[] AssemblyFilters = Array.Empty<string>();
+        [FormerlySerializedAs("StoryIntegrity")] public bool storyIntegrity;
+        [FormerlySerializedAs("ConceptualValidation")] public bool conceptualValidation;
+        [FormerlySerializedAs("CodeCoverage")] public bool codeCoverage;
+        [FormerlySerializedAs("ArchitecturalCompliance")] public bool architecturalCompliance;
+        [FormerlySerializedAs("SyncPointPerformance")] public bool syncPointPerformance;
+        [FormerlySerializedAs("StopOnFirstViolation")] public bool stopOnFirstViolation;
+        [FormerlySerializedAs("IncludeUnityAssemblies")] public bool includeUnityAssemblies;
+        [FormerlySerializedAs("AssemblyFilters")] public string[] assemblyFilters = Array.Empty<string>();
     }
 
     /// <summary>
@@ -606,6 +680,6 @@ namespace TinyWalnutGames.StoryTest
     public class ValidationPerformanceSnapshot
     {
         public bool? SyncPointPassed;
-        public string SyncPointReportPath;
+        [FormerlySerializedAs("SyncPointReportPath")] public string syncPointReportPath;
     }
 }

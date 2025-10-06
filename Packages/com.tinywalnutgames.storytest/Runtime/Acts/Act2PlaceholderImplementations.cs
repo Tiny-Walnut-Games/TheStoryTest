@@ -22,27 +22,25 @@ namespace TinyWalnutGames.StoryTest.Acts
         {
             violation = null;
 
-            if (member is MethodInfo method && !method.IsAbstract)
+            if (member is not MethodInfo method || method.IsAbstract) return false;
+            try
             {
-                try
+                var methodBody = method.GetMethodBody();
+                if (methodBody != null && methodBody.GetILAsByteArray().Length <= 10) // Very short methods are suspicious
                 {
-                    var methodBody = method.GetMethodBody();
-                    if (methodBody != null && methodBody.GetILAsByteArray().Length <= 10) // Very short methods are suspicious
-                    {
-                        var ilBytes = methodBody.GetILAsByteArray();
+                    var ilBytes = methodBody.GetILAsByteArray();
 
-                        // Check for throw new NotImplementedException pattern
-                        if (StoryTestUtilities.ContainsThrowNotImplementedException(ilBytes))
-                        {
-                            violation = "Method throws NotImplementedException (🏳placeholder implementation)";
-                            return true;
-                        }
+                    // Check for throw new Not Implemented Exception patterns
+                    if (StoryTestUtilities.ContainsThrowNotImplementedException(ilBytes))
+                    {
+                        violation = "Method throws NotImplementedException (🏳placeholder implementation)";
+                        return true;
                     }
                 }
-                catch
-                {
-                    // If we can't analyze IL, skip this check
-                }
+            }
+            catch
+            {
+                // If we can't analyze IL, skip this check
             }
 
             return false;

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using TinyWalnutGames.StoryTest.Shared;
+using UnityEngine;
 
 namespace TinyWalnutGames.StoryTest
 {
@@ -60,19 +60,33 @@ namespace TinyWalnutGames.StoryTest
 
         /// <summary>
         /// Validates all members across the provided assemblies.
-        /// When no assemblies supplied, auto-discovers project assemblies using StoryTestSettings.
+        /// When no assemblies are supplied, auto-discovers project assemblies using StoryTestSettings.
         /// </summary>
         public static List<StoryViolation> ValidateAssemblies(params Assembly[] assemblies)
         {
             EnsureRulesInitialized();
             var violations = new List<StoryViolation>();
 
-            var targetAssemblies = (assemblies != null && assemblies.Length > 0)
+            var targetAssemblies = assemblies is { Length: > 0 }
                 ? assemblies.Where(a => a != null)
                 : GetDefaultAssemblies();
 
             foreach (var assembly in targetAssemblies.Distinct())
             {
+                // CRITICAL SAFETY CHECK: Never validate test assemblies
+                // They contain async state machines, lambda closures, and test fixtures
+                // that create massive false positives and performance issues
+                var name = assembly.GetName().Name;
+
+                // Only skip assemblies that END with .Tests or .Test (actual test assemblies)
+                // Don't skip assemblies that just contain "Test" in the name (like "TheStoryTest")
+                if (name.EndsWith(".Tests") || name.EndsWith(".Test") ||
+                    name.EndsWith("Tests") && !name.Contains("StoryTest"))
+                {
+                    Debug.Log($"[Story Test] Skipping test assembly: {name}");
+                    continue;
+                }
+
                 violations.AddRange(ValidateAssemblyInternal(assembly));
             }
 
@@ -198,7 +212,7 @@ namespace TinyWalnutGames.StoryTest
                 Type = declaringType?.FullName ?? member.Name,
                 Member = member.Name,
                 Violation = violation,
-                FilePath = declaringType?.Module?.FullyQualifiedName ?? string.Empty,
+                FilePath = declaringType?.Module.FullyQualifiedName ?? string.Empty,
                 LineNumber = 0,
                 ViolationType = StoryTestUtilities.GetViolationType(violation)
             };
@@ -302,7 +316,7 @@ namespace TinyWalnutGames.StoryTest
             }
         }
 
-        private static bool IsProjectAssembly(Assembly assembly, StoryTestSettings settings)
+        public static bool IsProjectAssembly(Assembly assembly, StoryTestSettings settings)
         {
             if (assembly == null)
             {
@@ -311,6 +325,7 @@ namespace TinyWalnutGames.StoryTest
 
             var name = assembly.GetName().Name;
 
+            // Always exclude core/BCL and common third-party libs
             if (name.StartsWith("System", StringComparison.OrdinalIgnoreCase) ||
                 name.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase) ||
                 name.StartsWith("mscorlib", StringComparison.OrdinalIgnoreCase) ||
@@ -321,19 +336,29 @@ namespace TinyWalnutGames.StoryTest
                 return false;
             }
 
+            // Unity assemblies are optional based on settings
             if (name.StartsWith("Unity", StringComparison.OrdinalIgnoreCase) ||
                 name.StartsWith("UnityEngine", StringComparison.OrdinalIgnoreCase) ||
                 name.StartsWith("UnityEditor", StringComparison.OrdinalIgnoreCase))
             {
-                return settings != null && settings.includeUnityAssemblies;
+                if (settings is { includeUnityAssemblies: true })
+                {
+                    // Will still be subject to include-only list below if provided
+                }
+                else
+                {
+                    return false;
+                }
             }
 
-            if (settings != null && settings.assemblyFilters != null && settings.assemblyFilters.Length > 0)
+            // Include-only semantics: when filters provided, only include exact name matches
+            if (settings is { assemblyFilters: { Length: > 0 } })
             {
-                return settings.assemblyFilters.Any(filter =>
-                    name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
+                var includeSet = new HashSet<string>(settings.assemblyFilters.Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()), StringComparer.OrdinalIgnoreCase);
+                return includeSet.Contains(name);
             }
 
+            // No filters specified: include by default (subject to exclusions above)
             return true;
         }
 

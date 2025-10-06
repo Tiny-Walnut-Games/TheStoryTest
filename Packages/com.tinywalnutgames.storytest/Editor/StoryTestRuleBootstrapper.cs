@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using TinyWalnutGames.StoryTest;
 using TinyWalnutGames.StoryTest.Shared;
 
 namespace TinyWalnutGames.StoryTest.Editor
@@ -14,18 +13,24 @@ namespace TinyWalnutGames.StoryTest.Editor
     /// Automatically registers all validation rules from the Acts assembly whenever the Unity Editor domain reloads.
     /// Ensures StoryIntegrityValidator always has the latest rule set without requiring manual initialization.
     /// </summary>
-    [InitializeOnLoad]
+    // REMOVED [InitializeOnLoad] - was causing 2+ minute hangs on domain reload
+    // Rules are now lazy-loaded on first validation instead of eager-loaded on startup
     [StoryIgnore("Editor bootstrapper for story test validation rules")]
     public static class StoryTestRuleBootstrapper
     {
         private const string ActsAssemblyName = "TinyWalnutGames.TheStoryTest.Acts";
         private const string LogPrefix = "[Story Test]";
+        private static bool _hasBootstrapped;
 
-        static StoryTestRuleBootstrapper()
+        // No longer runs automatically - must be called explicitly
+        public static void EnsureBootstrapped()
         {
+            if (_hasBootstrapped) return;
+
             try
             {
                 Bootstrap();
+                _hasBootstrapped = true;
             }
             catch (Exception ex)
             {
@@ -107,7 +112,7 @@ namespace TinyWalnutGames.StoryTest.Editor
                     continue;
                 }
 
-                if (field.GetValue(null) is ValidationRule rule && rule != null)
+                if (field.GetValue(null) is ValidationRule rule)
                 {
                     yield return rule;
                 }

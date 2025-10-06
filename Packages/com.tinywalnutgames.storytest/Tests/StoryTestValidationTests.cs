@@ -1,4 +1,4 @@
-using TinyWalnutGames.StoryTest;
+using System;
 using TinyWalnutGames.StoryTest.Shared;
 using NUnit.Framework;
 using System.Reflection;
@@ -16,12 +16,12 @@ namespace TinyWalnutGames.StoryTest.Tests
         public void StoryIgnoreAttribute_RequiresReason()
         {
             // Test that StoryIgnoreAttribute requires a non-empty reason
-            Assert.Throws<System.ArgumentException>(() => new StoryIgnoreAttribute(""));
-            Assert.Throws<System.ArgumentException>(() => new StoryIgnoreAttribute(null));
-            Assert.Throws<System.ArgumentException>(() => new StoryIgnoreAttribute("   "));
+            Assert.Throws<ArgumentException>(() => _ = new StoryIgnoreAttribute(""));
+            Assert.Throws<ArgumentException>(() => _ = new StoryIgnoreAttribute(null));
+            Assert.Throws<ArgumentException>(() => _ = new StoryIgnoreAttribute("   "));
 
             // Valid reason should not throw
-            Assert.DoesNotThrow(() => new StoryIgnoreAttribute("Valid reason"));
+            Assert.DoesNotThrow(() => _ = new StoryIgnoreAttribute("Valid reason"));
         }
 
         [Test]
@@ -30,7 +30,7 @@ namespace TinyWalnutGames.StoryTest.Tests
             var assembly = Assembly.GetExecutingAssembly();
             var violations = StoryIntegrityValidator.ValidateAssemblies(assembly);
 
-            // Should return a list (may be empty, but not null)
+            // Should return a list (could be empty, but not null)
             Assert.IsNotNull(violations);
 
             // For a production-ready system, there should be no violations
@@ -53,7 +53,7 @@ namespace TinyWalnutGames.StoryTest.Tests
         [Test]
         public void StoryIntegrityValidator_RespectsStoryIgnoreAttribute()
         {
-            // Test that StoryIgnore attribute is respected
+            // Test that the StoryIgnore attribute is respected
             var testType = typeof(TestClassWithStoryIgnore);
             var violations = StoryIntegrityValidator.ValidateType(testType);
 
@@ -87,38 +87,50 @@ namespace TinyWalnutGames.StoryTest.Tests
         {
             // Dynamically discover all enum types in project assemblies
             var settings = StoryTestSettings.Instance;
-            var assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic && IsProjectAssembly(a, settings))
                 .ToArray();
 
             Assert.IsTrue(assemblies.Length > 0, "No project assemblies found");
 
+            var failures = new System.Collections.Generic.List<string>();
+
             foreach (var assembly in assemblies)
             {
                 var enumTypes = assembly.GetTypes()
-                    .Where(t => t.IsEnum && !HasStoryIgnore(t))
+                    .Where(t => t.IsEnum && !HasStoryIgnore(t) && !IsCompilerOrSystemGenerated(t) && !IsTestFixtureType(t))
                     .ToArray();
 
                 foreach (var enumType in enumTypes)
                 {
-                    var enumValues = System.Enum.GetValues(enumType);
-                    
+                    var enumValues = Enum.GetValues(enumType);
+
                     // Act8 (HollowEnums) rule: Must have at least 2 values
-                    Assert.IsTrue(enumValues.Length >= 2, 
-                        $"{enumType.FullName} enum should have at least 2 values (Act8: HollowEnums)");
+                    if (enumValues.Length < 2)
+                    {
+                        failures.Add($"{enumType.FullName} enum should have at least 2 values (Act8: HollowEnums)");
+                        continue;
+                    }
 
                     // Check for 🏳placeholder names
-                    var names = System.Enum.GetNames(enumType);
+                    var names = Enum.GetNames(enumType);
                     var placeholderNames = new[] { "None", "Default", "Undefined", "Placeholder", "🏳TODO", "TEMP" };
                     
                     if (enumValues.Length == 2)
                     {
                         // If only 2 values, ensure both aren't 🏳placeholders
-                        var nonPlaceholders = names.Where(n => !placeholderNames.Contains(n, System.StringComparer.OrdinalIgnoreCase)).Count();
-                        Assert.IsTrue(nonPlaceholders > 0,
-                            $"{enumType.FullName} has only 🏳placeholder values (Act8: HollowEnums)");
+                        var nonPlaceholders = names.Count(n => !placeholderNames.Contains(n, StringComparer.OrdinalIgnoreCase));
+                        if (nonPlaceholders == 0)
+                        {
+                            failures.Add($"{enumType.FullName} has only 🏳placeholder values (Act8: HollowEnums)");
+                        }
                     }
                 }
+            }
+
+            if (failures.Count > 0)
+            {
+                Assert.Fail("HollowEnums found:\n" + string.Join("\n", failures));
             }
         }
 
@@ -127,22 +139,22 @@ namespace TinyWalnutGames.StoryTest.Tests
         {
             // Dynamically discover value types (structs) that might be components
             var settings = StoryTestSettings.Instance;
-            var assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic && IsProjectAssembly(a, settings))
                 .ToArray();
 
             foreach (var assembly in assemblies)
             {
                 var valueTypes = assembly.GetTypes()
-                    .Where(t => t.IsValueType && !t.IsEnum && !t.IsPrimitive && !HasStoryIgnore(t))
+                    .Where(t => t.IsValueType && !t.IsEnum && !t.IsPrimitive && !HasStoryIgnore(t) && !IsCompilerOrSystemGenerated(t))
                     .ToArray();
 
                 foreach (var type in valueTypes)
                 {
                     try
                     {
-                        // Try to create default instance
-                        var instance = System.Activator.CreateInstance(type);
+                        // Try to create a default instance
+                        var instance = Activator.CreateInstance(type);
                         Assert.IsNotNull(instance, $"Could not create default instance of {type.FullName}");
 
                         // Verify all public fields are accessible
@@ -154,7 +166,7 @@ namespace TinyWalnutGames.StoryTest.Tests
                                 $"{type.FullName}.{field.Name} should be accessible");
                         }
                     }
-                    catch (System.Exception ex)
+                    catch (Exception ex)
                     {
                         // If instantiation fails, verify it's intentional (has StoryIgnore or is abstract)
                         if (!type.IsAbstract && !HasStoryIgnore(type))
@@ -172,7 +184,7 @@ namespace TinyWalnutGames.StoryTest.Tests
         {
             // This validates Act4 (🏳UnsealedAbstractMembers) conceptually
             var settings = StoryTestSettings.Instance;
-            var assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic && IsProjectAssembly(a, settings))
                 .ToArray();
 
@@ -185,8 +197,8 @@ namespace TinyWalnutGames.StoryTest.Tests
                 foreach (var type in types)
                 {
                     var abstractMembers = type.GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                        .Where(m => (m is MethodInfo mi && mi.IsAbstract) || 
-                                   (m is System.Reflection.PropertyInfo pi && ((pi.GetMethod?.IsAbstract ?? false) || (pi.SetMethod?.IsAbstract ?? false))))
+                        .Where(m => m is MethodInfo { IsAbstract: true } || 
+                                   (m is PropertyInfo pi && ((pi.GetMethod?.IsAbstract ?? false) || (pi.SetMethod?.IsAbstract ?? false))))
                         .ToArray();
 
                     if (abstractMembers.Length > 0 && !type.IsAbstract)
@@ -212,7 +224,7 @@ namespace TinyWalnutGames.StoryTest.Tests
         private static bool IsProjectAssembly(Assembly assembly, StoryTestSettings settings)
         {
             var name = assembly.GetName().Name;
-            
+
             // Exclude Unity engine assemblies unless explicitly enabled
             if (name.StartsWith("Unity") || name.StartsWith("UnityEngine") || name.StartsWith("UnityEditor"))
             {
@@ -225,6 +237,30 @@ namespace TinyWalnutGames.StoryTest.Tests
                 return false;
             }
 
+            // Exclude Microsoft assemblies (including Microsoft.Cci.Pdb and other compiler/debugging tools)
+            if (name.StartsWith("Microsoft"))
+            {
+                return false;
+            }
+
+            // Exclude third-party VCS/Plastic SCM assemblies that are not part of the project's domain
+            if (name.StartsWith("Codice") || name.StartsWith("Plastic"))
+            {
+                return false;
+            }
+
+            // Exclude compiler and build tooling (Bee, Mono, Cecil, etc.)
+            if (name.StartsWith("Bee.") || name.StartsWith("Mono.") || name.StartsWith("Cecil"))
+            {
+                return false;
+            }
+
+            // Exclude third-party infrastructure libraries (log4net, etc.)
+            if (name.StartsWith("log4net") || name.StartsWith("ExCSS") || name.StartsWith("Newtonsoft"))
+            {
+                return false;
+            }
+
             // Exclude NUnit and test frameworks
             if (name.Contains("nunit") || name.Contains("NUnit") || name.Contains("TestRunner"))
             {
@@ -232,17 +268,64 @@ namespace TinyWalnutGames.StoryTest.Tests
             }
 
             // If assembly filters are defined, check against them
-            if (settings.assemblyFilters != null && settings.assemblyFilters.Length > 0)
+            if (settings.assemblyFilters is { Length: > 0 })
             {
                 return settings.assemblyFilters.Any(filter => name.Contains(filter));
             }
 
-            return true;
+            // Default filter for this repository: only scan TinyWalnutGames assemblies
+            return name.Contains("TinyWalnutGames");
         }
 
-        private static bool HasStoryIgnore(System.Type type)
+        private static bool HasStoryIgnore(Type type)
         {
             return type.GetCustomAttributes(typeof(StoryIgnoreAttribute), true).Length > 0;
+        }
+
+        private static bool IsCompilerOrSystemGenerated(Type type)
+        {
+            // Skip compiler-generated types (like state machines, closures, etc.)
+            if (type.Name.Contains("<") || type.Name.Contains(">") || type.Name.Contains("$"))
+            {
+                return true;
+            }
+
+            // Skip types with CompilerGenerated attribute
+            var compilerGeneratedAttr = type.GetCustomAttributes(false)
+                .Any(a => a.GetType().Name == "CompilerGeneratedAttribute");
+            if (compilerGeneratedAttr)
+            {
+                return true;
+            }
+
+            // Skip generic type definitions (they can't be instantiated)
+            if (type.ContainsGenericParameters)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsTestFixtureType(Type type)
+        {
+            // Skip types that are part of test fixtures (nested in test classes)
+            if (type.DeclaringType != null)
+            {
+                var declaringTypeName = type.DeclaringType.Name;
+                if (declaringTypeName.Contains("Test") || declaringTypeName.Contains("Tests"))
+                {
+                    return true;
+                }
+            }
+
+            // Skip types in the Tests namespace
+            if (type.Namespace != null && type.Namespace.Contains("Tests"))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 
@@ -278,17 +361,17 @@ namespace TinyWalnutGames.StoryTest.Tests
         public void EnvironmentDetection_WorksCorrectly()
         {
             // Verify we can detect the current environment
-            var hasUnity = System.AppDomain.CurrentDomain.GetAssemblies()
+            var hasUnity = AppDomain.CurrentDomain.GetAssemblies()
                 .Any(a => a.GetName().Name.StartsWith("UnityEngine"));
             
-            var hasDOTS = System.AppDomain.CurrentDomain.GetAssemblies()
+            var hasDots = AppDomain.CurrentDomain.GetAssemblies()
                 .Any(a => a.GetName().Name.Contains("Unity.Entities"));
 
-            var hasBurst = System.AppDomain.CurrentDomain.GetAssemblies()
+            var hasBurst = AppDomain.CurrentDomain.GetAssemblies()
                 .Any(a => a.GetName().Name.Contains("Unity.Burst"));
 
             // Log environment for debugging
-            UnityEngine.Debug.Log($"Environment detected - Unity: {hasUnity}, DOTS: {hasDOTS}, Burst: {hasBurst}");
+            UnityEngine.Debug.Log($"Environment detected - Unity: {hasUnity}, DOTS: {hasDots}, Burst: {hasBurst}");
 
             // In Unity tests, we should always detect Unity
             Assert.IsTrue(hasUnity, "Should detect UnityEngine in Unity test environment");
@@ -298,7 +381,7 @@ namespace TinyWalnutGames.StoryTest.Tests
     /// <summary>
     /// Test class marked with StoryIgnore for testing purposes.
     /// </summary>
-    [StoryIgnoreAttribute("Test class for validating StoryIgnore attribute functionality")]
+    [StoryIgnore("Test class for validating StoryIgnore attribute functionality")]
     public class TestClassWithStoryIgnore
     {
         public void SomeMethod()
