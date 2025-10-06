@@ -3,7 +3,8 @@
     "rootNamespace": "TinyWalnutGames.TheStoryTest.Editor",
     "references": [
         "TinyWalnutGames.TheStoryTest",
-        "TinyWalnutGames.TheStoryTest.Shared"
+        "TinyWalnutGames.TheStoryTest.Shared",
+        "TinyWalnutGames.TheStoryTest.Acts"
     ],
     "includePlatforms": [
         "Editor"

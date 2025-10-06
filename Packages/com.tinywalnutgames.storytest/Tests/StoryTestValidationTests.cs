@@ -298,7 +298,7 @@ namespace TinyWalnutGames.StoryTest.Tests
     /// <summary>
     /// Test class marked with StoryIgnore for testing purposes.
     /// </summary>
-    [StoryIgnoreAttribute("Test class for validating StoryIgnore attribute functionality")]
+    [StoryIgnore("Test class for validating StoryIgnore attribute functionality")]
     public class TestClassWithStoryIgnore
     {
         public void SomeMethod()
