@@ -374,7 +374,25 @@ namespace TinyWalnutGames.StoryTest.Editor
             {
                 report += $"Assembly: {assembly.FullName}\n";
                 report += $"Types: {assembly.GetTypes().Length}\n";
-                report += $"Location: {assembly.Location}\n\n";
+
+                // Dynamic assemblies don't have a Location property
+                try
+                {
+                    if (!assembly.IsDynamic)
+                    {
+                        report += $"Location: {assembly.Location}\n";
+                    }
+                    else
+                    {
+                        report += "Location: (dynamic assembly)\n";
+                    }
+                }
+                catch (NotSupportedException)
+                {
+                    report += "Location: (not supported)\n";
+                }
+
+                report += "\n";
             }
 
             // Project structure analysis

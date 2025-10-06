@@ -24,9 +24,10 @@ namespace TinyWalnutGames.StoryTest.Shared
         /// <exception cref="ArgumentException">Thrown when reason is null, empty or whitespace</exception>
         public StoryIgnoreAttribute(string reason)
         {
-            Reason = reason ?? throw new ArgumentNullException(nameof(reason));
-            if (string.IsNullOrWhiteSpace(Reason))
-                throw new ArgumentException("Reason must not be empty", nameof(reason));
+            if (string.IsNullOrWhiteSpace(reason))
+                throw new ArgumentException("Reason must not be null, empty or whitespace", nameof(reason));
+
+            Reason = reason;
         }
     }
 }

@@ -93,19 +93,24 @@ namespace TinyWalnutGames.StoryTest.Tests
 
             Assert.IsTrue(assemblies.Length > 0, "No project assemblies found");
 
+            var failures = new System.Collections.Generic.List<string>();
+
             foreach (var assembly in assemblies)
             {
                 var enumTypes = assembly.GetTypes()
-                    .Where(t => t.IsEnum && !HasStoryIgnore(t))
+                    .Where(t => t.IsEnum && !HasStoryIgnore(t) && !IsCompilerOrSystemGenerated(t))
                     .ToArray();
 
                 foreach (var enumType in enumTypes)
                 {
                     var enumValues = Enum.GetValues(enumType);
-                    
+
                     // Act8 (HollowEnums) rule: Must have at least 2 values
-                    Assert.IsTrue(enumValues.Length >= 2, 
-                        $"{enumType.FullName} enum should have at least 2 values (Act8: HollowEnums)");
+                    if (enumValues.Length < 2)
+                    {
+                        failures.Add($"{enumType.FullName} enum should have at least 2 values (Act8: HollowEnums)");
+                        continue;
+                    }
 
                     // Check for 🏳placeholder names
                     var names = Enum.GetNames(enumType);
@@ -115,10 +120,17 @@ namespace TinyWalnutGames.StoryTest.Tests
                     {
                         // If only 2 values, ensure both aren't 🏳placeholders
                         var nonPlaceholders = names.Count(n => !placeholderNames.Contains(n, StringComparer.OrdinalIgnoreCase));
-                        Assert.IsTrue(nonPlaceholders > 0,
-                            $"{enumType.FullName} has only 🏳placeholder values (Act8: HollowEnums)");
+                        if (nonPlaceholders == 0)
+                        {
+                            failures.Add($"{enumType.FullName} has only 🏳placeholder values (Act8: HollowEnums)");
+                        }
                     }
                 }
+            }
+
+            if (failures.Count > 0)
+            {
+                Assert.Fail("HollowEnums found:\n" + string.Join("\n", failures));
             }
         }
 
@@ -134,7 +146,7 @@ namespace TinyWalnutGames.StoryTest.Tests
             foreach (var assembly in assemblies)
             {
                 var valueTypes = assembly.GetTypes()
-                    .Where(t => t.IsValueType && !t.IsEnum && !t.IsPrimitive && !HasStoryIgnore(t))
+                    .Where(t => t.IsValueType && !t.IsEnum && !t.IsPrimitive && !HasStoryIgnore(t) && !IsCompilerOrSystemGenerated(t))
                     .ToArray();
 
                 foreach (var type in valueTypes)
@@ -212,7 +224,7 @@ namespace TinyWalnutGames.StoryTest.Tests
         private static bool IsProjectAssembly(Assembly assembly, StoryTestSettings settings)
         {
             var name = assembly.GetName().Name;
-            
+
             // Exclude Unity engine assemblies unless explicitly enabled
             if (name.StartsWith("Unity") || name.StartsWith("UnityEngine") || name.StartsWith("UnityEditor"))
             {
@@ -221,6 +233,30 @@ namespace TinyWalnutGames.StoryTest.Tests
 
             // Exclude system assemblies
             if (name.StartsWith("System") || name.StartsWith("mscorlib") || name.StartsWith("netstandard"))
+            {
+                return false;
+            }
+
+            // Exclude Microsoft assemblies (including Microsoft.Cci.Pdb and other compiler/debugging tools)
+            if (name.StartsWith("Microsoft"))
+            {
+                return false;
+            }
+
+            // Exclude third-party VCS/Plastic SCM assemblies that are not part of the project's domain
+            if (name.StartsWith("Codice") || name.StartsWith("Plastic"))
+            {
+                return false;
+            }
+
+            // Exclude compiler and build tooling (Bee, Mono, Cecil, etc.)
+            if (name.StartsWith("Bee.") || name.StartsWith("Mono.") || name.StartsWith("Cecil"))
+            {
+                return false;
+            }
+
+            // Exclude third-party infrastructure libraries (log4net, etc.)
+            if (name.StartsWith("log4net") || name.StartsWith("ExCSS") || name.StartsWith("Newtonsoft"))
             {
                 return false;
             }
@@ -237,12 +273,38 @@ namespace TinyWalnutGames.StoryTest.Tests
                 return settings.assemblyFilters.Any(filter => name.Contains(filter));
             }
 
-            return true;
+            // Default filter for this repository: only scan TinyWalnutGames assemblies
+            return name.Contains("TinyWalnutGames");
         }
 
         private static bool HasStoryIgnore(Type type)
         {
             return type.GetCustomAttributes(typeof(StoryIgnoreAttribute), true).Length > 0;
+        }
+
+        private static bool IsCompilerOrSystemGenerated(Type type)
+        {
+            // Skip compiler-generated types (like state machines, closures, etc.)
+            if (type.Name.Contains("<") || type.Name.Contains(">") || type.Name.Contains("$"))
+            {
+                return true;
+            }
+
+            // Skip types with CompilerGenerated attribute
+            var compilerGeneratedAttr = type.GetCustomAttributes(false)
+                .Any(a => a.GetType().Name == "CompilerGeneratedAttribute");
+            if (compilerGeneratedAttr)
+            {
+                return true;
+            }
+
+            // Skip generic type definitions (they can't be instantiated)
+            if (type.ContainsGenericParameters)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 
