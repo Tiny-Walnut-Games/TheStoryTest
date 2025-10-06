@@ -6,7 +6,7 @@ using System.Reflection;
 namespace TinyWalnutGames.StoryTest.Shared
 {
     /// <summary>
-    /// Provides conceptual validation strategies that adapt to project structure.
+    /// Provides conceptual validation strategies that adapt to the project structure.
     /// This class enables dynamic, environment-agnostic validation beyond the core 9 Acts.
     /// </summary>
     [StoryIgnore("Infrastructure component for Story Test validation framework")]
@@ -22,7 +22,7 @@ namespace TinyWalnutGames.StoryTest.Shared
 
             capabilities.hasUnityEngine = assemblies.Any(a => a.GetName().Name == "UnityEngine");
             capabilities.hasEntities = assemblies.Any(a => a.GetName().Name == "Unity.Entities");
-            capabilities.hasDOTS = capabilities.hasEntities;
+            capabilities.hasDots = capabilities.hasEntities;
             capabilities.hasBurst = assemblies.Any(a => a.GetName().Name == "Unity.Burst");
             
             // Test if we can instantiate components by trying to create a simple struct
@@ -33,7 +33,7 @@ namespace TinyWalnutGames.StoryTest.Shared
 
         /// <summary>
         /// Validate an enum type according to conceptual rules.
-        /// Returns violations if enum is "hollow" (too few values, all 🏳placeholders).
+        /// Returns violations if any enum is "hollow" (too few values, all 🏳placeholders).
         /// </summary>
         public static List<string> ValidateEnum(Type enumType)
         {
@@ -67,7 +67,7 @@ namespace TinyWalnutGames.StoryTest.Shared
         }
 
         /// <summary>
-        /// Validate a value type (struct) for proper default constructor and field accessibility.
+        /// Validate a value type (struct) for the proper default constructor and field accessibility.
         /// Falls back to IL analysis if instantiation is not possible.
         /// </summary>
         public static List<string> ValidateValueType(Type valueType, bool canInstantiate = true)
@@ -93,6 +93,8 @@ namespace TinyWalnutGames.StoryTest.Shared
                         try
                         {
                             var value = field.GetValue(instance);
+                            if (value == null)
+                                throw new Exception("Field value is null");
                             // Success - field is accessible
                         }
                         catch (Exception ex)
@@ -125,7 +127,7 @@ namespace TinyWalnutGames.StoryTest.Shared
         {
             var violations = new List<string>();
 
-            // Check that type has public fields or properties
+            // Check that the type has public fields or properties
             var fields = valueType.GetFields(BindingFlags.Public | BindingFlags.Instance);
             var properties = valueType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
@@ -134,10 +136,11 @@ namespace TinyWalnutGames.StoryTest.Shared
                 violations.Add($"{valueType.FullName}: Value type has no public fields or properties. Likely a 🏳placeholder.");
             }
 
-            // Check for default constructor (value types always have one, but verify it's not explicitly deleted)
+            // Check for a default constructor (value types always have one, but verify it's not explicitly deleted)
             var constructors = valueType.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
-            
-            return violations;
+            if (constructors.Length == 0 || constructors.Any(c => c.IsPrivate))
+                return violations;
+            return null;
         }
 
         /// <summary>
@@ -146,6 +149,8 @@ namespace TinyWalnutGames.StoryTest.Shared
         /// </summary>
         public static List<string> ValidateAbstractMemberSealing(Type classType)
         {
+            if (classType == null)
+                throw new ArgumentNullException(nameof(classType));
             var violations = new List<string>();
 
             if (!classType.IsClass || classType.IsAbstract)
@@ -205,12 +210,7 @@ namespace TinyWalnutGames.StoryTest.Shared
             }
 
             // If assembly filters are defined, check against them
-            if (settings.assemblyFilters != null && settings.assemblyFilters.Length > 0)
-            {
-                return settings.assemblyFilters.Any(filter => name.Contains(filter));
-            }
-
-            return true;
+            return settings.assemblyFilters is not { Length: > 0 } || settings.assemblyFilters.Any(filter => name.Contains(filter));
         }
 
         /// <summary>
@@ -230,14 +230,10 @@ namespace TinyWalnutGames.StoryTest.Shared
 
             foreach (var typeName in componentTypeNames)
             {
-                var type = Type.GetType(typeName);
-                if (type == null)
-                {
-                    // Try to find the type in all loaded assemblies
-                    type = AppDomain.CurrentDomain.GetAssemblies()
-                        .SelectMany(a => a.GetTypes())
-                        .FirstOrDefault(t => t.FullName == typeName || t.Name == typeName);
-                }
+                // Try to find the type in all loaded assemblies
+                var type = Type.GetType(typeName) ?? AppDomain.CurrentDomain.GetAssemblies()
+                    .SelectMany(a => a.GetTypes())
+                    .FirstOrDefault(t => t.FullName == typeName || t.Name == typeName);
 
                 if (type == null)
                 {
@@ -319,21 +315,21 @@ namespace TinyWalnutGames.StoryTest.Shared
 
     /// <summary>
     /// Represents detected environment capabilities.
-    /// Serializable for saving to settings file.
+    /// Serializable for saving to a settings file.
     /// </summary>
     [Serializable]
     [StoryIgnore("Environment detection infrastructure for Story Test framework")]
     public class EnvironmentCapabilities
     {
         public bool hasUnityEngine;
-        public bool hasDOTS;
+        public bool hasDots;
         public bool hasBurst;
         public bool hasEntities;
         public bool canInstantiateComponents;
 
         public override string ToString()
         {
-            return $"Unity: {hasUnityEngine}, DOTS: {hasDOTS}, Burst: {hasBurst}, Entities: {hasEntities}, Instantiate: {canInstantiateComponents}";
+            return $"Unity: {hasUnityEngine}, DOTS: {hasDots}, Burst: {hasBurst}, Entities: {hasEntities}, Instantiate: {canInstantiateComponents}";
         }
     }
 }

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using TinyWalnutGames.StoryTest;
 using TinyWalnutGames.StoryTest.Shared;
 
 namespace TinyWalnutGames.StoryTest.Editor
@@ -107,7 +106,7 @@ namespace TinyWalnutGames.StoryTest.Editor
                     continue;
                 }
 
-                if (field.GetValue(null) is ValidationRule rule && rule != null)
+                if (field.GetValue(null) is ValidationRule rule)
                 {
                     yield return rule;
                 }

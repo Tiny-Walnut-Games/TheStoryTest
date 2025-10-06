@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using TinyWalnutGames.StoryTest.Shared;
@@ -60,14 +59,14 @@ namespace TinyWalnutGames.StoryTest
 
         /// <summary>
         /// Validates all members across the provided assemblies.
-        /// When no assemblies supplied, auto-discovers project assemblies using StoryTestSettings.
+        /// When no assemblies are supplied, auto-discovers project assemblies using StoryTestSettings.
         /// </summary>
         public static List<StoryViolation> ValidateAssemblies(params Assembly[] assemblies)
         {
             EnsureRulesInitialized();
             var violations = new List<StoryViolation>();
 
-            var targetAssemblies = (assemblies != null && assemblies.Length > 0)
+            var targetAssemblies = assemblies is { Length: > 0 }
                 ? assemblies.Where(a => a != null)
                 : GetDefaultAssemblies();
 
@@ -198,7 +197,7 @@ namespace TinyWalnutGames.StoryTest
                 Type = declaringType?.FullName ?? member.Name,
                 Member = member.Name,
                 Violation = violation,
-                FilePath = declaringType?.Module?.FullyQualifiedName ?? string.Empty,
+                FilePath = declaringType?.Module.FullyQualifiedName ?? string.Empty,
                 LineNumber = 0,
                 ViolationType = StoryTestUtilities.GetViolationType(violation)
             };
@@ -325,10 +324,10 @@ namespace TinyWalnutGames.StoryTest
                 name.StartsWith("UnityEngine", StringComparison.OrdinalIgnoreCase) ||
                 name.StartsWith("UnityEditor", StringComparison.OrdinalIgnoreCase))
             {
-                return settings != null && settings.includeUnityAssemblies;
+                return settings is { includeUnityAssemblies: true };
             }
 
-            if (settings != null && settings.assemblyFilters != null && settings.assemblyFilters.Length > 0)
+            if (settings is { assemblyFilters: { Length: > 0 } })
             {
                 return settings.assemblyFilters.Any(filter =>
                     name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);

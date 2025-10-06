@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TinyWalnutGames.StoryTest.Shared
 {
     /// <summary>
-    /// Configuration settings for Story Test framework.
+    /// Configuration settings for the Story Test framework.
     /// Loaded from Resources/StoryTestSettings.json or uses defaults for project-agnostic validation.
     /// </summary>
     [Serializable]
@@ -14,17 +14,17 @@ namespace TinyWalnutGames.StoryTest.Shared
     {
         public string projectName = "YourProjectName";
         public string menuPath = "Tiny Walnut Games/The Story Test/";
-        public string[] assemblyFilters = new string[0];
-        public bool includeUnityAssemblies = false;
-        public bool validateOnStart = false;
-        public bool strictMode = false;
+        public string[] assemblyFilters = Array.Empty<string>();
+        public bool includeUnityAssemblies;
+        public bool validateOnStart;
+        public bool strictMode;
         public string exportPath = ".debug/storytest_report.txt";
 
         // Conceptual validation configuration
         public ConceptualValidationConfig conceptualValidation = new ConceptualValidationConfig();
 
         private static StoryTestSettings _instance;
-        private static readonly object _lock = new object();
+        private static readonly object Lock = new object();
 
         /// <summary>
         /// Gets the singleton instance of Story Test settings.
@@ -34,15 +34,10 @@ namespace TinyWalnutGames.StoryTest.Shared
         {
             get
             {
-                if (_instance == null)
+                if (_instance != null) return _instance;
+                lock (Lock)
                 {
-                    lock (_lock)
-                    {
-                        if (_instance == null)
-                        {
-                            _instance = LoadSettings();
-                        }
-                    }
+                    _instance ??= LoadSettings();
                 }
                 return _instance;
             }
@@ -50,7 +45,7 @@ namespace TinyWalnutGames.StoryTest.Shared
 
         /// <summary>
         /// Loads settings from Resources/StoryTestSettings.json.
-        /// Falls back to default settings if file doesn't exist.
+        /// Falls back to default settings if the file doesn't exist.
         /// </summary>
         private static StoryTestSettings LoadSettings()
         {
@@ -58,7 +53,7 @@ namespace TinyWalnutGames.StoryTest.Shared
             {
 #if UNITY_EDITOR || UNITY_ENGINE
                 var settingsAsset = Resources.Load<TextAsset>("StoryTestSettings");
-                if (settingsAsset != null)
+                if (settingsAsset is not null)
                 {
                     var settings = JsonUtility.FromJson<StoryTestSettings>(settingsAsset.text);
                     if (settings != null)
@@ -110,8 +105,8 @@ namespace TinyWalnutGames.StoryTest.Shared
 #if UNITY_EDITOR
             try
             {
-                string json = JsonUtility.ToJson(this, true);
-                string settingsPath = Path.Combine(
+                var json = JsonUtility.ToJson(this, true);
+                var settingsPath = Path.Combine(
                     Application.dataPath,
                     "Tiny Walnut Games",
                     "TheStoryTest",
@@ -119,7 +114,11 @@ namespace TinyWalnutGames.StoryTest.Shared
                     "StoryTestSettings.json"
                 );
 
-                Directory.CreateDirectory(Path.GetDirectoryName(settingsPath));
+                var directory = Path.GetDirectoryName(settingsPath);
+                if (directory != null)
+                {
+                    Directory.CreateDirectory(directory);
+                }
                 File.WriteAllText(settingsPath, json);
 
                 UnityEditor.AssetDatabase.Refresh();
@@ -137,7 +136,7 @@ namespace TinyWalnutGames.StoryTest.Shared
         /// </summary>
         public static void ReloadSettings()
         {
-            lock (_lock)
+            lock (Lock)
             {
                 _instance = null;
             }
@@ -155,8 +154,8 @@ namespace TinyWalnutGames.StoryTest.Shared
         public bool autoDetectEnvironment = true;
         public ValidationTiers validationTiers = new ValidationTiers();
         public EnvironmentCapabilities environmentCapabilities = new EnvironmentCapabilities();
-        public string[] customComponentTypes = new string[0];
-        public string[] enumValidationPatterns = new string[0];
+        public string[] customComponentTypes = Array.Empty<string>();
+        public string[] enumValidationPatterns = Array.Empty<string>();
         public string fallbackMode = "ilAnalysis"; // or "skip"
     }
 
@@ -169,6 +168,6 @@ namespace TinyWalnutGames.StoryTest.Shared
     {
         public bool universal = true;
         public bool unityAware = true;
-        public bool projectSpecific = false;
+        public bool projectSpecific;
     }
 }

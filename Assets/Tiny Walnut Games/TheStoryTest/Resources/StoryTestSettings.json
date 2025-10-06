@@ -3,8 +3,8 @@
     "menuPath": "Tiny Walnut Games/The Story Test/",
     "assemblyFilters": [],
     "includeUnityAssemblies": false,
-    "validateOnStart": false,
-    "strictMode": false,
+    "validateOnStart": true,
+    "strictMode": true,
     "exportPath": ".debug/storytest_report.txt",
     "conceptualValidation": {
         "enableConceptTests": true,
@@ -12,7 +12,7 @@
         "validationTiers": {
             "universal": true,
             "unityAware": true,
-            "projectSpecific": false
+            "projectSpecific": true
         },
         "environmentCapabilities": {
             "hasUnityEngine": false,

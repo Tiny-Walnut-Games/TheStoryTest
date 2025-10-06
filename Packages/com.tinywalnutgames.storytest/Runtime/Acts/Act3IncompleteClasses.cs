@@ -25,16 +25,14 @@ namespace TinyWalnutGames.StoryTest.Acts
         {
             violation = null;
 
-            if (member is Type type && !type.IsInterface && !type.IsAbstract)
-            {
-                var abstractMethods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                                         .Where(m => m.IsAbstract).ToArray();
+            if (member is not Type type || type.IsInterface || type.IsAbstract) return false;
+            var abstractMethods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where(m => m.IsAbstract).ToArray();
 
-                if (abstractMethods.Length > 0)
-                {
-                    violation = $"Class has 🏳unimplemented abstract methods: {string.Join(", ", abstractMethods.Select(m => m.Name))}";
-                    return true;
-                }
+            if (abstractMethods.Length > 0)
+            {
+                violation = $"Class has 🏳unimplemented abstract methods: {string.Join(", ", abstractMethods.Select(m => m.Name))}";
+                return true;
             }
 
             return false;

@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 
 namespace TinyWalnutGames.StoryTest.Shared
@@ -9,7 +8,7 @@ namespace TinyWalnutGames.StoryTest.Shared
     public delegate bool ValidationRule(MemberInfo member, out string violation);
 
     /// <summary>
-    /// Shared utilities for story test validation including IL analysis helpers.
+    /// Shared utilities for story test validation - including IL analysis helpers.
     /// </summary>
     [StoryIgnore("Infrastructure utilities for Story Test validation framework")]
     public static class StoryTestUtilities
@@ -47,7 +46,7 @@ namespace TinyWalnutGames.StoryTest.Shared
         public static StoryViolationType GetViolationType(string violation)
         {
             // Note: This method categorizes ACTUAL violation messages (not comments)
-            // Violation messages contain the real words without 🏳 prefix
+            // Violation messages contain the real words without the 🏳 prefix
             if (violation.Contains("TODO") || violation.Contains("NotImplementedException"))
                 return StoryViolationType.IncompleteImplementation;
             if (violation.Contains("Phantom") || violation.Contains("Cold") || violation.Contains("Hollow"))

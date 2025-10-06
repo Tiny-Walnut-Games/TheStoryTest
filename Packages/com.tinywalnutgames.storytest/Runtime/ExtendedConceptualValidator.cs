@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using TinyWalnutGames.StoryTest.Shared;
@@ -48,22 +47,23 @@ namespace TinyWalnutGames.StoryTest
             var violations = new List<StoryViolation>();
             var tiers = config.validationTiers ?? new ValidationTiers();
 
+            IEnumerable<Assembly> enumerable = assemblies as Assembly[] ?? assemblies.ToArray();
             if (tiers.universal)
             {
                 if (log) LogInfo("[Story Test] Running conceptual enum validation...");
-                violations.AddRange(ValidateProjectEnums(settings, assemblies));
+                violations.AddRange(ValidateProjectEnums(settings, enumerable));
 
                 if (log) LogInfo("[Story Test] Running conceptual value type validation...");
-                violations.AddRange(ValidateProjectValueTypes(settings, assemblies, config.environmentCapabilities));
+                violations.AddRange(ValidateProjectValueTypes(settings, enumerable, config.environmentCapabilities));
             }
 
             if (tiers.unityAware)
             {
                 if (log) LogInfo("[Story Test] Running abstract member sealing validation...");
-                violations.AddRange(ValidateAbstractMemberSealing(settings, assemblies));
+                violations.AddRange(ValidateAbstractMemberSealing(settings, enumerable));
             }
 
-            if (tiers.projectSpecific && config.customComponentTypes != null && config.customComponentTypes.Length > 0)
+            if (tiers.projectSpecific && config.customComponentTypes is { Length: > 0 })
             {
                 if (log) LogInfo("[Story Test] Running project-specific conceptual validation...");
                 violations.AddRange(ConceptualValidator.ValidateCustomComponents(config.customComponentTypes));
@@ -198,7 +198,7 @@ namespace TinyWalnutGames.StoryTest
                 Type = type.FullName,
                 Member = type.Name,
                 Violation = message,
-                FilePath = type.Assembly?.Location ?? string.Empty,
+                FilePath = type.Assembly.Location,
                 LineNumber = 0,
                 ViolationType = StoryTestUtilities.GetViolationType(message)
             };

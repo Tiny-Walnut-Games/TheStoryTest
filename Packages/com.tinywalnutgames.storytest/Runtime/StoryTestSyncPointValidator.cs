@@ -22,7 +22,7 @@ namespace TinyWalnutGames.StoryTest
         /// <summary>
         /// Container for performance metrics captured during sync-point validation.
         /// </summary>
-        public class SyncPointTestResults
+        private class SyncPointTestResults
         {
             public int TotalActors { get; set; }
             public int TotalOperations { get; set; }
@@ -81,7 +81,7 @@ namespace TinyWalnutGames.StoryTest
         /// <summary>
         /// Runs a sync-point stress test with configurable iterations and concurrency.
         /// </summary>
-        public static async Task<SyncPointTestResults> RunSyncPointStressTest(int iterationsPerActor = 25, int concurrentBatches = 2)
+        private static async Task<SyncPointTestResults> RunSyncPointStressTest(int iterationsPerActor = 25, int concurrentBatches = 2)
         {
             var assemblies = GetProjectAssemblies();
             if (assemblies.Length == 0)
@@ -117,7 +117,7 @@ namespace TinyWalnutGames.StoryTest
                     batchTasks.Add(PerformRealStoryValidation(actorId, iterationsPerActor, syncPoint.Task, assemblies, rules));
                 }
 
-                // Give actors time to reach sync point before release
+                // Give actors time to reach the sync point before release
                 await Task.Delay(5);
                 syncPoint.SetResult(true);
                 allTasks.AddRange(batchTasks);
@@ -171,7 +171,7 @@ namespace TinyWalnutGames.StoryTest
         /// </summary>
         public static async Task<bool> QuickSyncPointTest()
         {
-            var results = await RunSyncPointStressTest(16, 2);
+            var results = await RunSyncPointStressTest(16);
             return !results.HasBottleneck && !results.IsComedySkitDetected;
         }
 
@@ -180,7 +180,7 @@ namespace TinyWalnutGames.StoryTest
         /// </summary>
         public static async Task<bool> QuickSyncPointTestAndExport(string exportPath)
         {
-            var results = await RunSyncPointStressTest(16, 2);
+            var results = await RunSyncPointStressTest(16);
             try
             {
                 if (!string.IsNullOrEmpty(exportPath))
@@ -191,7 +191,7 @@ namespace TinyWalnutGames.StoryTest
                         Directory.CreateDirectory(directory);
                     }
 
-                    File.WriteAllText(exportPath, results.GenerateReport());
+                    await File.WriteAllTextAsync(exportPath, results.GenerateReport());
                     UnityDebugLog($"[Story Test] Sync-point report exported to: {exportPath}");
                 }
             }

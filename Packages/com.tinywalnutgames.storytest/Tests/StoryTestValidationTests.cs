@@ -1,4 +1,4 @@
-using TinyWalnutGames.StoryTest;
+using System;
 using TinyWalnutGames.StoryTest.Shared;
 using NUnit.Framework;
 using System.Reflection;
@@ -16,12 +16,12 @@ namespace TinyWalnutGames.StoryTest.Tests
         public void StoryIgnoreAttribute_RequiresReason()
         {
             // Test that StoryIgnoreAttribute requires a non-empty reason
-            Assert.Throws<System.ArgumentException>(() => new StoryIgnoreAttribute(""));
-            Assert.Throws<System.ArgumentException>(() => new StoryIgnoreAttribute(null));
-            Assert.Throws<System.ArgumentException>(() => new StoryIgnoreAttribute("   "));
+            Assert.Throws<ArgumentException>(() => _ = new StoryIgnoreAttribute(""));
+            Assert.Throws<ArgumentException>(() => _ = new StoryIgnoreAttribute(null));
+            Assert.Throws<ArgumentException>(() => _ = new StoryIgnoreAttribute("   "));
 
             // Valid reason should not throw
-            Assert.DoesNotThrow(() => new StoryIgnoreAttribute("Valid reason"));
+            Assert.DoesNotThrow(() => _ = new StoryIgnoreAttribute("Valid reason"));
         }
 
         [Test]
@@ -30,7 +30,7 @@ namespace TinyWalnutGames.StoryTest.Tests
             var assembly = Assembly.GetExecutingAssembly();
             var violations = StoryIntegrityValidator.ValidateAssemblies(assembly);
 
-            // Should return a list (may be empty, but not null)
+            // Should return a list (could be empty, but not null)
             Assert.IsNotNull(violations);
 
             // For a production-ready system, there should be no violations
@@ -53,7 +53,7 @@ namespace TinyWalnutGames.StoryTest.Tests
         [Test]
         public void StoryIntegrityValidator_RespectsStoryIgnoreAttribute()
         {
-            // Test that StoryIgnore attribute is respected
+            // Test that the StoryIgnore attribute is respected
             var testType = typeof(TestClassWithStoryIgnore);
             var violations = StoryIntegrityValidator.ValidateType(testType);
 
@@ -87,7 +87,7 @@ namespace TinyWalnutGames.StoryTest.Tests
         {
             // Dynamically discover all enum types in project assemblies
             var settings = StoryTestSettings.Instance;
-            var assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic && IsProjectAssembly(a, settings))
                 .ToArray();
 
@@ -101,20 +101,20 @@ namespace TinyWalnutGames.StoryTest.Tests
 
                 foreach (var enumType in enumTypes)
                 {
-                    var enumValues = System.Enum.GetValues(enumType);
+                    var enumValues = Enum.GetValues(enumType);
                     
                     // Act8 (HollowEnums) rule: Must have at least 2 values
                     Assert.IsTrue(enumValues.Length >= 2, 
                         $"{enumType.FullName} enum should have at least 2 values (Act8: HollowEnums)");
 
                     // Check for 🏳placeholder names
-                    var names = System.Enum.GetNames(enumType);
+                    var names = Enum.GetNames(enumType);
                     var placeholderNames = new[] { "None", "Default", "Undefined", "Placeholder", "🏳TODO", "TEMP" };
                     
                     if (enumValues.Length == 2)
                     {
                         // If only 2 values, ensure both aren't 🏳placeholders
-                        var nonPlaceholders = names.Where(n => !placeholderNames.Contains(n, System.StringComparer.OrdinalIgnoreCase)).Count();
+                        var nonPlaceholders = names.Count(n => !placeholderNames.Contains(n, StringComparer.OrdinalIgnoreCase));
                         Assert.IsTrue(nonPlaceholders > 0,
                             $"{enumType.FullName} has only 🏳placeholder values (Act8: HollowEnums)");
                     }
@@ -127,7 +127,7 @@ namespace TinyWalnutGames.StoryTest.Tests
         {
             // Dynamically discover value types (structs) that might be components
             var settings = StoryTestSettings.Instance;
-            var assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic && IsProjectAssembly(a, settings))
                 .ToArray();
 
@@ -141,8 +141,8 @@ namespace TinyWalnutGames.StoryTest.Tests
                 {
                     try
                     {
-                        // Try to create default instance
-                        var instance = System.Activator.CreateInstance(type);
+                        // Try to create a default instance
+                        var instance = Activator.CreateInstance(type);
                         Assert.IsNotNull(instance, $"Could not create default instance of {type.FullName}");
 
                         // Verify all public fields are accessible
@@ -154,7 +154,7 @@ namespace TinyWalnutGames.StoryTest.Tests
                                 $"{type.FullName}.{field.Name} should be accessible");
                         }
                     }
-                    catch (System.Exception ex)
+                    catch (Exception ex)
                     {
                         // If instantiation fails, verify it's intentional (has StoryIgnore or is abstract)
                         if (!type.IsAbstract && !HasStoryIgnore(type))
@@ -172,7 +172,7 @@ namespace TinyWalnutGames.StoryTest.Tests
         {
             // This validates Act4 (🏳UnsealedAbstractMembers) conceptually
             var settings = StoryTestSettings.Instance;
-            var assemblies = System.AppDomain.CurrentDomain.GetAssemblies()
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic && IsProjectAssembly(a, settings))
                 .ToArray();
 
@@ -185,8 +185,8 @@ namespace TinyWalnutGames.StoryTest.Tests
                 foreach (var type in types)
                 {
                     var abstractMembers = type.GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                        .Where(m => (m is MethodInfo mi && mi.IsAbstract) || 
-                                   (m is System.Reflection.PropertyInfo pi && ((pi.GetMethod?.IsAbstract ?? false) || (pi.SetMethod?.IsAbstract ?? false))))
+                        .Where(m => m is MethodInfo { IsAbstract: true } || 
+                                   (m is PropertyInfo pi && ((pi.GetMethod?.IsAbstract ?? false) || (pi.SetMethod?.IsAbstract ?? false))))
                         .ToArray();
 
                     if (abstractMembers.Length > 0 && !type.IsAbstract)
@@ -232,7 +232,7 @@ namespace TinyWalnutGames.StoryTest.Tests
             }
 
             // If assembly filters are defined, check against them
-            if (settings.assemblyFilters != null && settings.assemblyFilters.Length > 0)
+            if (settings.assemblyFilters is { Length: > 0 })
             {
                 return settings.assemblyFilters.Any(filter => name.Contains(filter));
             }
@@ -240,7 +240,7 @@ namespace TinyWalnutGames.StoryTest.Tests
             return true;
         }
 
-        private static bool HasStoryIgnore(System.Type type)
+        private static bool HasStoryIgnore(Type type)
         {
             return type.GetCustomAttributes(typeof(StoryIgnoreAttribute), true).Length > 0;
         }
@@ -278,17 +278,17 @@ namespace TinyWalnutGames.StoryTest.Tests
         public void EnvironmentDetection_WorksCorrectly()
         {
             // Verify we can detect the current environment
-            var hasUnity = System.AppDomain.CurrentDomain.GetAssemblies()
+            var hasUnity = AppDomain.CurrentDomain.GetAssemblies()
                 .Any(a => a.GetName().Name.StartsWith("UnityEngine"));
             
-            var hasDOTS = System.AppDomain.CurrentDomain.GetAssemblies()
+            var hasDots = AppDomain.CurrentDomain.GetAssemblies()
                 .Any(a => a.GetName().Name.Contains("Unity.Entities"));
 
-            var hasBurst = System.AppDomain.CurrentDomain.GetAssemblies()
+            var hasBurst = AppDomain.CurrentDomain.GetAssemblies()
                 .Any(a => a.GetName().Name.Contains("Unity.Burst"));
 
             // Log environment for debugging
-            UnityEngine.Debug.Log($"Environment detected - Unity: {hasUnity}, DOTS: {hasDOTS}, Burst: {hasBurst}");
+            UnityEngine.Debug.Log($"Environment detected - Unity: {hasUnity}, DOTS: {hasDots}, Burst: {hasBurst}");
 
             // In Unity tests, we should always detect Unity
             Assert.IsTrue(hasUnity, "Should detect UnityEngine in Unity test environment");

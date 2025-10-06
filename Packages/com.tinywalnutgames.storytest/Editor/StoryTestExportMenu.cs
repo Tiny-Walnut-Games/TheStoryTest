@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-using TinyWalnutGames.StoryTest;
 using TinyWalnutGames.StoryTest.Shared;
 
 namespace TinyWalnutGames.StoryTest.Editor
@@ -12,32 +11,31 @@ namespace TinyWalnutGames.StoryTest.Editor
     {
         private const string MenuPath = "Tiny Walnut Games/The Story Test/Run Story Test and Export Report";
 
-        private static MenuValidationRun currentRun;
+        private static MenuValidationRun _currentRun;
 
         [MenuItem(MenuPath, false, 0)]
         public static void RunAndExportStoryTest()
         {
-            if (currentRun != null && currentRun.IsActive)
+            if (_currentRun is { IsActive: true })
             {
                 EditorUtility.DisplayDialog("Story Test Validation", "Validation is already running.", "OK");
                 return;
             }
 
-            currentRun = new MenuValidationRun();
-            currentRun.Begin();
+            _currentRun = new MenuValidationRun();
+            _currentRun.Begin();
         }
 
         [MenuItem(MenuPath, true)]
         public static bool ValidateRunAndExportStoryTest()
         {
-            return currentRun == null || !currentRun.IsActive;
+            return _currentRun is not { IsActive: true };
         }
 
         private sealed class MenuValidationRun
         {
             private const string ProgressTitle = "Story Test Validation";
 
-            private readonly StoryTestSettings settings;
             private readonly string exportPathSetting;
             private readonly string exportPathAbsolute;
 
@@ -65,9 +63,9 @@ namespace TinyWalnutGames.StoryTest.Editor
 
             public MenuValidationRun()
             {
-                settings = SafeGetSettings();
-                exportPathSetting = !string.IsNullOrWhiteSpace(settings?.exportPath)
-                    ? settings.exportPath
+                var settings1 = SafeGetSettings();
+                exportPathSetting = !string.IsNullOrWhiteSpace(settings1?.exportPath)
+                    ? settings1.exportPath
                     : ".debug/storytest_report.txt";
                 exportPathAbsolute = ResolveAbsolutePath(exportPathSetting);
             }
@@ -123,8 +121,10 @@ namespace TinyWalnutGames.StoryTest.Editor
 
                     if (runner == null)
                     {
-                        runnerGameObject = new GameObject("Story Test Runner (Temp)");
-                        runnerGameObject.hideFlags = HideFlags.DontSave;
+                        runnerGameObject = new GameObject("Story Test Runner (Temp)")
+                        {
+                            hideFlags = HideFlags.DontSave
+                        };
                         runner = runnerGameObject.AddComponent<ProductionExcellenceStoryTest>();
                         ConfigureTempRunner(runner);
                         createdRunner = true;
@@ -162,14 +162,14 @@ namespace TinyWalnutGames.StoryTest.Editor
                 Debug.Log("[Story Test] Play Mode validation completed. Preparing report feedback…");
 
                 RestoreRunnerState();
-                if (createdRunner && runnerGameObject != null)
+                if (createdRunner && runnerGameObject is not null)
                 {
                     UnityEngine.Object.Destroy(runnerGameObject);
                 }
 
                 EditorUtility.ClearProgressBar();
 
-                if (runnerSubscribed && runner != null)
+                if (runnerSubscribed && runner is not null)
                 {
                     runner.OnValidationComplete -= OnValidationComplete;
                     runnerSubscribed = false;
@@ -210,16 +210,22 @@ namespace TinyWalnutGames.StoryTest.Editor
 
                 if (waitingForPlayMode)
                 {
-                    if (change == PlayModeStateChange.EnteredPlayMode)
+                    switch (change)
                     {
-                        waitingForPlayMode = false;
-                        EditorUtility.DisplayProgressBar(ProgressTitle, "Starting validation…", 0.2f);
-                        EditorApplication.delayCall += StartValidation;
-                    }
-                    else if (change == PlayModeStateChange.ExitingPlayMode)
-                    {
-                        waitingForPlayMode = false;
-                        Fail("Play Mode exited before validation could start.");
+                        case PlayModeStateChange.EnteredPlayMode:
+                            waitingForPlayMode = false;
+                            EditorUtility.DisplayProgressBar(ProgressTitle, "Starting validation…", 0.2f);
+                            EditorApplication.delayCall += StartValidation;
+                            break;
+                        case PlayModeStateChange.ExitingPlayMode:
+                            waitingForPlayMode = false;
+                            Fail("Play Mode exited before validation could start.");
+                            break;
+                        case PlayModeStateChange.EnteredEditMode:
+                        case PlayModeStateChange.ExitingEditMode:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(change), change, null);
                     }
 
                     return;
@@ -227,11 +233,9 @@ namespace TinyWalnutGames.StoryTest.Editor
 
                 if (awaitingExit)
                 {
-                    if (change == PlayModeStateChange.EnteredEditMode)
-                    {
-                        awaitingExit = false;
-                        ShowSummaryAndFinish();
-                    }
+                    if (change != PlayModeStateChange.EnteredEditMode) return;
+                    awaitingExit = false;
+                    ShowSummaryAndFinish();
 
                     return;
                 }
@@ -248,8 +252,8 @@ namespace TinyWalnutGames.StoryTest.Editor
 
                 EditorUtility.ClearProgressBar();
 
-                bool reportExists = File.Exists(exportPathAbsolute);
-                string title = "Story Test Validation Complete";
+                var reportExists = File.Exists(exportPathAbsolute);
+                var title = "Story Test Validation Complete";
                 string message;
 
                 if (pendingReport != null)
@@ -273,7 +277,7 @@ namespace TinyWalnutGames.StoryTest.Editor
 
                 if (reportExists)
                 {
-                    int option = EditorUtility.DisplayDialogComplex(
+                    var option = EditorUtility.DisplayDialogComplex(
                         title,
                         message,
                         "Reveal Report",
@@ -336,7 +340,7 @@ namespace TinyWalnutGames.StoryTest.Editor
                 runner = null;
                 runnerGameObject = null;
                 IsActive = false;
-                currentRun = null;
+                _currentRun = null;
             }
 
             private void SubscribePlayModeEvents()
@@ -363,47 +367,47 @@ namespace TinyWalnutGames.StoryTest.Editor
 
             private void CaptureRunnerState(ProductionExcellenceStoryTest instance)
             {
-                previousExportReport = instance.ExportReport;
-                previousExportPath = instance.ExportPath;
-                previousStopOnFirstViolation = instance.StopOnFirstViolation;
-                previousValidateAutomaticallyOnStart = instance.ValidateAutomaticallyOnStart;
+                previousExportReport = instance.exportReport;
+                previousExportPath = instance.exportPath;
+                previousStopOnFirstViolation = instance.stopOnFirstViolation;
+                previousValidateAutomaticallyOnStart = instance.validateAutomaticallyOnStart;
             }
 
             private void ConfigureRunnerForMenu(ProductionExcellenceStoryTest instance)
             {
-                instance.ExportReport = true;
-                instance.ExportPath = exportPathSetting;
-                instance.StopOnFirstViolation = false;
-                instance.ValidateAutomaticallyOnStart = false;
+                instance.exportReport = true;
+                instance.exportPath = exportPathSetting;
+                instance.stopOnFirstViolation = false;
+                instance.validateAutomaticallyOnStart = false;
 
                 EnsureReportDirectory(exportPathAbsolute);
             }
 
-            private void ConfigureTempRunner(ProductionExcellenceStoryTest instance)
+            private static void ConfigureTempRunner(ProductionExcellenceStoryTest instance)
             {
-                instance.EnableStoryIntegrity = true;
-                instance.EnableConceptualValidation = true;
-                instance.EnableArchitecturalCompliance = true;
-                instance.EnableCodeCoverage = false;
-                instance.EnableSyncPointPerformance = true;
-                instance.OverrideUnityAssemblies = false;
-                instance.ValidateAutomaticallyOnStart = false;
-                instance.StopOnFirstViolation = false;
+                instance.enableStoryIntegrity = true;
+                instance.enableConceptualValidation = true;
+                instance.enableArchitecturalCompliance = true;
+                instance.enableCodeCoverage = false;
+                instance.enableSyncPointPerformance = true;
+                instance.overrideUnityAssemblies = false;
+                instance.validateAutomaticallyOnStart = false;
+                instance.stopOnFirstViolation = false;
             }
 
             private void RestoreRunnerState()
             {
-                if (runner == null)
+                if (runner is null)
                 {
                     return;
                 }
 
                 try
                 {
-                    runner.ExportReport = previousExportReport;
-                    runner.ExportPath = previousExportPath;
-                    runner.StopOnFirstViolation = previousStopOnFirstViolation;
-                    runner.ValidateAutomaticallyOnStart = previousValidateAutomaticallyOnStart;
+                    runner.exportReport = previousExportReport;
+                    runner.exportPath = previousExportPath;
+                    runner.stopOnFirstViolation = previousStopOnFirstViolation;
+                    runner.validateAutomaticallyOnStart = previousValidateAutomaticallyOnStart;
                 }
                 catch
                 {
@@ -414,7 +418,7 @@ namespace TinyWalnutGames.StoryTest.Editor
             private static ProductionExcellenceStoryTest LocateRunner()
             {
 #if UNITY_2023_1_OR_NEWER
-                return UnityEngine.Object.FindFirstObjectByType<ProductionExcellenceStoryTest>(UnityEngine.FindObjectsInactive.Exclude);
+                return UnityEngine.Object.FindFirstObjectByType<ProductionExcellenceStoryTest>(FindObjectsInactive.Exclude);
 #elif UNITY_2022_2_OR_NEWER
                 return UnityEngine.Object.FindFirstObjectByType<ProductionExcellenceStoryTest>();
 #else
@@ -462,9 +466,22 @@ namespace TinyWalnutGames.StoryTest.Editor
                     return Path.GetFullPath(targetPath);
                 }
 
-                string projectRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
-                string normalized = targetPath.Replace('\\', '/');
-                return Path.GetFullPath(Path.Combine(projectRoot, normalized));
+                var projectRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+                var normalized = targetPath.Replace('\\', '/');
+                var fullPath = Path.GetFullPath(Path.Combine(projectRoot, normalized));
+
+                // Strip ISSUE-prefix from filename if present (e.g., ISSUE-2 -> 2)
+                var directory = Path.GetDirectoryName(fullPath) ?? string.Empty;
+                var filename = Path.GetFileName(fullPath);
+                var extension = Path.GetExtension(filename);
+                var nameWithoutExt = Path.GetFileNameWithoutExtension(filename);
+
+                if (!nameWithoutExt.StartsWith("ISSUE-", StringComparison.OrdinalIgnoreCase)) return fullPath;
+                nameWithoutExt = nameWithoutExt[6..]; // Remove "ISSUE-" prefix
+                filename = nameWithoutExt + extension;
+                fullPath = Path.Combine(directory, filename);
+
+                return fullPath;
             }
         }
     }

@@ -1,8 +1,3 @@
-using System;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace TinyWalnutGames.StoryTest.Shared
 {
     /// <summary>
@@ -24,6 +19,7 @@ namespace TinyWalnutGames.StoryTest.Shared
     {
         IncompleteImplementation,
         DebuggingCode,
+        NamingConvention,
         UnusedCode,
         PrematureCelebration,
         Other
