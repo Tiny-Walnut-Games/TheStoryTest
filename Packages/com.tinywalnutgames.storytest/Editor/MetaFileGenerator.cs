@@ -38,7 +38,7 @@ namespace TinyWalnutGames.StoryTest.Editor
     {
         return Selection.GetFiltered(typeof(DefaultAsset), SelectionMode.Assets).Select(AssetDatabase.GetAssetPath).FirstOrDefault(path => Directory.Exists(Path.GetFullPath(path)));
     }
-    [MenuItem("Tools/Generate Missing Meta Files")]
+    [MenuItem("Tiny Walnut Games/Tools/Generate Missing Meta Files")]
     public static void ShowWindow()
     {
         GetWindow<MetaFileGenerator>("Meta Generator");

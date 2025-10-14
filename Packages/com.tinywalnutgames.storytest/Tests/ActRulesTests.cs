@@ -7,7 +7,7 @@ using TinyWalnutGames.StoryTest.Shared;
 namespace TinyWalnutGames.StoryTest.Tests
 {
     /// <summary>
-    /// Unit tests for individual Act validation rules.
+    /// Unit tests for the individual Act validation rules.
     /// Each test validates that the Act correctly identifies violations.
     /// </summary>
     public class ActRulesTests

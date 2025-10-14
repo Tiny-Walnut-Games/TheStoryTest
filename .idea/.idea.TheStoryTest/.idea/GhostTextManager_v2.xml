@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GhostTextManager">
+    <option name="inputs">
+      <map>
+        <entry key="@&lt;file_name&gt; Windows and Mac. As far as testing workflows go... you are right. There is a python version of the story test that I believe you ran yourself. It was nice seeing a script just RUN today. lol. Go ahead and start at the top.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760413551739" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="Can you fix my brain? Lol. I am an AuDHDer developer. I handle a ton of projects at the same time because my brain just does not stop. I am lying when I say my blood is energy drink... but it feels like it sometimes... If that has not confused you... cool!&#10;&#10;I have horrible memory issues, major learning disabilities, and when I get frustrated I get lost in the fractal renumeration of the Imposter syndrome.&#10;&#10;We've discussed and you found innacuracies in the docoumentation. This is a HUGE pain point that is literally caused by the agentic workflows themselves. LLMs have a propensity to falsely celebrate. I AM new. I may be published but I have no certs. I am self taught. And my entire development team is filled with Agentic LLMs and RAGs. This means that no matter how hard I try... I miss shit and having inaccurate representation of the current reality of the project is derailing.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760414326032" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="Create a SWEEP.md file from the existing rules files such as CLAUDE.md, cursor rules, .cursorrules. Combine these into a comprehensive SWEEP.md file in the project root directory. Include instructions on different terminal commands. Extra files and directories just included for reference and guidance in your sidequest towards enlightenment (forewarning, I sometimes use fantastical language for dopemine.) ">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760412057806" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="Having looked at all of the documentation and development chronicles, Let's get a solid grasp of where we are now that we are back in this repo. I took a short break to work on other tasks and I find that if I try to catch up through the documentation, the false celebration LLMs tend to use kind of triggers me because we are obviously not done yet but every document created is all &quot;we're amazing and everything is amaaaaaaaaazing!&quot; We need a reality check.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760412716635" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="I do not believe that Unity Secrets get hardcoded anywhere here. They exist in the repo already. I have had the workflows run before. During initial matrixOS build testing, where Linux&gt;Mac&gt;Windows was an exponential increase of time... I blew, BLEW, through 2000 action minutes in two days. But I felt it was necessary because rapid rebuilding seemed to be the only path towards ensuring all three build. But, in hindsite, had I realized that linux was just so much faster, I would have started with the canonical build target from the get-go.&#10;&#10;Keep in mind here, that I only really started vibe coding in June of this year. Before that, I was manuall coding and the best I could manage was MCCustomizer. That is my release on the Unity Asset store and it provides a demo for character creation screens using modular character kits like those from Synty Studios.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760413981197" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="I gaurantee you that if we were to crack the dlls open ourselves and match the methods, we would find no violations. These are Roslyn artifacts from methods that are called by themselves or by Unity Lifetime. Confirm?">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760417003445" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="Is the &quot;No False Celebrations&quot; rule kicking you to the curb??? lol. The last to turns has had the Results after fix: section cut off! lol.I highly doubt my joke is the case... but that would be super funny. &quot;Nonono! You can't say you fixed that cause it might not be true...!&quot; Lol.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760417356673" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="Thank you. Let's do a complete documentation overhaul: evaporating, condensing, and Gitbooking ourselves a documentation directory. All developmental history artifacts need to find a home within a changelog and I believe we may need to implement the versioning scheme and prep the packages for release. The only non customer-facing documentation at root should be that which is required/expected by community guidelines. I am not a fan of directory-based readmes... I find them to be bloat rather then useful. There are some circumstances where such a thing is needed, like tools packaged with other tools... but that's about it. I do not like documents scattered all over the place.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="2.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760417911212" />
+                  <option value="1760417817766" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="What can be done to fix the pyhon x Unity situation?">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760416257117" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="You've been kind enough to provide me a reality check and I appreciate that. But your own initial reality checks made assumptions and judgments. Follow up messages shown better light on things and the further the get, the better picture we seem to have. But I am sure you understand when I say that innaccuracy scares me! lol. Good news, I ran the Playmode editor tests in Unity, including the sync-points, and came back clean. This helps alleviate concerns but its not like I can hand this over to a human and say, &quot;have fun!&quot; I'd look like the guy who never lets go of the blank check. lol.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760416060865" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="please review the uncommitted changes and give me a solid commit message and/or help me bring the remote up to date.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760422347690" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

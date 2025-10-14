@@ -4,7 +4,7 @@ A comprehensive code quality validation framework for Unity and .NET projects th
 
 ## Features
 
-### The "9 Acts" Validation System
+### The "11 Acts" Validation System
 
 Each "Act" performs IL bytecode analysis to detect code quality issues:
 
@@ -17,10 +17,12 @@ Each "Act" performs IL bytecode analysis to detect code quality issues:
 7. **Act 7: Cold Methods** - Finds empty or minimal methods (just `ret` instruction)
 8. **Act 8: Hollow Enums** - Catches enums with ≤1 values or placeholder names
 9. **Act 9: Premature Celebrations** - Detects code marked complete but still throwing `NotImplementedException`
+10. **Act 10: Unused Parameters** - Detects method parameters that are never referenced
+11. **Act 11: Empty Interfaces** - Identifies interfaces with no members (marker interfaces)
 
 ### Three-Tier Validation System
 
-- **Tier 1 (Universal)**: Acts 1-9 IL bytecode analysis - works in ANY .NET environment
+- **Tier 1 (Universal)**: Acts 1-11 IL bytecode analysis - works in ANY .NET environment
 - **Tier 2 (Conceptual)**: Dynamic discovery (enums, structs, abstract members) with environment detection
 - **Tier 3 (Project-Specific)**: User-configured custom component validation
 

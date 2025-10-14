@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TinyWalnutGames.StoryTest.Shared;
 
 namespace TinyWalnutGames.StoryTest
 {
@@ -10,10 +11,10 @@ namespace TinyWalnutGames.StoryTest
     [StoryIgnore("UI overlay for validation progress tracking")]
     public class ValidationProgressUI : MonoBehaviour
     {
-        private Canvas _canvas;
-        private Text _statusText;
-        private Text _progressText;
-        private GameObject _panel;
+        private Canvas canvas;
+        private Text statusText;
+        private Text progressText;
+        private GameObject panel;
 
         private void Awake()
         {
@@ -25,29 +26,29 @@ namespace TinyWalnutGames.StoryTest
             // Create Canvas
             var canvasGo = new GameObject("Story Test Progress Canvas");
             canvasGo.transform.SetParent(transform);
-            _canvas = canvasGo.AddComponent<Canvas>();
-            _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            _canvas.sortingOrder = 9999;
+            canvas = canvasGo.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 9999;
 
             canvasGo.AddComponent<CanvasScaler>();
             canvasGo.AddComponent<GraphicRaycaster>();
 
             // Create Panel (semi-transparent background)
-            _panel = new GameObject("Panel");
-            _panel.transform.SetParent(canvasGo.transform, false);
-            var panelRect = _panel.AddComponent<RectTransform>();
+            panel = new GameObject("Panel");
+            panel.transform.SetParent(canvasGo.transform, false);
+            var panelRect = panel.AddComponent<RectTransform>();
             panelRect.anchorMin = new Vector2(0.5f, 0);
             panelRect.anchorMax = new Vector2(0.5f, 0);
             panelRect.pivot = new Vector2(0.5f, 0);
             panelRect.anchoredPosition = new Vector2(0, 20);
             panelRect.sizeDelta = new Vector2(400, 100);
 
-            var panelImage = _panel.AddComponent<Image>();
+            var panelImage = panel.AddComponent<Image>();
             panelImage.color = new Color(0, 0, 0, 0.8f);
 
             // Create Status Text (bold header)
             var statusGo = new GameObject("Status Text");
-            statusGo.transform.SetParent(_panel.transform, false);
+            statusGo.transform.SetParent(panel.transform, false);
             var statusRect = statusGo.AddComponent<RectTransform>();
             statusRect.anchorMin = new Vector2(0, 0.5f);
             statusRect.anchorMax = new Vector2(1, 1);
@@ -55,17 +56,17 @@ namespace TinyWalnutGames.StoryTest
             statusRect.anchoredPosition = Vector2.zero;
             statusRect.sizeDelta = new Vector2(-20, 0);
 
-            _statusText = statusGo.AddComponent<Text>();
-            _statusText.text = "Validation Running...";
-            _statusText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _statusText.fontSize = 18;
-            _statusText.alignment = TextAnchor.MiddleCenter;
-            _statusText.color = Color.white;
-            _statusText.fontStyle = FontStyle.Bold;
+            statusText = statusGo.AddComponent<Text>();
+            statusText.text = "Validation Running...";
+            statusText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            statusText.fontSize = 18;
+            statusText.alignment = TextAnchor.MiddleCenter;
+            statusText.color = Color.white;
+            statusText.fontStyle = FontStyle.Bold;
 
             // Create Progress Text (detail)
             var progressGo = new GameObject("Progress Text");
-            progressGo.transform.SetParent(_panel.transform, false);
+            progressGo.transform.SetParent(panel.transform, false);
             var progressRect = progressGo.AddComponent<RectTransform>();
             progressRect.anchorMin = new Vector2(0, 0);
             progressRect.anchorMax = new Vector2(1, 0.5f);
@@ -73,67 +74,61 @@ namespace TinyWalnutGames.StoryTest
             progressRect.anchoredPosition = Vector2.zero;
             progressRect.sizeDelta = new Vector2(-20, 0);
 
-            _progressText = progressGo.AddComponent<Text>();
-            _progressText.text = "Initializing...";
-            _progressText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _progressText.fontSize = 14;
-            _progressText.alignment = TextAnchor.MiddleCenter;
-            _progressText.color = new Color(0.8f, 0.8f, 0.8f);
+            progressText = progressGo.AddComponent<Text>();
+            progressText.text = "Initializing...";
+            progressText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            progressText.fontSize = 14;
+            progressText.alignment = TextAnchor.MiddleCenter;
+            progressText.color = new Color(0.8f, 0.8f, 0.8f);
 
             Hide();
         }
 
         public void Show()
         {
-            if (_panel != null)
-            {
-                _panel.SetActive(true);
-            }
+            panel?.SetActive(true);
         }
 
-        public void Hide()
+        private void Hide()
         {
-            if (_panel != null)
-            {
-                _panel.SetActive(false);
-            }
+            panel?.SetActive(false);
         }
 
         public void UpdateStatus(string status)
         {
-            if (_statusText != null)
+            if (statusText is not null)
             {
-                _statusText.text = status;
+                statusText.text = status;
             }
         }
 
         public void UpdateProgress(string progress)
         {
-            if (_progressText != null)
+            if (progressText is not null)
             {
-                _progressText.text = progress;
+                progressText.text = progress;
             }
         }
 
         public void SetComplete(int violationCount)
         {
-            if (_statusText != null)
+            if (statusText is not null)
             {
-                _statusText.text = violationCount == 0 ? "✓ Validation Passed" : $"✗ {violationCount} Violations Found";
-                _statusText.color = violationCount == 0 ? Color.green : new Color(1f, 0.6f, 0);
+                statusText.text = violationCount == 0 ? "✓ Validation Passed" : $"✗ {violationCount} Violations Found";
+                statusText.color = violationCount == 0 ? Color.green : new Color(1f, 0.6f, 0);
             }
 
-            if (_progressText != null)
+            if (progressText is not null)
             {
-                _progressText.text = "Check Console for details";
+                progressText.text = "Check Console for details";
             }
         }
 
         private void OnDestroy()
         {
-            if (_canvas != null && _canvas.gameObject != null)
+            if (canvas?.gameObject is not null)
             {
-                Destroy(_canvas.gameObject);
+                Destroy(canvas.gameObject);
             }
         }
     }

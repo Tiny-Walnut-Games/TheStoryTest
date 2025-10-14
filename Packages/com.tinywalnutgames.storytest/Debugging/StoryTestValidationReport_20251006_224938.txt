@@ -1,0 +1,39 @@
+THE STORY-TEST FRAMEWORK STRENGTHENING VALIDATION REPORT
+==================================================
+
+Generated: 2025-10-06 22:49:42
+Unity Version: 6000.2.6f2
+Target Platform: StandaloneWindows64
+
+STORY INTEGRITY ANALYSIS
+-------------------------
+Status: PASSED
+No story integrity violations found.
+
+ASSEMBLY ANALYSIS
+-----------------
+Assembly: TinyWalnutGames.TheStoryTest.Acts, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+Types: 19
+Location: E:\Tiny_Walnut_Games\TheStoryTest\Library\ScriptAssemblies\TinyWalnutGames.TheStoryTest.Acts.dll
+
+Assembly: TinyWalnutGames.TheStoryTest, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+Types: 36
+Location: E:\Tiny_Walnut_Games\TheStoryTest\Library\ScriptAssemblies\TinyWalnutGames.TheStoryTest.dll
+
+Assembly: TinyWalnutGames.TheStoryTest.Editor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+Types: 21
+Location: E:\Tiny_Walnut_Games\TheStoryTest\Library\ScriptAssemblies\TinyWalnutGames.TheStoryTest.Editor.dll
+
+Assembly: TinyWalnutGames.TheStoryTest.Shared, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+Types: 23
+Location: E:\Tiny_Walnut_Games\TheStoryTest\Library\ScriptAssemblies\TinyWalnutGames.TheStoryTest.Shared.dll
+
+PROJECT STRUCTURE
+-----------------
+Folder Structure:
+  Assets\Scenes
+  Assets\Settings
+  Assets\Tiny Walnut Games
+  Assets\_Recovery
+  Assets\Tiny Walnut Games\TheStoryTest
+  Assets\Tiny Walnut Games\TheStoryTest\Resources

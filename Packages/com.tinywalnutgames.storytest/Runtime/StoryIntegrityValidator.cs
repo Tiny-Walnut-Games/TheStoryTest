@@ -158,6 +158,12 @@ namespace TinyWalnutGames.StoryTest
                     continue;
                 }
 
+                // Skip compiler-generated types (async state machines, lambdas, Unity source gen, etc.)
+                if (Shared.AdvancedILAnalysis.ShouldSkipType(type))
+                {
+                    continue;
+                }
+
                 try
                 {
                     violations.AddRange(ValidateMembersForType(type));
@@ -175,7 +181,7 @@ namespace TinyWalnutGames.StoryTest
         {
             foreach (var member in EnumerateMembers(type))
             {
-                if (member == null || HasStoryIgnore(member))
+                if (member == null || HasStoryIgnore(member) || Shared.AdvancedILAnalysis.ShouldSkipMember(member))
                 {
                     continue;
                 }
@@ -220,41 +226,70 @@ namespace TinyWalnutGames.StoryTest
 
         private static IEnumerable<MemberInfo> EnumerateMembers(Type type)
         {
-            yield return type;
+            // Use iterative approach with a stack to avoid recursion
+            var typeStack = new Stack<Type>();
+            typeStack.Push(type);
 
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |
                                        BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
-            foreach (var ctor in type.GetConstructors(flags))
+            while (typeStack.Count > 0)
             {
+                var currentType = typeStack.Pop();
+
+                // Yield the type itself unless it's flagged as generated
+                if (!Shared.AdvancedILAnalysis.ShouldSkipType(currentType))
+                {
+                    yield return currentType;
+                }
+
+                // Enumerate all members of the current type
+                foreach (var member in EnumerateTypeMembers(currentType, flags))
+                {
+                    yield return member;
+                }
+
+                // Queue nested types for processing
+                QueueNestedTypes(currentType, flags, typeStack);
+            }
+        }
+
+        private static IEnumerable<MemberInfo> EnumerateTypeMembers(Type type, BindingFlags flags)
+        {
+            foreach (var ctor in FilterMembers(type.GetConstructors(flags)))
                 yield return ctor;
-            }
 
-            foreach (var method in type.GetMethods(flags))
-            {
+            foreach (var method in FilterMembers(type.GetMethods(flags)))
                 yield return method;
-            }
 
-            foreach (var property in type.GetProperties(flags))
-            {
+            foreach (var property in FilterMembers(type.GetProperties(flags)))
                 yield return property;
-            }
 
-            foreach (var field in type.GetFields(flags))
-            {
+            foreach (var field in FilterMembers(type.GetFields(flags)))
                 yield return field;
-            }
 
-            foreach (var evt in type.GetEvents(flags))
-            {
+            foreach (var evt in FilterMembers(type.GetEvents(flags)))
                 yield return evt;
-            }
+        }
 
+        private static IEnumerable<T> FilterMembers<T>(T[] members) where T : MemberInfo
+        {
+            foreach (var member in members)
+            {
+                if (!Shared.AdvancedILAnalysis.ShouldSkipMember(member))
+                {
+                    yield return member;
+                }
+            }
+        }
+
+        private static void QueueNestedTypes(Type type, BindingFlags flags, Stack<Type> typeStack)
+        {
             foreach (var nested in type.GetNestedTypes(flags))
             {
-                foreach (var nestedMember in EnumerateMembers(nested))
+                if (!Shared.AdvancedILAnalysis.ShouldSkipType(nested))
                 {
-                    yield return nestedMember;
+                    typeStack.Push(nested);
                 }
             }
         }
