@@ -22,6 +22,9 @@ namespace TinyWalnutGames.StoryTest.Shared
 
         // Conceptual validation configuration
         public ConceptualValidationConfig conceptualValidation = new ConceptualValidationConfig();
+        
+        // Project structure validation configuration
+        public ProjectStructureConfig projectStructure = new ProjectStructureConfig();
 
         private static StoryTestSettings _instance;
         private static readonly object Lock = new object();
@@ -169,5 +172,23 @@ namespace TinyWalnutGames.StoryTest.Shared
         public bool universal = true;
         public bool unityAware = true;
         public bool projectSpecific;
+    }
+
+    /// <summary>
+    /// Configuration for project structure validation.
+    /// Defines required/optional folders, build target expectations, and assembly reference requirements.
+    /// </summary>
+    [Serializable]
+    [StoryIgnore("Configuration infrastructure for project structure validation")]
+    public class ProjectStructureConfig
+    {
+        public string[] requiredFolders = Array.Empty<string>();
+        public string[] optionalFolders = Array.Empty<string>();
+        public bool enforcePrefabUsage = true;
+        public bool allowResourcesFolder = false;
+        public bool requireTests = true;
+        public string expectedBuildTarget = ""; // Empty string to skip build target validation
+        public bool validateAssemblyReferences = true;
+        public string[] requiredAssemblyReferences = Array.Empty<string>();
     }
 }

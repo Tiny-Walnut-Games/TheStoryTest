@@ -29,5 +29,28 @@
         "customComponentTypes": [],
         "enumValidationPatterns": [],
         "fallbackMode": "ilAnalysis"
+    },
+    "projectStructure": {
+        "requiredFolders": [
+            "Assets/Scripts",
+            "Assets/Scenes",
+            "Assets/Prefabs",
+            "Assets/Tests"
+        ],
+        "optionalFolders": [
+            "Assets/Art",
+            "Assets/Audio",
+            "Assets/Editor",
+            "Assets/UI",
+            "Assets/Resources"
+        ],
+        "enforcePrefabUsage": true,
+        "allowResourcesFolder": false,
+        "requireTests": true,
+        "expectedBuildTarget": "WebGL",
+        "validateAssemblyReferences": true,
+        "requiredAssemblyReferences": [
+            "Unity.Entities"
+        ]
     }
 }
