@@ -1,0 +1,64 @@
+TinyWalnutGames.TheStoryTest.Tests (54 tests) Success
+  TinyWalnutGames.StoryTest.Tests (54 tests) Success
+    ActRulesTests (11 tests) Success
+      Act1_AllowsImplementedMethods Success
+      Act1_DetectsTodoComments Success
+      Act2_DetectsPlaceholderNames Success
+      Act3_DetectsEmptyClasses Success
+      Act4_DetectsUnsealedAbstractClasses Success
+      Act5_DetectsDebugOnlyCode Success
+      Act6_DetectsUnusedProperties Success
+      Act7_DetectsUnusedMethods Success
+      Act8_AllowsProperEnums Success
+      Act8_DetectsHollowEnums Success
+      Act9_DetectsCelebratoryNames Success
+    ConceptualValidationTests (4 tests) Success
+      AllEnumTypesHaveValidValues Success
+      ClassesWithAbstractMembersAreAbstract Success
+      ConceptualValidator_SettingsLoaded Success
+      ValueTypesHaveValidDefaultConstructors Success
+    IntegrationTests (2 tests) Success
+      EnvironmentDetection_WorksCorrectly Success
+      StoryTestCompliance_CoreFrameworkHasNoViolations Success
+    StoryTestSettingsTests (8 tests) Success
+      ConceptualValidationConfig_HasReasonableDefaults Success
+      EnvironmentCapabilities_CanBeConfigured Success
+      StoryTestSettings_CanReload Success
+      StoryTestSettings_ConceptualValidation_IsInitialized Success
+      StoryTestSettings_HasDefaultValues Success
+      StoryTestSettings_Instance_ReturnsNonNull Success
+      StoryTestSettings_SaveAndLoad_Roundtrip Success
+      ValidationTiers_DefaultsCorrectly Success
+    StoryTestValidationTests (5 tests) Success
+      ProductionExcellenceStoryTest_ValidatesConfiguration Success
+      StoryIgnoreAttribute_RequiresReason Success
+      StoryIntegrityValidator_AutoRegistersRules Success
+      StoryIntegrityValidator_RespectsStoryIgnoreAttribute Success
+      StoryIntegrityValidator_ValidatesAssemblies Success
+    StoryViolationTests (7 tests) Success
+      StoryTestUtilities_GetViolationType_HandlesKnownPatterns Success
+      StoryTestUtilities_GetViolationType_ReturnsOtherForUnknown Success
+      StoryViolation_CanBeCreated Success
+      StoryViolation_CanBeUsedInCollections Success
+      StoryViolation_DefaultValues_AreReasonable Success
+      StoryViolation_ToString_FormatsCorrectly Success
+      StoryViolationType_AllValuesAreDefined Success
+    SyncPointPerformanceTests (9 tests) Ignored
+      SyncPoint_CanRunConcurrently Ignored: Test should be run explicitly
+      SyncPoint_DetectsComedySkit_WhenActorsCollide Ignored: Test should be run explicitly
+      SyncPoint_ExportPath_HandlesInvalidPaths Ignored: Test should be run explicitly
+      SyncPoint_MultipleRuns_AreConsistent Ignored: Test should be run explicitly
+      SyncPoint_Performance_MeetsMinimumThroughput Ignored: Test should be run explicitly
+      SyncPoint_QuickTest_CompletesSuccessfully Ignored: Test should be run explicitly
+      SyncPoint_QuickTest_RunsInReasonableTime Ignored: Test should be run explicitly
+      SyncPoint_QuickTestAndExport_CreatesReport Ignored: Test should be run explicitly
+      SyncPoint_ReportContains_PerformanceMetrics Ignored: Test should be run explicitly
+    ValidationReportTests (8 tests) Success
+      ValidationReport_AddNote_StoresNoteByPhase Success
+      ValidationReport_AddViolations_TracksByPhase Success
+      ValidationReport_GenerateSummary_ContainsKeyInfo Success
+      ValidationReport_InitializesCorrectly Success
+      ValidationReport_IsFullyCompliant_WhenNoViolations Success
+      ValidationReport_IsNotCompliant_WhenHasViolations Success
+      ValidationReport_ProductionReadinessScore_Decreases Success
+      ValidationReport_ShouldStop_ReturnsTrueWhenStopOnFirstAndHasViolation Success
