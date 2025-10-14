@@ -1,0 +1,8 @@
+pythonnet>=3.0.0
+clr-loader>=0.2.5
+colorama>=0.4.6
+
+[dev]
+pytest>=7.0.0
+black>=23.0.0
+mypy>=1.0.0

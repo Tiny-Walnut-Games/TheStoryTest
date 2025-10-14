@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "storytest"
+version = "1.2.0"
+description = "A comprehensive code quality validation framework for Unity and .NET projects that enforces Story Test Doctrine"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Tiny Walnut Games", email = "jmeyer1980@gmail.com"}
+]
+maintainers = [
+    {name = "Tiny Walnut Games", email = "jmeyer1980@gmail.com"}
+]
+keywords = [
+    "unity",
+    "dotnet",
+    "csharp",
+    "code-quality",
+    "validation",
+    "testing",
+    "bytecode-analysis",
+    "il-analysis",
+    "static-analysis",
+    "linting"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: C#",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "pythonnet>=3.0.0",
+    "clr-loader>=0.2.5",
+    "colorama>=0.4.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "mypy>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/jmeyer1980/TheStoryTest"
+Documentation = "https://github.com/jmeyer1980/TheStoryTest/tree/main/docs"
+Repository = "https://github.com/jmeyer1980/TheStoryTest"
+Issues = "https://github.com/jmeyer1980/TheStoryTest/issues"
+Changelog = "https://github.com/jmeyer1980/TheStoryTest/blob/main/CHANGELOG.md"
+
+[project.scripts]
+storytest = "storytest.cli:main"
+
+[tool.setuptools]
+packages = ["storytest"]
+
+[tool.setuptools.package-data]
+storytest = ["py.typed"]
