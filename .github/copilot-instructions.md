@@ -105,7 +105,7 @@ The framework uses conditional compilation to work outside Unity:
 ```csharp
 #if UNITY_EDITOR || UNITY_ENGINE
 using Debug = UnityEngine.Debug;
-#else
+else
 using Debug = System.Diagnostics.Debug;
 #endif
 ```
