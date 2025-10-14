@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ai.zencoder.plugin.chat.index">
+    <option name="activeChatId" value="1be52d84-7f78-41c7-aacf-50fbc5829944" />
+    <option name="chatMetadata" value="{&quot;1be52d84-7f78-41c7-aacf-50fbc5829944&quot;:{&quot;id&quot;:&quot;1be52d84-7f78-41c7-aacf-50fbc5829944&quot;,&quot;title&quot;:&quot;PR#5 Release Review&quot;,&quot;createdAt&quot;:1760465034856,&quot;updatedAt&quot;:1760468768390,&quot;isAgent&quot;:true,&quot;isNameGenerated&quot;:true,&quot;messageCount&quot;:18,&quot;lastMessagePreview&quot;:&quot;Excellent! The tag v1.2.0 is properly set up. Now let me create the perfect GitHub release descripti...&quot;}}" />
+  </component>
+</project>
