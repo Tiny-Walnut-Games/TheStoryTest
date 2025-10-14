@@ -226,56 +226,70 @@ namespace TinyWalnutGames.StoryTest
 
         private static IEnumerable<MemberInfo> EnumerateMembers(Type type)
         {
-            // Yield the type itself unless it's flagged as generated
-            if (!Shared.AdvancedILAnalysis.ShouldSkipType(type))
-            {
-                yield return type;
-            }
+            // Use iterative approach with a stack to avoid recursion
+            var typeStack = new Stack<Type>();
+            typeStack.Push(type);
 
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |
                                        BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
-            foreach (var ctor in type.GetConstructors(flags))
+            while (typeStack.Count > 0)
             {
-                if (!Shared.AdvancedILAnalysis.ShouldSkipMember(ctor))
-                    yield return ctor;
-            }
+                var currentType = typeStack.Pop();
 
-            foreach (var method in type.GetMethods(flags))
-            {
-                if (!Shared.AdvancedILAnalysis.ShouldSkipMember(method))
-                    yield return method;
-            }
-
-            foreach (var property in type.GetProperties(flags))
-            {
-                if (!Shared.AdvancedILAnalysis.ShouldSkipMember(property))
-                    yield return property;
-            }
-
-            foreach (var field in type.GetFields(flags))
-            {
-                if (!Shared.AdvancedILAnalysis.ShouldSkipMember(field))
-                    yield return field;
-            }
-
-            foreach (var evt in type.GetEvents(flags))
-            {
-                if (!Shared.AdvancedILAnalysis.ShouldSkipMember(evt))
-                    yield return evt;
-            }
-
-            foreach (var nested in type.GetNestedTypes(flags))
-            {
-                if (Shared.AdvancedILAnalysis.ShouldSkipType(nested))
+                // Yield the type itself unless it's flagged as generated
+                if (!Shared.AdvancedILAnalysis.ShouldSkipType(currentType))
                 {
-                    continue;
+                    yield return currentType;
                 }
 
-                foreach (var nestedMember in EnumerateMembers(nested))
+                // Enumerate all members of the current type
+                foreach (var member in EnumerateTypeMembers(currentType, flags))
                 {
-                    if (!Shared.AdvancedILAnalysis.ShouldSkipMember(nestedMember))
-                        yield return nestedMember;
+                    yield return member;
+                }
+
+                // Queue nested types for processing
+                QueueNestedTypes(currentType, flags, typeStack);
+            }
+        }
+
+        private static IEnumerable<MemberInfo> EnumerateTypeMembers(Type type, BindingFlags flags)
+        {
+            foreach (var ctor in FilterMembers(type.GetConstructors(flags)))
+                yield return ctor;
+
+            foreach (var method in FilterMembers(type.GetMethods(flags)))
+                yield return method;
+
+            foreach (var property in FilterMembers(type.GetProperties(flags)))
+                yield return property;
+
+            foreach (var field in FilterMembers(type.GetFields(flags)))
+                yield return field;
+
+            foreach (var evt in FilterMembers(type.GetEvents(flags)))
+                yield return evt;
+        }
+
+        private static IEnumerable<T> FilterMembers<T>(T[] members) where T : MemberInfo
+        {
+            foreach (var member in members)
+            {
+                if (!Shared.AdvancedILAnalysis.ShouldSkipMember(member))
+                {
+                    yield return member;
+                }
+            }
+        }
+
+        private static void QueueNestedTypes(Type type, BindingFlags flags, Stack<Type> typeStack)
+        {
+            foreach (var nested in type.GetNestedTypes(flags))
+            {
+                if (!Shared.AdvancedILAnalysis.ShouldSkipType(nested))
+                {
+                    typeStack.Push(nested);
                 }
             }
         }

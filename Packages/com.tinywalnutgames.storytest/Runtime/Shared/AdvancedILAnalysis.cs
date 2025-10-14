@@ -56,7 +56,7 @@ namespace TinyWalnutGames.StoryTest.Shared
 
             // Pattern: ldc.i4.0/1/2/... followed by ret
             // OpCodes: 0x16 (ldc.i4.0), 0x17 (ldc.i4.1), etc.
-            for (int i = 0; i < ilBytes.Length - 1; i++)
+            for (var i = 0; i < ilBytes.Length - 1; i++)
             {
                 if (ilBytes[i] >= 0x16 && ilBytes[i] <= 0x1E && ilBytes[i + 1] == 0x2A)
                 {
@@ -75,7 +75,7 @@ namespace TinyWalnutGames.StoryTest.Shared
             if (ilBytes == null || ilBytes.Length == 0) return true;
 
             // Check for presence of call/branch instructions
-            for (int i = 0; i < ilBytes.Length; i++)
+            for (var i = 0; i < ilBytes.Length; i++)
             {
                 var opCode = ilBytes[i];
 
@@ -106,7 +106,7 @@ namespace TinyWalnutGames.StoryTest.Shared
             // For very short methods, check if they just return a default value
             if (ilBytes.Length <= 8)
             {
-                for (int i = 0; i < ilBytes.Length - 1; i++)
+                for (var i = 0; i < ilBytes.Length - 1; i++)
                 {
                     // ldc.i4.0 (0x16), ldc.i4.1 (0x17), ldnull (0x14), followed by ret (0x2A)
                     if ((ilBytes[i] == 0x14 || ilBytes[i] == 0x16 || ilBytes[i] == 0x17) && ilBytes[i + 1] == 0x2A)
@@ -169,7 +169,7 @@ namespace TinyWalnutGames.StoryTest.Shared
 
                     // Look for ldfld (0x7B) or ldsfld (0x7E) opcodes
                     // These load field values onto the stack (reading)
-                    for (int i = 0; i < ilBytes.Length - 4; i++)
+                    for (var i = 0; i < ilBytes.Length - 4; i++)
                     {
                         if (ilBytes[i] == 0x7B || ilBytes[i] == 0x7E)
                         {
@@ -202,25 +202,10 @@ namespace TinyWalnutGames.StoryTest.Shared
 
                 // Search all methods in the assembly for calls to this getter
                 var types = assembly.GetTypes();
-                foreach (var type in types)
+                if (types.Select(type => type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
+                                                         BindingFlags.Instance | BindingFlags.Static)).Any(methods => (from method in methods where method != property.GetMethod select method.GetMethodBody() into body select body?.GetILAsByteArray() into ilBytes where ilBytes != null select ilBytes).Any(ilBytes => ContainsCallTo(ilBytes, getterToken))))
                 {
-                    var methods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
-                                                 BindingFlags.Instance | BindingFlags.Static);
-
-                    foreach (var method in methods)
-                    {
-                        if (method == property.GetMethod) continue; // Skip the getter itself
-
-                        var body = method.GetMethodBody();
-                        if (body == null) continue;
-
-                        var ilBytes = body.GetILAsByteArray();
-                        if (ilBytes == null) continue;
-
-                        // Look for call/callvirt instructions
-                        if (ContainsCallTo(ilBytes, getterToken))
-                            return true;
-                    }
+                    return true;
                 }
             }
             catch
@@ -243,24 +228,10 @@ namespace TinyWalnutGames.StoryTest.Shared
                 var methodToken = method.MetadataToken;
 
                 var types = assembly.GetTypes();
-                foreach (var type in types)
+                if (types.Select(type => type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
+                                                         BindingFlags.Instance | BindingFlags.Static)).Any(methods => (from caller in methods where caller != method select caller.GetMethodBody() into body where body != null select body.GetILAsByteArray() into ilBytes where ilBytes != null select ilBytes).Any(ilBytes => ContainsCallTo(ilBytes, methodToken))))
                 {
-                    var methods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
-                                                 BindingFlags.Instance | BindingFlags.Static);
-
-                    foreach (var caller in methods)
-                    {
-                        if (caller == method) continue; // Skip self
-
-                        var body = caller.GetMethodBody();
-                        if (body == null) continue;
-
-                        var ilBytes = body.GetILAsByteArray();
-                        if (ilBytes == null) continue;
-
-                        if (ContainsCallTo(ilBytes, methodToken))
-                            return true;
-                    }
+                    return true;
                 }
             }
             catch
@@ -274,14 +245,13 @@ namespace TinyWalnutGames.StoryTest.Shared
         private static bool ContainsCallTo(byte[] ilBytes, int targetToken)
         {
             // Look for call (0x28) or callvirt (0x6F) followed by metadata token
-            for (int i = 0; i < ilBytes.Length - 4; i++)
+            for (var i = 0; i < ilBytes.Length - 4; i++)
             {
-                if (ilBytes[i] == 0x28 || ilBytes[i] == 0x6F)
-                {
-                    // The next 4 bytes are the metadata token
-                    // For now, we just know a call exists - full token matching is complex
-                    return true; // Conservative: assume it might be our method
-                }
+                if (ilBytes[i] != 0x28 && ilBytes[i] != 0x6F) continue;
+                // The next 4 bytes are the metadata token
+                // Target token is encoded as big-endian uint32
+                var token = BitConverter.ToUInt32(ilBytes, i + 1);
+                if (token == targetToken) return true;
             }
 
             return false;
@@ -299,9 +269,9 @@ namespace TinyWalnutGames.StoryTest.Shared
         {
             if (ilBytes == null || ilBytes.Length == 0) return 1;
 
-            int branchCount = 0;
+            var branchCount = 0;
 
-            for (int i = 0; i < ilBytes.Length; i++)
+            for (var i = 0; i < ilBytes.Length; i++)
             {
                 var opCode = ilBytes[i];
 
@@ -323,10 +293,10 @@ namespace TinyWalnutGames.StoryTest.Shared
         {
             if (ilBytes == null || ilBytes.Length == 0) return 0;
 
-            int depth = 0;
+            var depth = 0;
 
             // Count meaningful operations
-            for (int i = 0; i < ilBytes.Length; i++)
+            for (var i = 0; i < ilBytes.Length; i++)
             {
                 var opCode = ilBytes[i];
 
@@ -360,39 +330,60 @@ namespace TinyWalnutGames.StoryTest.Shared
             var typeName = type.Name ?? string.Empty;
             var fullName = type.FullName ?? string.Empty;
 
+            return IsCompilerGeneratedType(typeName, fullName) ||
+                   IsStateMachineType(typeName, fullName) ||
+                   IsDisplayClassType(typeName, fullName) ||
+                   IsUnitySourceGeneratedType(typeName, fullName) ||
+                   IsIteratorType(typeName, fullName) ||
+                   HasCompilerGeneratedAttribute(type) ||
+                   IsTestFixtureType(type);
+        }
+
+        private static bool IsCompilerGeneratedType(string typeName, string fullName)
+        {
             // Skip compiler-generated types (lambdas, closures, state machines)
             // Check both name and fullName to catch nested compiler-generated types (Outer+<Inner>)
-            if (typeName.Contains("<") || typeName.Contains(">") || typeName.Contains("$") ||
-                fullName.Contains("<") || fullName.Contains(">"))
-                return true;
+            return typeName.Contains("<") || typeName.Contains(">") || typeName.Contains("$") ||
+                   fullName.Contains("<") || fullName.Contains(">");
+        }
 
+        private static bool IsStateMachineType(string typeName, string fullName)
+        {
             // Skip async/iterator state machines (d__0, d__1, etc.)
-            if (typeName.Contains("d__") || fullName.Contains("d__"))
-                return true;
+            return typeName.Contains("d__") || fullName.Contains("d__");
+        }
 
+        private static bool IsDisplayClassType(string typeName, string fullName)
+        {
             // Skip display classes (closures/lambdas)
-            if (typeName.Contains("DisplayClass") || fullName.Contains("DisplayClass") ||
-                typeName.Contains("<>c") || fullName.Contains("<>c"))
-                return true;
+            return typeName.Contains("DisplayClass") || fullName.Contains("DisplayClass") ||
+                   typeName.Contains("<>c") || fullName.Contains("<>c");
+        }
 
+        private static bool IsUnitySourceGeneratedType(string typeName, string fullName)
+        {
             // Skip Unity source-generated types (and their nested types)
-            if (typeName.StartsWith("UnitySourceGeneratedAssemblyMonoScriptTypes", StringComparison.Ordinal) ||
-                fullName.Contains("UnitySourceGeneratedAssemblyMonoScriptTypes"))
-                return true;
+            return typeName.StartsWith("UnitySourceGeneratedAssemblyMonoScriptTypes", StringComparison.Ordinal) ||
+                   fullName.Contains("UnitySourceGeneratedAssemblyMonoScriptTypes");
+        }
 
+        private static bool IsIteratorType(string typeName, string fullName)
+        {
             // Skip generic iterator helpers
-            if (typeName.Contains("Iterator") || fullName.Contains("Iterator"))
-                return true;
+            return typeName.Contains("Iterator") || fullName.Contains("Iterator");
+        }
 
+        private static bool HasCompilerGeneratedAttribute(Type type)
+        {
             // Skip types with CompilerGenerated attribute
-            if (type.GetCustomAttributes(false).Any(a => a.GetType().Name.Contains("CompilerGenerated")))
-                return true;
+            return type.GetCustomAttributes(false).Any(a => a.GetType().Name.Contains("CompilerGenerated"));
+        }
 
+        private static bool IsTestFixtureType(Type type)
+        {
             // Skip test fixtures (but not assemblies that contain "Test" in their name like "TheStoryTest")
-            if (!string.IsNullOrEmpty(type.Namespace) && (type.Namespace.EndsWith(".Tests") || type.Namespace.EndsWith(".Test")))
-                return true;
-
-            return false;
+            return !string.IsNullOrEmpty(type.Namespace) && 
+                   (type.Namespace.EndsWith(".Tests") || type.Namespace.EndsWith(".Test"));
         }
 
         /// <summary>
@@ -408,32 +399,38 @@ namespace TinyWalnutGames.StoryTest.Shared
 
             var name = member.Name ?? string.Empty;
 
+            return IsCompilerGeneratedMemberName(name) || 
+                   HasCompilerGeneratedMemberAttribute(member);
+        }
+
+        private static bool IsCompilerGeneratedMemberName(string name)
+        {
             // Names that indicate compiler generated members (closures, lambdas, backing fields, local functions)
             if (name.Contains("<") || name.Contains(">") || name.Contains("$")) return true;
             if (name.Contains("b__")) return true; // lambda/closure methods
             if (name.Contains("k__BackingField")) return true; // auto-property backing field
 
+            return false;
+        }
+
+        private static bool HasCompilerGeneratedMemberAttribute(MemberInfo member)
+        {
             // Explicit attribute checks without taking a hard dependency on specific assemblies
             try
             {
-                if (member.GetCustomAttributes(false).Any(a =>
-                        {
-                            var n = a.GetType().Name;
-                            return n.Contains("CompilerGenerated") ||
-                                   n.Contains("AsyncStateMachine") ||
-                                   n.Contains("IteratorStateMachine");
-                        }))
+                return member.GetCustomAttributes(false).Any(a =>
                 {
-                    return true;
-                }
+                    var n = a.GetType().Name;
+                    return n.Contains("CompilerGenerated") ||
+                           n.Contains("AsyncStateMachine") ||
+                           n.Contains("IteratorStateMachine");
+                });
             }
             catch
             {
                 // If reflection fails, be conservative and skip
                 return true;
             }
-
-            return false;
         }
 
         /// <summary>

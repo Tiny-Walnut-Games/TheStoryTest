@@ -27,49 +27,60 @@ namespace TinyWalnutGames.StoryTest
                 return new List<StoryViolation>();
             }
 
-            if (config.autoDetectEnvironment)
-            {
-                try
-                {
-                    config.environmentCapabilities = ConceptualValidator.DetectEnvironment();
-                    if (log)
-                    {
-                        LogInfo($"[Story Test] Environment detected: {config.environmentCapabilities}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogWarning($"[Story Test] Environment detection failed: {ex.Message}");
-                }
-            }
+            // Detect environment if requested
+            TryAutoDetectEnvironment(config, log);
 
             var assemblies = GetProjectAssemblies(settings);
-            var violations = new List<StoryViolation>();
             var tiers = config.validationTiers ?? new ValidationTiers();
 
-            IEnumerable<Assembly> enumerable = assemblies as Assembly[] ?? assemblies.ToArray();
-            if (tiers.universal)
+            // Compose and run enabled validation steps
+            var results = RunValidations(settings, assemblies, config, tiers, log);
+            return results.ToList();
+        }
+
+        private static void TryAutoDetectEnvironment(ConceptualValidationConfig config, bool log)
+        {
+            if (!config.autoDetectEnvironment) return;
+
+            try
             {
-                if (log) LogInfo("[Story Test] Running conceptual enum validation...");
-                violations.AddRange(ValidateProjectEnums(settings, enumerable));
-
-                if (log) LogInfo("[Story Test] Running conceptual value type validation...");
-                violations.AddRange(ValidateProjectValueTypes(settings, enumerable, config.environmentCapabilities));
+                config.environmentCapabilities = ConceptualValidator.DetectEnvironment();
+                if (log)
+                {
+                    LogInfo($"[Story Test] Environment detected: {config.environmentCapabilities}");
+                }
             }
-
-            if (tiers.unityAware)
+            catch (Exception ex)
             {
-                if (log) LogInfo("[Story Test] Running abstract member sealing validation...");
-                violations.AddRange(ValidateAbstractMemberSealing(settings, enumerable));
+                LogWarning($"[Story Test] Environment detection failed: {ex.Message}");
             }
+        }
 
-            if (tiers.projectSpecific && config.customComponentTypes is { Length: > 0 })
+        private static IEnumerable<StoryViolation> RunValidations(
+            StoryTestSettings settings,
+            IEnumerable<Assembly> assemblies,
+            ConceptualValidationConfig config,
+            ValidationTiers tiers,
+            bool log)
+        {
+            var a = assemblies as Assembly[] ?? assemblies?.ToArray() ?? Array.Empty<Assembly>();
+
+            var steps = new List<(bool Enabled, string Message, Func<IEnumerable<StoryViolation>> Run)>
             {
-                if (log) LogInfo("[Story Test] Running project-specific conceptual validation...");
-                violations.AddRange(ConceptualValidator.ValidateCustomComponents(config.customComponentTypes));
-            }
+                (tiers.universal, "[Story Test] Running conceptual enum validation...", () => ValidateProjectEnums(settings, a)),
+                (tiers.universal, "[Story Test] Running conceptual value type validation...", () => ValidateProjectValueTypes(settings, a, config.environmentCapabilities)),
+                (tiers.unityAware, "[Story Test] Running abstract member sealing validation...", () => ValidateAbstractMemberSealing(settings, a)),
+                (tiers.projectSpecific && config.customComponentTypes is { Length: > 0 }, "[Story Test] Running project-specific conceptual validation...", () => ConceptualValidator.ValidateCustomComponents(config.customComponentTypes))
+            };
 
-            return violations;
+            foreach (var step in steps.Where(s => s.Enabled))
+            {
+                if (log) LogInfo(step.Message);
+                foreach (var v in step.Run() ?? Enumerable.Empty<StoryViolation>())
+                {
+                    yield return v;
+                }
+            }
         }
 
         /// <summary>
