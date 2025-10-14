@@ -43,12 +43,10 @@ python scripts/story_test_unity_safe.py . --fail-on-violations --output report.j
 ## 📚 Documentation
 
 - [**Getting Started**](getting-started.md) - Installation and first validation
-- [**The 9+ Acts**](acts.md) - Complete validation rules reference
+- [**The 11 Acts**](acts.md) - Complete validation rules reference
 - [**Configuration**](configuration.md) - Settings and customization
 - [**CI/CD Integration**](ci-cd.md) - GitHub Actions and automation
 - [**Python Validator**](python-validator.md) - Standalone validation
-- [**API Reference**](api.md) - Programming interfaces
-- [**Troubleshooting**](troubleshooting.md) - Common issues and solutions
 
 ## 🎯 Core Features
 
