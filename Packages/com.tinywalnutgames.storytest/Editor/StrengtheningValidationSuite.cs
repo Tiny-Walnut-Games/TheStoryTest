@@ -225,7 +225,8 @@ namespace TinyWalnutGames.StoryTest.Editor
 
             var reportPath = EditorUtility.SaveFilePanel(
                 "Save Validation Report",
-                Application.dataPath,
+                // we should get the path from StoryTestSettings instead of Application.dataPath
+                StoryTestSettings.Instance.exportPath,
                 $"StoryTestValidationReport_{DateTime.Now:yyyyMMdd_HHmmss}",
                 "txt");
 
@@ -305,13 +306,7 @@ namespace TinyWalnutGames.StoryTest.Editor
                 "Assets/Tests"
             };
 
-            foreach (var folder in requiredFolders)
-            {
-                if (!Directory.Exists(folder))
-                {
-                    issues.Add($"Required folder missing: {folder}");
-                }
-            }
+            issues.AddRange(from folder in requiredFolders where !Directory.Exists(folder) select $"Required folder missing: {folder}");
 
             // Check for WebGL compatibility
             var buildSettings = EditorUserBuildSettings.activeBuildTarget;
@@ -338,9 +333,6 @@ namespace TinyWalnutGames.StoryTest.Editor
         {
             if (state != PlayModeStateChange.EnteredPlayMode) return;
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
-            // Delay to allow the scene to initialize
-            // EditorApplication.delayCall += () => RunValidation();
-            // � PLANNED FEATURE: Will be implemented in Phase 3+ when ProductionExcellenceStoryTest is available
             Debug.LogWarning("🏳Complete validation pipeline not yet implemented");
         }
         

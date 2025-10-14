@@ -351,30 +351,87 @@ namespace TinyWalnutGames.StoryTest.Shared
         #region Helper Methods
 
         /// <summary>
-        /// Determines if a type should be skipped entirely from validation (test/compiler-generated code).
+        /// Determines if a type should be skipped entirely from validation (test/compiler-generated/source-generated code).
         /// </summary>
         public static bool ShouldSkipType(Type type)
         {
             if (type == null) return true;
 
-            // Skip compiler-generated types
-            if (type.Name.Contains("<") || type.Name.Contains(">") || type.Name.Contains("$"))
+            var typeName = type.Name ?? string.Empty;
+            var fullName = type.FullName ?? string.Empty;
+
+            // Skip compiler-generated types (lambdas, closures, state machines)
+            // Check both name and fullName to catch nested compiler-generated types (Outer+<Inner>)
+            if (typeName.Contains("<") || typeName.Contains(">") || typeName.Contains("$") ||
+                fullName.Contains("<") || fullName.Contains(">"))
                 return true;
 
-            if (type.GetCustomAttributes(false).Any(a => a.GetType().Name.Contains("CompilerGenerated")))
-                return true;
-
-            // Skip async state machines (d__0, d__1, etc.)
-            if (type.Name.Contains("d__"))
+            // Skip async/iterator state machines (d__0, d__1, etc.)
+            if (typeName.Contains("d__") || fullName.Contains("d__"))
                 return true;
 
             // Skip display classes (closures/lambdas)
-            if (type.Name.Contains("DisplayClass"))
+            if (typeName.Contains("DisplayClass") || fullName.Contains("DisplayClass") ||
+                typeName.Contains("<>c") || fullName.Contains("<>c"))
                 return true;
 
-            // Skip test fixtures
-            if (type.Namespace != null && type.Namespace.Contains("Test"))
+            // Skip Unity source-generated types (and their nested types)
+            if (typeName.StartsWith("UnitySourceGeneratedAssemblyMonoScriptTypes", StringComparison.Ordinal) ||
+                fullName.Contains("UnitySourceGeneratedAssemblyMonoScriptTypes"))
                 return true;
+
+            // Skip generic iterator helpers
+            if (typeName.Contains("Iterator") || fullName.Contains("Iterator"))
+                return true;
+
+            // Skip types with CompilerGenerated attribute
+            if (type.GetCustomAttributes(false).Any(a => a.GetType().Name.Contains("CompilerGenerated")))
+                return true;
+
+            // Skip test fixtures (but not assemblies that contain "Test" in their name like "TheStoryTest")
+            if (!string.IsNullOrEmpty(type.Namespace) && (type.Namespace.EndsWith(".Tests") || type.Namespace.EndsWith(".Test")))
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Determines if a member should be skipped (compiler or tool generated, or belongs to a skipped type).
+        /// </summary>
+        public static bool ShouldSkipMember(MemberInfo member)
+        {
+            if (member == null) return true;
+
+            // If the declaring type is to be skipped, skip the member
+            var declaring = (member as Type) ?? member.DeclaringType;
+            if (ShouldSkipType(declaring)) return true;
+
+            var name = member.Name ?? string.Empty;
+
+            // Names that indicate compiler generated members (closures, lambdas, backing fields, local functions)
+            if (name.Contains("<") || name.Contains(">") || name.Contains("$")) return true;
+            if (name.Contains("b__")) return true; // lambda/closure methods
+            if (name.Contains("k__BackingField")) return true; // auto-property backing field
+
+            // Explicit attribute checks without taking a hard dependency on specific assemblies
+            try
+            {
+                if (member.GetCustomAttributes(false).Any(a =>
+                        {
+                            var n = a.GetType().Name;
+                            return n.Contains("CompilerGenerated") ||
+                                   n.Contains("AsyncStateMachine") ||
+                                   n.Contains("IteratorStateMachine");
+                        }))
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                // If reflection fails, be conservative and skip
+                return true;
+            }
 
             return false;
         }

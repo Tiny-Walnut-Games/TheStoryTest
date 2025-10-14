@@ -1,6 +1,6 @@
 {
   "name": "@tinywalnutgames/storytest",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Story Test Framework - Code quality validation via IL bytecode analysis for Unity and .NET projects",
   "main": "scripts/story_test.py",
   "scripts": {
@@ -8,7 +8,10 @@
     "lint": "python -m pylint scripts/story_test.py",
     "validate": "python scripts/story_test.py . --verbose",
     "validate:report": "python scripts/story_test.py . --verbose --output .debug/story-test-report.json",
-    "validate:ci": "python scripts/story_test.py . --fail-on-violations --output story-test-report.json"
+    "validate:ci": "python scripts/story_test.py . --fail-on-violations --output story-test-report.json",
+    "validate:safe": "python scripts/story_test_unity_safe.py . --verbose",
+    "validate:safe:ci": "python scripts/story_test_unity_safe.py . --fail-on-violations --output story-test-report.json",
+    "sync:reality": "python scripts/sync_reality.py"
   },
   "repository": {
     "type": "git",
@@ -24,7 +27,9 @@
     "il-analysis",
     "bytecode",
     "static-analysis",
-    "story-test"
+    "story-test",
+    "unity-package",
+    "code-quality-framework"
   ],
   "author": {
     "name": "Tiny Walnut Games",
@@ -40,5 +45,20 @@
     "python": ">=3.8",
     "node": ">=14.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "files": [
+    "scripts/",
+    "Packages/com.tinywalnutgames.storytest/",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "unity": {
+    "version": "2020.3.0",
+    "author": {
+      "name": "Tiny Walnut Games",
+      "email": "jmeyer1980@gmail.com",
+      "url": "https://tinywalnutgames.com"
+    }
+  }
 }

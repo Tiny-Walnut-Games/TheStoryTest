@@ -86,6 +86,9 @@ namespace TinyWalnutGames.StoryTest
                 {
                     if (HasStoryIgnore(type)) continue;
 
+                    // Skip compiler-generated types
+                    if (Shared.AdvancedILAnalysis.ShouldSkipType(type)) continue;
+
                     var messages = ConceptualValidator.ValidateEnum(type);
                     violations.AddRange(messages.Select(message => CreateViolation(type, message)));
                 }
@@ -113,6 +116,9 @@ namespace TinyWalnutGames.StoryTest
                 {
                     if (HasStoryIgnore(type)) continue;
 
+                    // Skip compiler-generated types
+                    if (Shared.AdvancedILAnalysis.ShouldSkipType(type)) continue;
+
                     var messages = ConceptualValidator.ValidateValueType(type, canInstantiate);
                     violations.AddRange(messages.Select(message => CreateViolation(type, message)));
                 }
@@ -134,6 +140,9 @@ namespace TinyWalnutGames.StoryTest
                 foreach (var type in GetTypesSafe(assembly).Where(t => t.IsClass))
                 {
                     if (HasStoryIgnore(type)) continue;
+
+                    // Skip compiler-generated types
+                    if (Shared.AdvancedILAnalysis.ShouldSkipType(type)) continue;
 
                     var messages = ConceptualValidator.ValidateAbstractMemberSealing(type);
                     violations.AddRange(messages.Select(message => CreateViolation(type, message)));

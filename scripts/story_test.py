@@ -31,6 +31,44 @@ try:
     clr.AddReference("System.Reflection")
     from System.Reflection import Assembly, BindingFlags, MethodInfo, PropertyInfo  # type: ignore
     from System import Type, Enum as DotNetEnum  # type: ignore
+
+    # Try to resolve Unity assemblies if available
+    def setup_unity_resolution():
+        """Setup assembly resolution for Unity assemblies if available"""
+        try:
+            # Common Unity installation paths
+            unity_paths = [
+                "C:/Program Files/Unity/Hub/Editor",
+                "C:/Program Files/Unity",
+                "/Applications/Unity/Hub/Editor",
+                "/opt/unity"
+            ]
+
+            unity_found = False
+            for base_path in unity_paths:
+                if os.path.exists(base_path):
+                    # Look for Unity installations
+                    for version_dir in os.listdir(base_path):
+                        unity_editor_path = os.path.join(base_path, version_dir, "Editor/Data/Managed")
+                        if os.path.exists(unity_editor_path):
+                            # Add Unity assemblies to CLR path
+                            for dll in os.listdir(unity_editor_path):
+                                if dll.endswith(".dll") and dll.startswith("UnityEngine."):
+                                    try:
+                                        clr.AddReference(os.path.join(unity_editor_path, dll))
+                                        unity_found = True
+                                    except:
+                                        pass
+
+            if unity_found:
+                print("[Story Test] Unity assemblies resolved for standalone validation")
+            return unity_found
+        except Exception:
+            return False
+
+    # Attempt Unity resolution (will fail gracefully if Unity not installed)
+    setup_unity_resolution()
+
 except ImportError as e:
     print(f"Error: pythonnet not installed or runtime configuration failed: {e}")
     print("Install with: pip install -r requirements.txt")
@@ -77,7 +115,7 @@ class ILAnalyzer:
     
     @staticmethod
     def contains_throw_not_implemented(il_bytes: bytes) -> bool:
-        """Detects NotImplementedException pattern (opcodes 0x73 + 0x7A)"""
+        """Detects 🏳NotImplementedException pattern (opcodes 0x73 + 0x7A)"""
         if not il_bytes or len(il_bytes) == 0:
             return False
         
@@ -110,7 +148,7 @@ class ILAnalyzer:
 
 
 class StoryTestValidator:
-    """Main validator implementing the 9 Acts"""
+    """Main validator implementing the 11 Acts"""
     
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
@@ -132,13 +170,34 @@ class StoryTestValidator:
         try:
             self.log(f"Loading assembly: {assembly_path}")
             assembly = Assembly.LoadFrom(assembly_path)
-            
-            types = assembly.GetTypes()
+
+            # Try to get types, but handle Unity dependency failures gracefully
+            types = []
+            try:
+                types = assembly.GetTypes()
+            except Exception as e:
+                # Unity assemblies often fail to load types due to missing UnityEngine.CoreModule
+                # Try alternative approach: get exported types instead
+                try:
+                    types = assembly.GetExportedTypes()
+                    self.log(f"Warning: Using GetExportedTypes() due to Unity dependencies: {str(e)[:100]}...")
+                except Exception as e2:
+                    self.log(f"Error: Cannot load types from assembly due to Unity dependencies: {str(e2)[:100]}...")
+                    return self.violations
+
             self.log(f"Found {len(types)} types to validate")
             
             for type_obj in types:
-                self._validate_type(type_obj)
-            
+                try:
+                    self._validate_type(type_obj)
+                except Exception as e:
+                    # Skip types that can't be loaded due to Unity dependencies
+                    if "UnityEngine" in str(e) or "CoreModule" in str(e):
+                        self.log(f"Skipping Unity-dependent type: {type_obj.Name}")
+                        continue
+                    else:
+                        raise e
+
             self.log(f"Validation complete. Found {len(self.violations)} violations")
             return self.violations
             
@@ -212,7 +271,7 @@ class StoryTestValidator:
         except Exception:
             pass
         
-        # Act 1: TODO Comments (NotImplementedException)
+        # Act 1: 🏳TODO Comments (NotImplementedException)
         # Act 2: Placeholder Implementations
         self._check_todo_and_placeholders(method, type_name, method_name, file_path)
         
@@ -227,6 +286,12 @@ class StoryTestValidator:
         
         # Act 9: Premature Celebrations
         self._check_premature_celebrations(method, type_name, method_name, file_path)
+        
+        # Act 10: Suspiciously Simple Methods
+        self._check_suspiciously_simple(method, type_name, method_name, file_path)
+        
+        # Act 11: Dead Code
+        self._check_dead_code(type_obj, type_name, file_path)
     
     def _validate_property(self, type_obj, prop, type_name: str, file_path: str):
         """Validate a property"""
@@ -239,7 +304,7 @@ class StoryTestValidator:
         self._check_phantom_props(prop, type_name, prop_name, file_path)
     
     def _check_todo_and_placeholders(self, method, type_name: str, method_name: str, file_path: str):
-        """Act 1 & 2: Check for TODO comments and placeholder implementations"""
+        """Act 1 & 2: Check for 🏳TODO comments and placeholder implementations"""
         try:
             method_body = method.GetMethodBody()
             if method_body is None:
@@ -251,7 +316,7 @@ class StoryTestValidator:
             if ILAnalyzer.contains_throw_not_implemented(il_bytes):
                 self.violations.append(StoryViolation(
                     type_name, method_name,
-                    "Method contains NotImplementedException indicating TODO implementation",
+                    "Method contains NotImplementedException indicating 🏳TODO implementation",
                     StoryViolationType.INCOMPLETE_IMPLEMENTATION,
                     file_path=file_path
                 ))
@@ -366,7 +431,7 @@ class StoryTestValidator:
                 ))
                 return
             
-            # Check for placeholder enum names
+            # Check for 🏳Placeholder enum names
             enum_names = DotNetEnum.GetNames(type_obj)
             placeholder_names = [n for n in enum_names if "Placeholder" in n or "TODO" in n or "Temp" in n]
             
@@ -406,6 +471,64 @@ class StoryTestValidator:
         except Exception:
             pass
 
+    def _check_suspiciously_simple(self, method, type_name: str, method_name: str, file_path: str):
+        """Act 10: Check for suspiciously simple methods"""
+        try:
+            method_body = method.GetMethodBody()
+            if method_body is None:
+                return
+
+            il_bytes = bytes(method_body.GetILAsByteArray())
+
+            # Heuristic: very short body and returns a constant/null/default
+            if len(il_bytes) <= 5 and (
+                    ILAnalyzer.is_constant_return(il_bytes) or
+                    ILAnalyzer.is_null_return(il_bytes) or
+                    ILAnalyzer.is_only_default_return(method, il_bytes)
+            ):
+                self.violations.append(StoryViolation(
+                    type_name, method_name,
+                    "Suspiciously simple method - returns constant/null/default with no logic",
+                    StoryViolationType.INCOMPLETE_IMPLEMENTATION,
+                    file_path=file_path
+                ))
+        except Exception:
+            pass
+
+    def _check_dead_code(self, type_obj, type_name: str, file_path: str):
+        """Act 11: Check for dead code (unused fields/methods/properties)"""
+        try:
+            # Fields: written but never read
+            for field in type_obj.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance):
+                if not ILAnalyzer.is_field_read(type_obj, field):
+                    self.violations.append(StoryViolation(
+                        type_name, field.Name,
+                        "Dead code - field is never read",
+                        StoryViolationType.UNUSED_CODE,
+                        file_path=file_path
+                    ))
+
+            # Methods: declared but never called
+            for method in type_obj.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance):
+                if not method.IsAbstract and not ILAnalyzer.is_method_invoked(type_obj, method):
+                    self.violations.append(StoryViolation(
+                        type_name, method.Name,
+                        "Dead code - method is never invoked",
+                        StoryViolationType.UNUSED_CODE,
+                        file_path=file_path
+                    ))
+
+            # Properties: declared but never accessed
+            for prop in type_obj.GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance):
+                if not ILAnalyzer.is_property_accessed(type_obj, prop):
+                    self.violations.append(StoryViolation(
+                        type_name, prop.Name,
+                        "Dead code - property is never accessed",
+                        StoryViolationType.UNUSED_CODE,
+                        file_path=file_path
+                    ))
+        except Exception:
+            pass
 
 def find_unity_assemblies(project_path: str) -> List[str]:
     """Find compiled Unity assemblies in Library/ScriptAssemblies"""

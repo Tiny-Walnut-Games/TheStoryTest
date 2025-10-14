@@ -158,6 +158,12 @@ namespace TinyWalnutGames.StoryTest
                     continue;
                 }
 
+                // Skip compiler-generated types (async state machines, lambdas, Unity source gen, etc.)
+                if (Shared.AdvancedILAnalysis.ShouldSkipType(type))
+                {
+                    continue;
+                }
+
                 try
                 {
                     violations.AddRange(ValidateMembersForType(type));
@@ -175,7 +181,7 @@ namespace TinyWalnutGames.StoryTest
         {
             foreach (var member in EnumerateMembers(type))
             {
-                if (member == null || HasStoryIgnore(member))
+                if (member == null || HasStoryIgnore(member) || Shared.AdvancedILAnalysis.ShouldSkipMember(member))
                 {
                     continue;
                 }
@@ -220,41 +226,56 @@ namespace TinyWalnutGames.StoryTest
 
         private static IEnumerable<MemberInfo> EnumerateMembers(Type type)
         {
-            yield return type;
+            // Yield the type itself unless it's flagged as generated
+            if (!Shared.AdvancedILAnalysis.ShouldSkipType(type))
+            {
+                yield return type;
+            }
 
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |
                                        BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
             foreach (var ctor in type.GetConstructors(flags))
             {
-                yield return ctor;
+                if (!Shared.AdvancedILAnalysis.ShouldSkipMember(ctor))
+                    yield return ctor;
             }
 
             foreach (var method in type.GetMethods(flags))
             {
-                yield return method;
+                if (!Shared.AdvancedILAnalysis.ShouldSkipMember(method))
+                    yield return method;
             }
 
             foreach (var property in type.GetProperties(flags))
             {
-                yield return property;
+                if (!Shared.AdvancedILAnalysis.ShouldSkipMember(property))
+                    yield return property;
             }
 
             foreach (var field in type.GetFields(flags))
             {
-                yield return field;
+                if (!Shared.AdvancedILAnalysis.ShouldSkipMember(field))
+                    yield return field;
             }
 
             foreach (var evt in type.GetEvents(flags))
             {
-                yield return evt;
+                if (!Shared.AdvancedILAnalysis.ShouldSkipMember(evt))
+                    yield return evt;
             }
 
             foreach (var nested in type.GetNestedTypes(flags))
             {
+                if (Shared.AdvancedILAnalysis.ShouldSkipType(nested))
+                {
+                    continue;
+                }
+
                 foreach (var nestedMember in EnumerateMembers(nested))
                 {
-                    yield return nestedMember;
+                    if (!Shared.AdvancedILAnalysis.ShouldSkipMember(nestedMember))
+                        yield return nestedMember;
                 }
             }
         }

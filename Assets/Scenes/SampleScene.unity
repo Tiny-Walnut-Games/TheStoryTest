@@ -414,20 +414,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: TinyWalnutGames.TheStoryTest::TinyWalnutGames.StoryTest.ProductionExcellenceStoryTest
   enableStoryIntegrity: 1
   enableConceptualValidation: 1
-  enableCodeCoverage: 1
+  enableCodeCoverage: 0
   enableArchitecturalCompliance: 1
   enableSyncPointPerformance: 1
   overrideUnityAssemblies: 0
-  includeUnityAssemblies: 1
+  includeUnityAssemblies: 0
   assemblyFilters:
   - TinyWalnutGames.TheStoryTest
   - TinyWalnutGames.TheStoryTest.Acts
   - TinyWalnutGames.TheStoryTest.Shared
-  - TinyWalnutGames.TheStoryTest.Tests
-  validateAutomaticallyOnStart: 1
+  validateAutomaticallyOnStart: 0
   stopOnFirstViolation: 0
   exportReport: 1
-  exportPath: .debug/storytest_report.txt
+  exportPath: Packages/com.tinywalnutgames.storytest/Debugging/storytest_report.txt
 --- !u!4 &761235607
 Transform:
   m_ObjectHideFlags: 0
