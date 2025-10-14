@@ -83,6 +83,12 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 Contributions welcome! See [docs/](docs/) for development guidelines.
 
+### For Maintainers
+
+- **[Release Process](docs/RELEASE_PROCESS.md)** - Automated releases and versioning
+- Releases are automated via GitHub Actions when version tags are pushed
+- Use `./scripts/release.sh` for easy version bumping
+
 ## 🆘 Support
 
 - [GitHub Issues](https://github.com/jmeyer1980/TheStoryTest/issues)
