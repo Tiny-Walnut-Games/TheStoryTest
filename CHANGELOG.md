@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2025-10-15
+
+### Fixed
+- False positive violation for `IEnumerator.Reset()` in compiler-generated iterator state machines
+- Enhanced compiler-generated member detection in both C# and Python validators to skip explicit interface implementations in state machines
+- Python validation script (`story_test.py`) now properly filters compiler-generated iterator/async state machine members
+
+### Changed
+- Improved release script to update all three version files atomically (Unity package.json, root package.json, pyproject.toml)
+
 ## [1.2.0] - 2025-10-14
 
 ### Added
