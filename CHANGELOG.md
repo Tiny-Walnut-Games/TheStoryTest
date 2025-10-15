@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- ...
+
 ## [1.2.1] - 2025-10-15
 
 ### Fixed
+- CI/CD workflow Unity version mismatch (updated from 2022.3.17f1 to 6000.0.30f1 to match project version)
 - False positive violation for `IEnumerator.Reset()` in compiler-generated iterator state machines
 - Enhanced compiler-generated member detection in both C# and Python validators to skip explicit interface implementations in state machines
 - Python validation script (`story_test.py`) now properly filters compiler-generated iterator/async state machine members
