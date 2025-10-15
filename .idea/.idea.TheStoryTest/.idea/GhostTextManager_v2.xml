@@ -27,6 +27,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="Check my work please. I have followed your instructions and need that juicy dopemine of validation.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760490692193" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="Create a SWEEP.md file from the existing rules files such as CLAUDE.md, cursor rules, .cursorrules. Combine these into a comprehensive SWEEP.md file in the project root directory. Include instructions on different terminal commands. Extra files and directories just included for reference and guidance in your sidequest towards enlightenment (forewarning, I sometimes use fantastical language for dopemine.) ">
           <value>
             <GhostTextMetaData>
