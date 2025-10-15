@@ -1,6 +1,6 @@
 # PyPI Configuration Example
 # Copy this to ~/.pypirc and add your API tokens
-# 
+#
 # Get tokens from:
 # - PyPI: https://pypi.org/manage/account/token/
 # - TestPyPI: https://test.pypi.org/manage/account/token/
@@ -12,9 +12,9 @@ index-servers =
 
 [pypi]
 username = __token__
-password = pypi-YOUR_API_TOKEN_HERE
+password = pypi-YOUR_REAL_TOKEN_HERE
 
 [testpypi]
 repository = https://test.pypi.org/legacy/
 username = __token__
-password = pypi-YOUR_TEST_API_TOKEN_HERE
+password = pypi-YOUR_TEST_TOKEN_HERE
