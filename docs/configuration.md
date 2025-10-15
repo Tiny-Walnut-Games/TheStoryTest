@@ -398,3 +398,156 @@ Enable detailed logging:
 5. **Environment Awareness**: Use different profiles for dev/prod/CI
 
 Remember: Configuration should serve your team's needs, not hinder productivity.
+
+---
+
+## Mental Model Configuration
+
+Define your project's narrative and validate it adheres to claims.
+
+### Mental Model Configuration File
+
+Create: `storytest-mental-model.json` in your project root.
+
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/jmeyer1980/TheStoryTest/main/docs/mental-model-schema.json",
+  "version": "1.0",
+  "description": "Mental model for your project",
+  
+  "project": {
+    "name": "Project Name",
+    "mission": "What the project does",
+    "platforms": ["Platform1", "Platform2"]
+  },
+
+  "claimed_capabilities": {
+    "core_features": [
+      "Feature 1",
+      "Feature 2"
+    ],
+    "platforms": ["Unity", ".NET"],
+    "integration": ["GitHub Actions"],
+    "output": ["JSON reports"]
+  },
+
+  "required_artifacts": [
+    {
+      "path": "src/",
+      "type": "directory",
+      "description": "Source code",
+      "required": true
+    },
+    {
+      "path": "docs/",
+      "type": "directory", 
+      "description": "Documentation",
+      "required": true
+    }
+  ],
+
+  "architectural_rules": [
+    {
+      "rule": "separation_of_concerns",
+      "description": "Core logic separate from UI",
+      "verify": [
+        "Core/ exists independently",
+        "UI/ has no business logic"
+      ]
+    }
+  ],
+
+  "quality_gates": [
+    {
+      "gate": "all_acts_implemented",
+      "minimum_acts": 11,
+      "description": "Must have 11+ validation acts"
+    },
+    {
+      "gate": "documentation_complete",
+      "minimum_docs_pages": 5,
+      "description": "Must have adequate documentation"
+    },
+    {
+      "gate": "test_coverage",
+      "minimum_test_files": 1,
+      "description": "Must have test suite"
+    },
+    {
+      "gate": "multi_platform",
+      "required_platforms": 2,
+      "description": "Must support 2+ platforms"
+    }
+  ]
+}
+```
+
+### Sections Explained
+
+| Section | Purpose |
+|---------|---------|
+| `project` | Basic project metadata |
+| `claimed_capabilities` | Features your project claims to have |
+| `required_artifacts` | Files/directories that must exist |
+| `architectural_rules` | Rules that shape your design |
+| `quality_gates` | Minimum standards your project must meet |
+
+### Validation Process
+
+Acts 12 & 13 validate against this configuration:
+
+```bash
+# Full validation
+python scripts/story_test.py . --output report.json
+
+# Just mental model
+python -m storytest.mental_model_reporter
+
+# Generate HTML report
+open mental-model-report.html
+```
+
+### Example: Multi-Platform Library
+
+```json
+{
+  "project": {
+    "name": "MyLib",
+    "mission": "Provide validation across platforms",
+    "platforms": ["Unity", ".NET", "Python"]
+  },
+  "claimed_capabilities": {
+    "core": [
+      "IL bytecode analysis",
+      "11 validation acts"
+    ],
+    "platforms": ["Unity", ".NET", "Python"]
+  },
+  "quality_gates": [
+    {
+      "gate": "multi_platform",
+      "required_platforms": 3
+    }
+  ]
+}
+```
+
+### Mental Model in CI/CD
+
+Add to your GitHub Actions workflow:
+
+```yaml
+- name: Validate Mental Model
+  run: python -m storytest.mental_model_reporter > model-report.json
+
+- name: Check Mental Model Status
+  run: |
+    STATUS=$(jq -r '.status' model-report.json)
+    if [ "$STATUS" != "COMPLETE" ]; then
+      echo "Mental model has gaps"
+      cat model-report.json
+      exit 1
+    fi
+```
+
+See [Mental Model Validation](mental-model-validation.md) for detailed guide.

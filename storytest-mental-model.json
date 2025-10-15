@@ -1,0 +1,156 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jmeyer1980/TheStoryTest/main/docs/mental-model-schema.json",
+  "version": "1.0",
+  "description": "Mental Model definition for The Story Test Framework - defines what the project claims to do",
+  
+  "project": {
+    "name": "The Story Test Framework",
+    "mission": "Enforce the Story Test Doctrine: every symbol must be fully implemented and meaningful",
+    "platforms": ["Unity", ".NET", "Python"]
+  },
+
+  "claimed_capabilities": {
+    "core_validation": [
+      "IL bytecode analysis for code quality",
+      "11 Validation Acts for completeness checking",
+      "Detection of TODOs and placeholder implementations",
+      "Identification of incomplete classes and abstract members",
+      "Discovery of debug-only and unused code",
+      "Analysis of enum completeness",
+      "Detection of premature celebrations and suspicious simplicity"
+    ],
+    "platforms": [
+      "Unity Editor integration",
+      "Standalone Python validator",
+      "CLI tools for automation",
+      "Cross-platform support (Windows, Mac, Linux)"
+    ],
+    "integration": [
+      "GitHub Actions CI/CD",
+      "Azure DevOps integration",
+      "GitLab CI support",
+      "Zero dependencies (Python validation)",
+      "Works without Unity installation"
+    ],
+    "output": [
+      "JSON violation reports",
+      "HTML visualization",
+      "CI-friendly exit codes",
+      "Detailed IL analysis reports"
+    ]
+  },
+
+  "required_artifacts": [
+    {
+      "path": "Packages/com.tinywalnutgames.storytest/Runtime/Acts",
+      "type": "directory",
+      "description": "Core validation acts implementation",
+      "required": true
+    },
+    {
+      "path": "Packages/com.tinywalnutgames.storytest/Editor",
+      "type": "directory",
+      "description": "Unity Editor integration",
+      "required": true
+    },
+    {
+      "path": "storytest/",
+      "type": "directory",
+      "description": "Python validator module",
+      "required": true
+    },
+    {
+      "path": "scripts/story_test.py",
+      "type": "file",
+      "description": "Main Python validation script",
+      "required": true
+    },
+    {
+      "path": "docs/",
+      "type": "directory",
+      "description": "Documentation",
+      "required": true
+    },
+    {
+      "path": ".github/workflows",
+      "type": "directory",
+      "description": "CI/CD workflows",
+      "required": false
+    }
+  ],
+
+  "architectural_rules": [
+    {
+      "rule": "separation_of_concerns",
+      "description": "Validation logic separate from UI/CLI",
+      "verify": [
+        "Runtime/ exists independently",
+        "Editor/ has no dependency on specific Acts",
+        "Python module is self-contained"
+      ]
+    },
+    {
+      "rule": "validation_symmetry",
+      "description": "Both C# and Python implementations validate the same concepts",
+      "verify": [
+        "Python validator covers Acts 1-11",
+        "C# and Python produce equivalent results",
+        "Test suites exist for both"
+      ]
+    },
+    {
+      "rule": "zero_dependencies_python",
+      "description": "Python validator must not depend on external validation tools",
+      "verify": [
+        "Only pythonnet, clr-loader, colorama in dependencies",
+        "No external C# validators used"
+      ]
+    }
+  ],
+
+  "feature_validation_map": {
+    "IL bytecode analysis": {
+      "evidence": "Acts/Act*.cs files",
+      "implementation": "AdvancedILAnalysis.cs"
+    },
+    "Cross-platform": {
+      "evidence": "Packages/ + storytest/ + scripts/",
+      "implementation": "Multiple runtimes present"
+    },
+    "CI/CD Ready": {
+      "evidence": ".github/workflows/",
+      "implementation": "story-test.yml workflow"
+    },
+    "Python validator": {
+      "evidence": "storytest/*.py",
+      "implementation": "cli.py, validator.py"
+    },
+    "Zero Dependencies": {
+      "evidence": "pyproject.toml dependencies",
+      "implementation": "Only pythonnet and essentials"
+    }
+  },
+
+  "quality_gates": [
+    {
+      "gate": "all_acts_implemented",
+      "minimum_acts": 11,
+      "description": "Must have at least 11 validation acts"
+    },
+    {
+      "gate": "documentation_complete",
+      "minimum_docs_pages": 5,
+      "description": "Must have documentation for features and Acts"
+    },
+    {
+      "gate": "test_coverage",
+      "minimum_test_files": 1,
+      "description": "Must have test suite"
+    },
+    {
+      "gate": "multi_platform",
+      "required_platforms": 2,
+      "description": "Must support multiple platforms"
+    }
+  ]
+}

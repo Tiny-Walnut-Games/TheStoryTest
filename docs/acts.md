@@ -238,6 +238,121 @@ Dead code clutters the codebase and creates maintenance burden.
 
 ---
 
+## Act 12: Mental Model Claims Validation
+
+**Detects**: Project claims capabilities that aren't implemented
+
+### What it Catches
+```json
+// ❌ VIOLATION - Claimed but not implemented
+{
+  "claimed_capabilities": {
+    "platforms": ["Unity", ".NET", "Python"],
+    "integration": ["GitHub Actions", "Azure DevOps"]
+  }
+}
+// Only 2 platforms exist but 3 are claimed
+// No Azure DevOps integration found
+```
+
+### Why it Matters
+Claiming features you don't have creates expectations that lead to user frustration and wasted time. It's foreshadowing without payoff - a broken narrative promise.
+
+### Examples of Violations
+
+- 📦 Claiming multi-platform support but only delivering for one
+- 📚 Claiming features in README that don't exist in code
+- 🔗 Claiming integrations without implementation
+- 🏗️ Claiming architecture support that isn't present
+
+---
+
+## Act 13: Narrative Coherence
+
+**Detects**: Project structure that violates stated architectural rules
+
+### What it Catches
+```json
+// ❌ VIOLATION - Architecture doesn't match narrative
+{
+  "architectural_rules": [
+    {
+      "rule": "separation_of_concerns",
+      "verify": ["Runtime/ independent", "Editor/ separate"]
+    }
+  ]
+}
+// But Runtime and Editor are intertwined, or Editor depends on internal details
+```
+
+### Why it Matters
+Without architectural coherence, the narrative breaks down. Stated principles become lies. Code that doesn't follow its own documented rules is a contradiction in the story.
+
+### Examples of Violations
+
+- ⚙️ Quality gates not met (minimum Acts, docs, tests required)
+- 🏗️ Claimed layers exist but boundaries are violated
+- 📖 Documentation claims don't match implementation
+- 🔀 Platform implementations not symmetric (C# has feature, Python doesn't)
+
+---
+
+## Acts 12 & 13: Mental Model Validation
+
+These acts validate the **narrative level** — ensuring the project's story is coherent and fulfilled.
+
+### Configuration
+
+Create `storytest-mental-model.json` to define your project's narrative:
+
+```json
+{
+  "project": {
+    "name": "My Framework",
+    "mission": "What the project does",
+    "platforms": ["Unity", ".NET"]
+  },
+  "claimed_capabilities": {
+    "core": ["Feature 1", "Feature 2"],
+    "platforms": ["Unity", ".NET"]
+  },
+  "required_artifacts": [
+    {"path": "Runtime/", "type": "directory", "required": true}
+  ],
+  "quality_gates": [
+    {"gate": "all_acts_implemented", "minimum_acts": 11},
+    {"gate": "documentation_complete", "minimum_docs_pages": 5},
+    {"gate": "multi_platform", "required_platforms": 2}
+  ]
+}
+```
+
+### Difference from Acts 1-11
+
+| Aspect | Acts 1-11 | Acts 12-13 |
+|--------|-----------|-----------|
+| **What they check** | Code IL bytecode | Project narrative & structure |
+| **Level** | Individual symbols | Assembly & project |
+| **Violation type** | Implementation gap | Coherence gap |
+| **Example violation** | Empty method | Claims feature but doesn't implement it |
+
+### Running Mental Model Validation
+
+```bash
+# Full validation including Acts 12-13
+python scripts/story_test.py . --output report.json
+
+# Mental model report only
+python -m storytest.mental_model_reporter
+
+# HTML visualization
+# Generated as: mental-model-report.html
+```
+
+See [Mental Model Validation](mental-model-validation.md) for detailed configuration and examples.
+
+---
+
 ## Opt-Out Mechanism
 
 Use `[StoryIgnore]` to exclude legitimate exceptions:
