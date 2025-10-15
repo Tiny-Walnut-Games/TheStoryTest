@@ -1,39 +1,41 @@
 {
-  "name": "com.tinywalnutgames.storytest",
-  "version": "1.2.0",
-  "displayName": "The Story Test Framework",
-  "description": "A comprehensive code quality validation framework for Unity and .NET projects that enforces Story Test Doctrine: every symbol must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.",
-  "unity": "2020.3",
-  "unityRelease": "0f1",
-  "documentationUrl": "https://github.com/jmeyer1980/TheStoryTest/blob/main/docs/README.md",
-  "changelogUrl": "https://github.com/jmeyer1980/TheStoryTest/blob/main/CHANGELOG.md",
-  "licensesUrl": "https://github.com/jmeyer1980/TheStoryTest/blob/main/LICENSE",
-  "keywords": [
-    "confidence",
-    "testing",
-    "validation",
-    "code-quality",
-    "bytecode-analysis",
-    "il-analysis",
-    "code-standards",
-    "story-test",
-    "code-narrative",
-    "production-readiness",
-    "static-analysis"
-  ],
-  "author": {
-    "name": "Tiny Walnut Games",
-    "email": "jmeyer1980@gmail.com",
-    "url": "https://tinywalnutgames.com"
-  },
-  "dependencies": {},
-  "hideInEditor": false,
-  "samples": [
-    {
-      "displayName": "Story Test Example Project",
-      "description": "Complete Unity scene configured with ProductionExcellenceStoryTest and validation settings.",
-      "path": "Samples~/ExampleProject"
-    }
-  ],
-  "type": "tool"
+    "name":  "com.tinywalnutgames.storytest",
+    "version":  "1.2.1",
+    "displayName":  "The Story Test Framework",
+    "description":  "A comprehensive code quality validation framework for Unity and .NET projects that enforces Story Test Doctrine: every symbol must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.",
+    "unity":  "2020.3",
+    "unityRelease":  "0f1",
+    "documentationUrl":  "https://github.com/jmeyer1980/TheStoryTest/blob/main/docs/README.md",
+    "changelogUrl":  "https://github.com/jmeyer1980/TheStoryTest/blob/main/CHANGELOG.md",
+    "licensesUrl":  "https://github.com/jmeyer1980/TheStoryTest/blob/main/LICENSE",
+    "keywords":  [
+                     "confidence",
+                     "testing",
+                     "validation",
+                     "code-quality",
+                     "bytecode-analysis",
+                     "il-analysis",
+                     "code-standards",
+                     "story-test",
+                     "code-narrative",
+                     "production-readiness",
+                     "static-analysis"
+                 ],
+    "author":  {
+                   "name":  "Tiny Walnut Games",
+                   "email":  "jmeyer1980@gmail.com",
+                   "url":  "https://tinywalnutgames.com"
+               },
+    "dependencies":  {
+
+                     },
+    "hideInEditor":  false,
+    "samples":  [
+                    {
+                        "displayName":  "Story Test Example Project",
+                        "description":  "Complete Unity scene configured with ProductionExcellenceStoryTest and validation settings.",
+                        "path":  "Samples~/ExampleProject"
+                    }
+                ],
+    "type":  "tool"
 }

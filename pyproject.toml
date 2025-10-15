@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "storytest"
-version = "1.2.0"
+version = "1.2.1"
 description = "A comprehensive code quality validation framework for Unity and .NET projects that enforces Story Test Doctrine"
 readme = "README.md"
 requires-python = ">=3.8"
