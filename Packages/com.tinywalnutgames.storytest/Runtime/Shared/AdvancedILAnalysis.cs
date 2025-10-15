@@ -395,7 +395,7 @@ namespace TinyWalnutGames.StoryTest.Shared
 
             // If the declaring type is to be skipped, skip the member
             var declaring = (member as Type) ?? member.DeclaringType;
-            if (ShouldSkipType(declaring)) return true;
+            if (declaring != null && ShouldSkipType(declaring)) return true;
 
             var name = member.Name ?? string.Empty;
 
@@ -409,6 +409,11 @@ namespace TinyWalnutGames.StoryTest.Shared
             if (name.Contains("<") || name.Contains(">") || name.Contains("$")) return true;
             if (name.Contains("b__")) return true; // lambda/closure methods
             if (name.Contains("k__BackingField")) return true; // auto-property backing field
+            
+            // Explicit interface implementations (e.g., "System.Collections.IEnumerator.Reset")
+            // These often appear in compiler-generated iterator/async state machines
+            if (name.Contains(".") && (name.Contains("IEnumerator") || name.Contains("IAsyncStateMachine")))
+                return true;
 
             return false;
         }

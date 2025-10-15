@@ -216,6 +216,29 @@ class StoryTestValidator:
             pass
         return False
     
+    def _is_compiler_generated(self, member_name: str, type_name: str) -> bool:
+        """Check if a member or type is compiler-generated"""
+        # Check type name for compiler-generated patterns
+        if "<" in type_name or ">" in type_name or "$" in type_name:
+            return True
+        if "d__" in type_name:  # Iterator/async state machine
+            return True
+        
+        # Check member name for compiler-generated patterns
+        if "<" in member_name or ">" in member_name or "$" in member_name:
+            return True
+        if "b__" in member_name:  # lambda/closure methods
+            return True
+        if "k__BackingField" in member_name:  # auto-property backing field
+            return True
+        
+        # Explicit interface implementations (e.g., "System.Collections.IEnumerator.Reset")
+        # These often appear in compiler-generated iterator/async state machines
+        if "." in member_name and ("IEnumerator" in member_name or "IAsyncStateMachine" in member_name):
+            return True
+        
+        return False
+    
     def _validate_type(self, type_obj):
         """Validate a single type"""
         if self._has_story_ignore_attribute(type_obj):
@@ -259,8 +282,11 @@ class StoryTestValidator:
         
         method_name = str(method.Name)
         
-        # Skip compiler-generated methods
-        if method_name.startswith("<") or method.IsSpecialName:
+        # Skip compiler-generated methods and types
+        if self._is_compiler_generated(method_name, type_name):
+            return
+        
+        if method.IsSpecialName:
             return
         
         # Skip inherited methods - only validate methods declared in the current type

@@ -1,0 +1,27 @@
+=== Story Test Production Excellence Report ===
+Started:  2025-10-15 17:08:18Z
+Finished: 2025-10-15 17:08:19Z
+Duration: 0.91s
+Violations: 11
+Production Readiness Score: 45.0%
+
+[Conceptual] 0 violation(s)
+    Note: Architectural compliance ran in non-ECS environment.
+    Note: Conceptual validation passed with no violations.
+
+[StoryIntegrity] 11 violation(s)
+  - TinyWalnutGames.UI.UIManager.SwitchToColorTab: Method 'SwitchToColorTab' is never called - consider removing cold method
+  - TinyWalnutGames.Tools.AddSceneToBuildSettings.ValidateAddSceneToBuildSettings: Method 'ValidateAddSceneToBuildSettings' is never called - consider removing cold method
+  - TinyWalnutGames.Tools.AddSceneToBuildSettings.AddScenesToBuildSettingsAndOpenMenu: Method 'AddScenesToBuildSettingsAndOpenMenu' is never called - consider removing cold method
+  - TinyWalnutGames.Tools.CharacterPrefabSetter.CreateAllBlinkCharacterPrefabs: Method 'CreateAllBlinkCharacterPrefabs' is never called - consider removing cold method
+  - TinyWalnutGames.Tools.CharacterPrefabSetter.CreateSyntyBaseCharacter: Method 'CreateSyntyBaseCharacter' is never called - consider removing cold method
+  - TinyWalnutGames.Tools.CharacterPrefabSetter.CreateSciFiHeroCharacter: Method 'CreateSciFiHeroCharacter' is never called - consider removing cold method
+  - TinyWalnutGames.Tools.PredefinedColors.Blend: Method 'Blend' is never called - consider removing cold method
+  - TinyWalnutGames.ModularCharacters.MCCustomizer.CycleVariants: Method 'CycleVariants' is never called - consider removing cold method
+  - TinyWalnutGames.ModularCharacters.MCCustomizerEditor.ResetCharacter: Method 'ResetCharacter' is never called - consider removing cold method
+  - TinyWalnutGames.StoryTest.StoryIntegrityValidator.RegisterRule: Method contains NotImplementedException indicating TODO implementation
+  - TinyWalnutGames.StoryTest.StoryIntegrityValidator.RegisterRulesFromAssembly: Method 'RegisterRulesFromAssembly' is never called - consider removing cold method
+
+Additional Notes:
+[SyncPointPerformance] Sync-point performance detected potential bottlenecks
+

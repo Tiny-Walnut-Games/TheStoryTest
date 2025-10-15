@@ -13,7 +13,9 @@ $ErrorActionPreference = "Stop"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Split-Path -Parent $ScriptDir
-$PackageJson = Join-Path $ProjectRoot "Packages\com.tinywalnutgames.storytest\package.json"
+$UnityPackageJson = Join-Path $ProjectRoot "Packages\com.tinywalnutgames.storytest\package.json"
+$RootPackageJson = Join-Path $ProjectRoot "package.json"
+$PyProjectToml = Join-Path $ProjectRoot "pyproject.toml"
 
 # Helper functions
 function Write-Info {
@@ -37,13 +39,13 @@ function Write-Error-Exit {
     exit 1
 }
 
-# Get current version from package.json
+# Get current version from Unity package.json
 function Get-CurrentVersion {
-    if (-not (Test-Path $PackageJson)) {
-        Write-Error-Exit "package.json not found at $PackageJson"
+    if (-not (Test-Path $UnityPackageJson)) {
+        Write-Error-Exit "Unity package.json not found at $UnityPackageJson"
     }
     
-    $json = Get-Content $PackageJson -Raw | ConvertFrom-Json
+    $json = Get-Content $UnityPackageJson -Raw | ConvertFrom-Json
     return $json.version
 }
 
@@ -80,17 +82,30 @@ function Get-BumpedVersion {
     return "{0}.{1}.{2}" -f $major, $minor, $patchNum
 }
 
-# Update version in package.json
+# Update version in all package files
 function Update-PackageVersion {
     param([string]$NewVersion)
     
-    Write-Info "Updating package.json to version $NewVersion..."
-    
-    $json = Get-Content $PackageJson -Raw | ConvertFrom-Json
+    # Update Unity package.json
+    Write-Info "Updating Unity package.json to version $NewVersion..."
+    $json = Get-Content $UnityPackageJson -Raw | ConvertFrom-Json
     $json.version = $NewVersion
-    $json | ConvertTo-Json -Depth 10 | Set-Content $PackageJson
+    $json | ConvertTo-Json -Depth 10 | Set-Content $UnityPackageJson
+    Write-Success "Unity package.json updated"
     
-    Write-Success "package.json updated"
+    # Update root package.json
+    Write-Info "Updating root package.json to version $NewVersion..."
+    $json = Get-Content $RootPackageJson -Raw | ConvertFrom-Json
+    $json.version = $NewVersion
+    $json | ConvertTo-Json -Depth 10 | Set-Content $RootPackageJson
+    Write-Success "Root package.json updated"
+    
+    # Update pyproject.toml
+    Write-Info "Updating pyproject.toml to version $NewVersion..."
+    $content = Get-Content $PyProjectToml -Raw
+    $content = $content -replace 'version = "[\d\.]+"', "version = `"$NewVersion`""
+    Set-Content $PyProjectToml -Value $content -NoNewline
+    Write-Success "pyproject.toml updated"
 }
 
 # Create git tag
@@ -107,8 +122,8 @@ function New-GitTag {
         Write-Error-Exit "Tag $tag already exists"
     }
     
-    # Commit version change
-    git add $PackageJson
+    # Commit version changes
+    git add $UnityPackageJson $RootPackageJson $PyProjectToml
     try {
         git commit -m "Bump version to $Version"
     } catch {
