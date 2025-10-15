@@ -87,6 +87,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="Tell you what.... create a patch using the current state of the repo, ignoring the file I was foolish enough to commit... and then we will roll back to the commit just before I did that and patch it? But don't immediately rollback because we will lose the patch. I need to be able to grab it from you first so we have it.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760490221510" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="Thank you. Let's do a complete documentation overhaul: evaporating, condensing, and Gitbooking ourselves a documentation directory. All developmental history artifacts need to find a home within a changelog and I believe we may need to implement the versioning scheme and prep the packages for release. The only non customer-facing documentation at root should be that which is required/expected by community guidelines. I am not a fan of directory-based readmes... I find them to be bloat rather then useful. There are some circumstances where such a thing is needed, like tools packaged with other tools... but that's about it. I do not like documents scattered all over the place.">
           <value>
             <GhostTextMetaData>
