@@ -1,6 +1,6 @@
 {
     "name":  "com.tinywalnutgames.storytest",
-    "version":  "1.2.1",
+    "version":  "1.2.2",
     "displayName":  "The Story Test Framework",
     "description":  "A comprehensive code quality validation framework for Unity and .NET projects that enforces Story Test Doctrine: every symbol must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.",
     "unity":  "2020.3",

@@ -1,6 +1,6 @@
 {
     "name":  "@tinywalnutgames/storytest",
-    "version":  "1.2.1",
+    "version":  "1.2.2",
     "description":  "Story Test Framework - Code quality validation via IL bytecode analysis for Unity and .NET projects",
     "main":  "scripts/story_test.py",
     "scripts":  {
