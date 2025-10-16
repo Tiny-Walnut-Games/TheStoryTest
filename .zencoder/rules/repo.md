@@ -116,3 +116,20 @@ python scripts/story_test_unity_safe.py . --fail-on-violations --output story-te
 **Version Management**: 
 - Version is maintained in package.json, pyproject.toml, and Packages/com.tinywalnutgames.storytest/package.json
 - Release script: scripts/release.sh or scripts/release.ps1
+
+## Zencoder Personal Guidelines
+
+### Terminal Scripts with Emojis
+⚠️ **Important**: When creating or modifying terminal/CLI scripts that use emojis (status indicators, checkmarks, etc.), **always add UTF-8 BOM encoding**.
+
+#### For Python Scripts:
+```python
+#!/usr/bin/env python3
+# -*- coding: utf-8-sig -*-
+```
+Add this as the first two lines of the file to ensure emojis display correctly in terminal output on all platforms.
+
+#### For PowerShell Scripts:
+Add UTF-8 BOM when saving (most editors have this option in "Save with Encoding").
+
+**Reason**: Emojis require explicit UTF-8 encoding. Without BOM, some terminals (especially on Windows) may misinterpret the character encoding, causing display issues or script failures.
