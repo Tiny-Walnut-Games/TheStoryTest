@@ -17,24 +17,23 @@ from pathlib import Path
 from typing import Dict, Any, List, Tuple
 
 
-# Known-good versions that work across all platforms
+# Known-good versions that work across all platforms (extracted from packages-lock.json for Linux compatibility)
 CANONICAL_VERSIONS = {
     "com.tinywalnutgames.storytest": "https://github.com/jmeyer1980/TheStoryTest.git?path=Packages/com.tinywalnutgames.storytest",
-    "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "2.0.0",
     "com.unity.collab-proxy": "2.0.0",
     "com.unity.feature.ecs": "1.0.0",
-    "com.unity.ide.rider": "3.0.0",
+    "com.unity.ide.rider": "3.0.38",
     "com.unity.ide.visualstudio": "2.0.0",
     "com.unity.inputsystem": "1.7.0",
     "com.unity.multiplayer.center": "1.0.0",
-    "com.unity.render-pipelines.universal": "14.0.0",
-    "com.unity.test-framework": "1.1.0",
+    "com.unity.render-pipelines.universal": "17.2.0",
+    "com.unity.test-framework": "1.6.0",
     "com.unity.testtools.codecoverage": "1.0.0",
-    "com.unity.timeline": "1.6.0",
+    "com.unity.timeline": "1.8.9",
     "com.unity.toolchain.win-x86_64-linux-x86_64": "2.0.0",
     "com.unity.ugui": "2.0.0",
-    "com.unity.visualscripting": "1.7.0",
+    "com.unity.visualscripting": "1.9.7",
 }
 
 
