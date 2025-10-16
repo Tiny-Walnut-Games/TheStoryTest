@@ -6,8 +6,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Unity Version](https://img.shields.io/badge/Unity-2020.3%2B-blue.svg)](https://unity.com/releases)
-[![StoryTest Validation](https://img.shields.io/badge/StoryTest-11%20Acts-green.svg)](docs/acts.md)
-[![Coming Soon](https://img.shields.io/badge/StoryTest-13%20Acts%20in%201.3.0-orange.svg)](https://github.com/jmeyer1980/TheStoryTest/releases)
+[![StoryTest Validation](https://img.shields.io/badge/StoryTest-13%20Acts-green.svg)](docs/acts.md)
+[![Version](https://img.shields.io/badge/Version-1.3.0%20Pre--release-orange.svg)](https://github.com/jmeyer1980/TheStoryTest/releases)
 
 ## **Symbol Integrity & Narrative Completeness for C# Projects**
 
