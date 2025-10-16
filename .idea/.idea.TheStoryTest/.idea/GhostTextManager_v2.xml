@@ -111,6 +111,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="I finally have the mascot showing up in the online repo, but it is getting shrunk down quite strongly.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760584514078" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="I gaurantee you that if we were to crack the dlls open ourselves and match the methods, we would find no violations. These are Roslyn artifacts from methods that are called by themselves or by Unity Lifetime. Confirm?">
           <value>
             <GhostTextMetaData>
@@ -268,6 +280,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="did I just successfully cherrypick out changes to main into develop? Cause, yeah... not really a code update as much as a sidegrade, right?">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760583210540" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="first off... i linked the very image I wanted used and it looks like you ignored that fact. I said THIS image. Not those or whatever happens to still be showing up in the repo.">
           <value>
             <GhostTextMetaData>
@@ -275,6 +299,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1760581654221" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="having some difficulty, as the mascot is not appearing in the repo's development branch readme.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760583423591" />
                 </list>
               </option>
             </GhostTextMetaData>
