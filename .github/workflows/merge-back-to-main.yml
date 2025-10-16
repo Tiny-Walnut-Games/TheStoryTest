@@ -1,0 +1,58 @@
+name: 🔄 Merge Release Back to Main
+
+# After successful release, merges release branch back to main and develop
+# Maintains branch consistency and prevents drift
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  merge-back:
+    name: 🔄 Merge release → main → develop
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔧 Configure Git
+        run: |
+          git config --global user.name "Story Test Bot"
+          git config --global user.email "bot@tinywalnutgames.com"
+
+      - name: 📍 Get current version
+        id: version
+        run: |
+          VERSION=$(jq -r '.version' Packages/com.tinywalnutgames.storytest/package.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📌 Current version: $VERSION"
+
+      - name: 🔀 Merge release → main
+        run: |
+          git fetch origin
+          git checkout main
+          git merge origin/release --no-ff -m "🔀 Merge release v${{ steps.version.outputs.version }} to main"
+          git push origin main
+          echo "✅ Successfully merged release to main"
+
+      - name: 🔀 Merge main → develop
+        run: |
+          git fetch origin
+          git checkout develop
+          git merge origin/main --no-ff -m "🔀 Merge main back to develop after release v${{ steps.version.outputs.version }}"
+          git push origin develop
+          echo "✅ Successfully merged main to develop"
+
+      - name: 📢 Notify
+        run: |
+          echo "✅ Release v${{ steps.version.outputs.version }} propagated to all branches"
+          echo "📊 Branch Status:"
+          echo "  - main: Updated with release"
+          echo "  - develop: Updated with latest from main"
+          echo "  - release: Ready for next release cycle"
