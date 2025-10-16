@@ -3,6 +3,18 @@
   <component name="GhostTextManager">
     <option name="inputs">
       <map>
+        <entry key="11 acts because 1.3.0 is in pre-release?">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760586634243" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="@&lt;file_name&gt; Windows and Mac. As far as testing workflows go... you are right. There is a python version of the story test that I believe you ran yourself. It was nice seeing a script just RUN today. lol. Go ahead and start at the top.">
           <value>
             <GhostTextMetaData>
@@ -22,6 +34,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1760582467512" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="Can we add some tags to the readmes? We can add lastest stable, latest pre-release, StoryTest validation, and others.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760586570324" />
                 </list>
               </option>
             </GhostTextMetaData>
@@ -275,6 +299,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1760582096311" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="current 1.2.1 release only has 11 acts as you expect. 1.3.0 has 13.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760586693757" />
                 </list>
               </option>
             </GhostTextMetaData>
