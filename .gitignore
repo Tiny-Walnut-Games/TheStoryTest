@@ -123,3 +123,4 @@ ENV/
 # Story Test reports
 story-test-report.json
 .debug/
+/.idea/zencoder/chats
