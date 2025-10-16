@@ -134,7 +134,7 @@ jobs:
         with:
           path: Samples~/ExampleProject/Library
           key: >-
-            Library-ubuntu-latest-6.2.1f1-${{ hashFiles(
+            Library-ubuntu-latest-6000.2.6f2-${{ hashFiles(
               'Packages/com.tinywalnutgames.storytest/**',
               'Samples~/ExampleProject/Assets/**',
               'Samples~/ExampleProject/Packages/manifest.json',
@@ -142,7 +142,7 @@ jobs:
               'Samples~/ExampleProject/ProjectSettings/ProjectVersion.txt'
             ) }}
           restore-keys: |
-            Library-ubuntu-latest-6.2.1f1-
+            Library-ubuntu-latest-6000.2.6f2-
             Library-ubuntu-latest-
 
       # Note: Unity secrets (UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD) must be added to repository Settings > Secrets
@@ -157,7 +157,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}  # pragma: allowlist secret
         with:
           projectPath: Samples~/ExampleProject
-          unityVersion: '6.2.1f1'
+          unityVersion: '6000.2.6f2'
           targetPlatform: StandaloneLinux64
           buildName: StoryTestSampleBuild
 
@@ -234,7 +234,7 @@ jobs:
         with:
           path: Samples~/ExampleProject/Library
           key: >-
-            Library-windows-latest-6.2.1f1-${{ hashFiles(
+            Library-windows-latest-6000.2.6f2-${{ hashFiles(
               'Packages/com.tinywalnutgames.storytest/**',
               'Samples~/ExampleProject/Assets/**',
               'Samples~/ExampleProject/Packages/manifest.json',
@@ -242,7 +242,7 @@ jobs:
               'Samples~/ExampleProject/ProjectSettings/ProjectVersion.txt'
             ) }}
           restore-keys: |
-            Library-windows-latest-6.2.1f1-
+            Library-windows-latest-6000.2.6f2-
             Library-windows-latest-
 
       - name: Build Sample Project (to generate assemblies)
@@ -253,7 +253,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}  # pragma: allowlist secret
         with:
           projectPath: Samples~/ExampleProject
-          unityVersion: '6.2.1f1'
+          unityVersion: '6000.2.6f2'
           targetPlatform: StandaloneWindows64
           buildName: StoryTestSampleBuild
 
@@ -330,7 +330,7 @@ jobs:
         with:
           path: Samples~/ExampleProject/Library
           key: >-
-            Library-macos-latest-6.2.1f1-${{ hashFiles(
+            Library-macos-latest-6000.2.6f2-${{ hashFiles(
               'Packages/com.tinywalnutgames.storytest/**',
               'Samples~/ExampleProject/Assets/**',
               'Samples~/ExampleProject/Packages/manifest.json',
@@ -338,7 +338,7 @@ jobs:
               'Samples~/ExampleProject/ProjectSettings/ProjectVersion.txt'
             ) }}
           restore-keys: |
-            Library-macos-latest-6.2.1f1-
+            Library-macos-latest-6000.2.6f2-
             Library-macos-latest-
 
       - name: Build Sample Project (to generate assemblies)
@@ -349,7 +349,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}  # pragma: allowlist secret
         with:
           projectPath: Samples~/ExampleProject
-          unityVersion: '6.2.1f1'
+          unityVersion: '6000.2.6f2'
           targetPlatform: StandaloneOSX
           buildName: StoryTestSampleBuild
 
