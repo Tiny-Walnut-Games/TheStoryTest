@@ -304,6 +304,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="first pasted image is what I see when previewing the readme in origine/develop. The second is what I see when looking at origin/develop's landing page. For some reason, it just keeps getting squashed in the landing page.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760585342904" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="having some difficulty, as the mascot is not appearing in the repo's development branch readme.">
           <value>
             <GhostTextMetaData>
