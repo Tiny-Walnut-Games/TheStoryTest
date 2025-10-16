@@ -7,7 +7,7 @@
 <table>
 <tr>
 <td width="200" valign="top">
-<img src="WarblerMascotStickerized%20copy.png" alt="Warbler Mascot" width="180">
+<img src="WarblerMascot.png" alt="Warbler Mascot" width="360">
 </td>
 <td width="*" valign="top">
 
