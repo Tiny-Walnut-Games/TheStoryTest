@@ -6,8 +6,8 @@
 
 <table>
 <tr>
-<td width="360" valign="top">
-<img src="WarblerMascotStickerized.png" alt="Warbler Mascot" width="360">
+<td width="400" valign="top" style="padding-right: 20px;">
+<img src="WarblerMascotStickerized.png" alt="Warbler Mascot" width="400" style="max-width: 400px;">
 </td>
 <td width="*" valign="top">
 

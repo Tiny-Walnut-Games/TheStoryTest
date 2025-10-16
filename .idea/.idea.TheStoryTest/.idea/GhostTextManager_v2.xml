@@ -111,6 +111,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="I finally have the mascot showing up in the online repo, but it is getting shrunk down quite strongly.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760584514078" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="I gaurantee you that if we were to crack the dlls open ourselves and match the methods, we would find no violations. These are Roslyn artifacts from methods that are called by themselves or by Unity Lifetime. Confirm?">
           <value>
             <GhostTextMetaData>
