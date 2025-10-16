@@ -8,7 +8,6 @@
 [![Unity Version](https://img.shields.io/badge/Unity-2020.3%2B-blue.svg)](https://unity.com/releases)
 [![StoryTest Validation](https://img.shields.io/badge/StoryTest-13%20Acts-green.svg)](docs/acts.md)
 [![Version](https://img.shields.io/badge/Version-1.3.0%20Pre--release-orange.svg)](https://github.com/jmeyer1980/TheStoryTest/releases)
-
 ## **Symbol Integrity & Narrative Completeness for C# Projects**
 
 A code quality validation framework that enforces the "Story Test Doctrine": every symbol (method, property, parameter, enum) must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.
