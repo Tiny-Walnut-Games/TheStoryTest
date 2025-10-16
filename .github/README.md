@@ -9,11 +9,13 @@
 <td width="400" valign="top" style="padding-right: 20px;">
 <img src="WarblerMascotStickerized.png" alt="Warbler Mascot";">
 </td>
-<td width="*" valign="top">
-
+<td>
 A code quality validation framework that enforces the "Story Test Doctrine": every symbol (method, property, parameter, enum) must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.
 
 Originally designed for Unity ECS/DOTS projects, Story Test is now **Unity-agnostic** and works with any C# codebase, including GameObject-based Unity projects and pure .NET applications.
+</td>
+</tr>
+</table>
 
 ## 🚀 Quick Start
 
@@ -22,9 +24,6 @@ Add to Unity Package Manager via git URL:
 ```
 https://github.com/jmeyer1980/TheStoryTest.git?path=Packages/com.tinywalnutgames.storytest
 ```
-</td>
-</tr>
-</table>
 
 ### First Validation
 ```bash
