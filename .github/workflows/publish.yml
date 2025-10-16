@@ -31,19 +31,22 @@ jobs:
     - name: Build package
       run: python -m build
 
+    - name: List package contents
+      run: ls -la dist/
+
     - name: Check package
-      run: python -m twine check dist/*
+      run: python -m twine check dist/storytest-*
 
     - name: Upload to TestPyPI
       if: github.event.inputs.test == 'true'
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
-      run: python -m twine upload --repository testpypi dist/*
+      run: python -m twine upload --repository testpypi dist/storytest-*
 
     - name: Upload to PyPI
       if: github.event.inputs.test != 'true'
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      run: python -m twine upload dist/*
+      run: python -m twine upload dist/storytest-*
