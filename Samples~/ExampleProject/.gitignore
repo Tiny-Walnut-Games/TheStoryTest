@@ -1,0 +1,39 @@
+# IDE
+.idea/
+.vscode/
+*.sln.DotSettings
+*.csproj~
+*.user
+
+# Build & Compilation
+obj/
+bin/
+*.o
+*.a
+*.lib
+*.so
+*.dylib
+
+# Node
+node_modules/
+package-lock.json
+npm-debug.log
+
+# Lock files (auto-generated)
+packages-lock.json
+
+# Generated
+UIElementsSchema/
+
+# Project Settings (generated)
+ProjectSettings/Packages/
+ProjectSettings/EntitiesClientSettings.asset
+ProjectSettings/URPProjectSettings.asset
+
+# Build output
+WebGL-Build/
+Builds/
+
+# OS
+.DS_Store
+Thumbs.db
