@@ -364,6 +364,30 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="i am sorry that I am bad at github... I switched to pre-release branch, cherry picked the readme changes and thought i handled the conflicts correctly, can you give me a patch to update the readmes in that pre-release branch or just update them for me? I did switch back to develop because I was confused I didn't see the updated tags on the landing page for develop branch... I can confirm pushing but I don't see the tags in the repo.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760587189964" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="if you recall correctly I did say I switched into pre-release and then back out of that and into develop and stated that develop is where I currently was upon sending the message. All of which you verified... and then you say that the issue was I was on the wrong branch? Which is it?">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760587358374" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="ok. that should be a more reasonable size, but set to 144ppi.">
           <value>
             <GhostTextMetaData>
