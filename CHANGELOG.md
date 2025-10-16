@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [1.3.0] - 2025-10-16
+
+
+- Bump version to 1.3.0 (6af4c38)
+- Fix CHANGELOG encoding (UTF-8) and reorganize v1.2.1 vs Unreleased content (fbfd794)
+- Last commit claimed bump to v1.2.2 but we're not ready for that tag. (9d69702)
+- Update CHANGELOG date for v1.2.1 release (0cfc1d2)
+- Update CHANGELOG date for v1.2.1 release (8db0e89)
+- Update CHANGELOG date for v1.2.1 release (58a529e)
+- Update CHANGELOG date for v1.2.1 release (77afda6)
+
+
 ## [1.3.0] - 2025-10-16
 
 ### Added
