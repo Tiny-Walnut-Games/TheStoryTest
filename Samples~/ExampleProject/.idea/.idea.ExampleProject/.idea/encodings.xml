@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" native2AsciiForPropertiesFiles="true" defaultCharsetForPropertiesFiles="UTF-8" addBOMForNewFiles="with BOM under Windows, with no BOM otherwise">
+    <file url="file://$PROJECT_DIR$/Assets/Resources/BSUI.prefab" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Resources/BSUI.prefab.meta" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Resources/Bubble.prefab.meta" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Resources/BubbleShooter.prefab" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Resources/BubbleShooter.prefab.meta" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Resources/BubbleShooterGameManager.prefab" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Resources/BubbleShooterGameManager.prefab.meta" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Resources/BubbleShooterSetup.prefab" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Resources/BubbleShooterSetup.prefab.meta" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Resources/Story Test Runner.prefab" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Resources/Story Test Runner.prefab.meta" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Scripts/Bubble.cs" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Scripts/BubbleShooter.cs" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Scripts/BubbleShooterGameManager.cs" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Scripts/BubbleShooterGameSetup.cs" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Scripts/BubbleShooterScene.cs" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Assets/Scripts/BubbleSpriteGenerator.cs" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Packages/manifest.json" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Packages/packages-lock.json" charset="UTF-16" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>

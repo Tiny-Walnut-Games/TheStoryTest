@@ -1,0 +1,810 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c6293db5-761a-4efa-9836-f4e1de6f16d7" name="Changes" comment="Update Unity version to 6000.2.6f2 in workflows&#10;&#10;Signed-off-by: Bellok &lt;jerioke@live.com&gt;">
+      <change beforePath="$PROJECT_DIR$/../../.idea/.idea.TheStoryTest/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../.idea/.idea.TheStoryTest/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DpaMonitoringSettings">
+    <option name="firstShow" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;jmeyer1980&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/jmeyer1980/TheStoryTest.git&quot;,
+    &quot;accountId&quot;: &quot;c1741a82-731b-4bcb-8c94-3221a25edbc6&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Debug.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Debug/bubbleshot1.png.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Debug/consolepasta.md.meta" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/DefaultVolumeProfile.asset" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/DefaultVolumeProfile.asset.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources/BSUI.prefab" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources/BSUI.prefab.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources/Bubble.prefab" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources/Bubble.prefab.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources/BubbleShooterGameManager.prefab" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources/BubbleShooterGameManager.prefab.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources/BubbleShooterSetup.prefab" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources/BubbleShooterSetup.prefab.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources/Story Test Runner.prefab" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources/Story Test Runner.prefab.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources/UI.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources/UI/BubbleShooterStyles.uss.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources/UI/BubbleShooterUI.uxml.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Resources/UI/GameDisplay.renderTexture.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scenes.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Bubble.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/BubbleShooter.Scripts.asmdef" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/BubbleShooter.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/BubbleShooterGameSetup.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/BubbleShooterScene.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/BubbleSpriteGenerator.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Settings.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Tests.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Tests/Editor.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Tests/Editor/BubbleShooter.Tests.Editor.asmdef" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Tests/Editor/BubbleShooterEditorTests.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Tests/Runtime.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Tests/Runtime/BubbleShooter.Tests.Runtime.asmdef" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Tests/Runtime/BubbleShooterPlayModeTests.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Tests/Runtime/TestHelpers.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Tests/Runtime/TestHelpers/UnityTestHelpers.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/UI Toolkit.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/UI Toolkit/PanelSettings.asset" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/UI Toolkit/PanelSettings.asset.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/UI Toolkit/UnityThemes.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/UI Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/UI.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/UniversalRenderPipelineGlobalSettings.asset" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/UniversalRenderPipelineGlobalSettings.asset.meta" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/package.json" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="SWEA" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="349NEGM9KPjS5AUAz4mVAWy5QOp" />
+  <component name="ProjectViewState">
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="openDirectoriesWithSingleClick" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="sortKey" value="BY_TIME_DESCENDING" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Attach to Unity Editor.Attach to Unity Editor.executor&quot;: &quot;Debug&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.zencoder-patch-add-chat-message-raw-content&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.zencoder-patch-chat-storage-migration&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.zencoder-patch-generate-chat-message-id&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.zencoder-patch-migrate-custom-instruction&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.zencoder-patch-migrate-repo-info-to-rules&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;dev.sweep.assistant.data.RecentlyUsedFiles&quot;: &quot;.gitignore;run-unity-tests.ps1;Packages\\manifest.json;.zencoder\\rules\\repo.md;Assets\\Tests\\Runtime\\BubblePositioningTests.cs;Assets\\Tests\\Runtime\\TestHelpers\\UnityTestHelpers.cs;Assets\\Scripts\\BubbleShooterGameManager.cs;UNITY_TESTING_SUMMARY.md;Assets\\Tests\\UNITY_TESTING_GUIDE.md;Assets\\Tests\\Runtime\\TestHelpers.meta&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;terminal&quot;,
+    &quot;sweep.chatMode&quot;: &quot;Agent&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\Jerry\\AppData\\Local\\JetBrains\\Installations\\Rider252\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
+    <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
+      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\6000.2.6f2\Editor\Unity.exe" />
+      <option name="PROGRAM_PARAMETERS" value="-projectPath E:\Tiny_Walnut_Games\TheStoryTest\Samples~\ExampleProject -debugCodeOptimization" />
+      <option name="WORKING_DIRECTORY" value="E:\Tiny_Walnut_Games\TheStoryTest\Samples~\ExampleProject" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="ENV_FILE_PATHS" value="" />
+      <option name="REDIRECT_INPUT_PATH" value="" />
+      <option name="PTY_MODE" value="Auto" />
+      <option name="MIXED_MODE_DEBUG" value="0" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Unit Tests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
+      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\6000.2.6f2\Editor\Unity.exe" />
+      <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath E:\Tiny_Walnut_Games\TheStoryTest\Samples~\ExampleProject -testResults Logs/results.xml -logFile Logs/Editor.log -testPlatform EditMode -debugCodeOptimization" />
+      <option name="WORKING_DIRECTORY" value="E:\Tiny_Walnut_Games\TheStoryTest\Samples~\ExampleProject" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="ENV_FILE_PATHS" value="" />
+      <option name="REDIRECT_INPUT_PATH" value="" />
+      <option name="PTY_MODE" value="Auto" />
+      <option name="MIXED_MODE_DEBUG" value="0" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Attach to Unity Editor &amp; Play" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="UNITY_ATTACH_AND_PLAY" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="listenPortForConnections" value="false" />
+      <option name="pid" />
+      <option name="projectPathOnTarget" />
+      <option name="runtimes">
+        <list />
+      </option>
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <option name="useMixedMode" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="listenPortForConnections" value="false" />
+      <option name="pid" />
+      <option name="projectPathOnTarget" />
+      <option name="runtimes">
+        <list />
+      </option>
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <option name="useMixedMode" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Attach to Device" type="UnityDevicePlayer" factoryName="UnityAttachToDevicePlayer">
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c6293db5-761a-4efa-9836-f4e1de6f16d7" name="Changes" comment="" />
+      <created>1760621715745</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1760621715745</updated>
+      <workItem from="1760621719195" duration="11198000" />
+      <workItem from="1760638254466" duration="28100000" />
+      <workItem from="1760725980243" duration="2792000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="true" />
+  <component name="UnityProjectDiscoverer">
+    <option name="hasUnityReference" value="true" />
+    <option name="unityProject" value="true" />
+    <option name="unityProjectFolder" value="true" />
+  </component>
+  <component name="UnityUnitTestConfiguration" currentTestLauncher="Both" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="Update Unity version to 6000.2.6f2 in workflows&#10;&#10;Signed-off-by: Bellok &lt;jerioke@live.com&gt;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update Unity version to 6000.2.6f2 in workflows&#10;&#10;Signed-off-by: Bellok &lt;jerioke@live.com&gt;" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.OperationCanceledException" breakIfHandledByOtherCode="false" displayValue="System.OperationCanceledException" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.Tasks.TaskCanceledException" breakIfHandledByOtherCode="false" displayValue="System.Threading.Tasks.TaskCanceledException" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
+          <option name="timeStamp" value="3" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="ai.zencoder.plugin.mcp">
+    <option name="internalToolsState" value="{&quot;web_search&quot;:true,&quot;fetch_webpage&quot;:true,&quot;str_replace_editor&quot;:true,&quot;file_search&quot;:true,&quot;ExecuteShellCommand&quot;:true,&quot;list_resources&quot;:true,&quot;FileDiagnosticsTool&quot;:true,&quot;fulltext_search&quot;:true,&quot;read_resource&quot;:true,&quot;RequirementsTool&quot;:true}" />
+    <option name="libraryTools">
+      <map>
+        <entry key="agentql">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="agentrpc">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="aiven">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="apache iotdb">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="apify">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="apimatic mcp">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="astra db">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="aws kb retrieval">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="axiom">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="bankless onchain">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="bicscan">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="box">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="brave search">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="browserbase">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="chroma">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="circleci">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="clickhouse">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="cloudflare">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="codacy">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="codelogic">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="comet opik">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="context7">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="convex">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="e2b">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="elasticsearch">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="everart">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="everything">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="exa">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="fetch">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="fibery">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="filesystem">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="financial datasets">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="firecrawl">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="fireproof">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="forevervm">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="git">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="gitee">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="github">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="gitlab">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="google drive">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="google maps">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="grafana">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="graphlit">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="greptimedb">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="heroku">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="hologres">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="hyperbrowser">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="ibm wxflows">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="inkeep">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="integration app">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="jetbrains">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="kagi search">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="langfuse prompt management">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="logfire">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="mailgun">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="make">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="meilisearch">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="memory">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="metoro">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="milvus">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="momento">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="motherduck">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="needle">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="neo4j">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="neon">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="notion">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="oceanbase">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="octagon">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="oxylabs">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="paddle">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="paypal">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="perplexity">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="playwright">
+          <value>
+            <McpServerInfo>
+              <option name="status">
+                <McpServerStatus />
+              </option>
+            </McpServerInfo>
+          </value>
+        </entry>
+        <entry key="postgresql">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="puppeteer">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="qdrant">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="ramp">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="raygun">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="redis">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="riza">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="screenshotone">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="search1api">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="semgrep">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="sentry">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="sequential thinking">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="singlestore">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="slack">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="sqlite">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="starrocks">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="stripe">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="taskmaster-ai">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="tavily">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="thirdweb">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="tinybird">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="unifai">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="unstructured">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="vectorize">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="zapier">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+        <entry key="zenml">
+          <value>
+            <McpServerInfo />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="mcpServers" value="{&quot;playwright&quot;:{&quot;type&quot;:&quot;STDIO&quot;,&quot;command&quot;:&quot;npx&quot;,&quot;cwd&quot;:null,&quot;args&quot;:[&quot;-y&quot;,&quot;@playwright/mcp@latest&quot;,&quot;--isolated&quot;,&quot;--headless&quot;,&quot;--browser&quot;,&quot;firefox&quot;,&quot;--user-agent&quot;,&quot;\&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.6422.112 Safari/537.36\&quot;&quot;],&quot;env&quot;:{}}}" />
+    <option name="zencoderBackendTools">
+      <map>
+        <entry key="ExecuteShellCommand">
+          <value>
+            <McpServerInfo>
+              <option name="status">
+                <McpServerStatus />
+              </option>
+            </McpServerInfo>
+          </value>
+        </entry>
+        <entry key="FileDiagnosticsTool">
+          <value>
+            <McpServerInfo>
+              <option name="status">
+                <McpServerStatus />
+              </option>
+            </McpServerInfo>
+          </value>
+        </entry>
+        <entry key="RequirementsTool">
+          <value>
+            <McpServerInfo>
+              <option name="status">
+                <McpServerStatus />
+              </option>
+            </McpServerInfo>
+          </value>
+        </entry>
+        <entry key="fetch_webpage">
+          <value>
+            <McpServerInfo>
+              <option name="status">
+                <McpServerStatus />
+              </option>
+            </McpServerInfo>
+          </value>
+        </entry>
+        <entry key="str_replace_editor">
+          <value>
+            <McpServerInfo>
+              <option name="status">
+                <McpServerStatus />
+              </option>
+            </McpServerInfo>
+          </value>
+        </entry>
+        <entry key="web_search">
+          <value>
+            <McpServerInfo>
+              <option name="status">
+                <McpServerStatus />
+              </option>
+            </McpServerInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="ai.zencoder.plugin.rag.RepoInfoWarningState">
+    <option name="lastCheckTime" value="1760714796000" />
+  </component>
+</project>

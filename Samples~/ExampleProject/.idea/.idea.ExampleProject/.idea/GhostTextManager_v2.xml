@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GhostTextManager">
+    <option name="inputs">
+      <map>
+        <entry key="If I were to hazard a guess, I would say that the system doesn't know how to animate it. It shoots, it lands in that same spot every time no matter where I shoot, and then nothing else shoots or appears to shoot. the ball and next ball are there in at the ready, the shot ball vanishes forever (by all appearances) and then is replaced by the next up and the sequence carries on. Nothing visually fires and the only one that makes it LOOK like it fired is that dot way over to the left. Nothing past that first shot appears to work and that first shot was never animated just PING it exists at that spot.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760632291483" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="Thanks for trying! Some of it looks like it is trying to work, the decent happens, I did not let the game end naturally. The bubbles being shot are not visible but appeared to collide with and remove a cluster of bubbles on the left side but above where the bubble shot would have landed (rebound? dunno because of the invisible shots.)">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760628656171" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="This is the example project contained by my tool: The Story Test. But it's not very impressive as an example project. It doesn't have any functional code beyond TST. So what I would love to do, is create a mini-game, like... yeah. A bubble-shooter game using primitive sprites and the UI Toolkit? Think we can whip up a fast minigame like that? It would not require any mobile-kit stuff... I am not looking for a full release example project, just one that builds and plays the mini-game. We can have high scores and the ability to reset them, but it should be minimalistic.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760621970422" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="This is what we are now looking at. First image is the sceneview during runtime and the second is the game view. Shooting bubbles does not fire the bubble along the trajectory, so no collision happens. The grid is too far down, the starting point of the grid before decent should be at around 70% up the screen and the play area should flex to the camera view to match height. My comment about decent assumes that each turn causes the existing bubbles to decend the grid and there should be a game loss trigger and UI.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760628024021" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="firing animation is still not happening and the first shot stuck to the left wall beyond the grid. We're still having game scale issues with the shooter being below the playable area and the grid is still beginning too high for my tastes. So we need a level boundary for the playfield so we aren't shooting outside of the play-space. If needed, would lerping the sprites work? We'd have to being in one of the dotween/hotween packs.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760629151245" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="i see some more encoding issues again and other possible problems.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760632680580" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="it rejected EOF">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760633030873" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="lmao!!! Did you hire someone from southern China near Korea to write this?">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="2.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760623369944" />
+                  <option value="1760623111829" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="ok. after some testing, the game scene is not set up correcty on play just with the BubbleShooterSetup game object. Some of the gameobjects are created, but the elements within are not. Bubbles generated do not have sprite renderers or sprites assigned.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760627051483" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="you're missing the point.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760623435711" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
