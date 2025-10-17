@@ -96,15 +96,35 @@ Packages/com.tinywalnutgames.storytest/
 
 MIT License - see [LICENSE](LICENSE) for details.
 
-## 🤝 Contributing
+## 📋 Operations & Maintenance
 
-Contributions welcome! See [docs/](docs/) for development guidelines.
+### Release & Branch Management
+
+- **[Workflows & Release Strategy](./WORKFLOWS.md)** - Three-branch workflow, branch protection, dependency management
+  - Daily development workflow
+  - Release process automation
+  - Branch protection configuration
+  - Package dependency management
+
+### Historical Reference
+
+- **[Workflow Fixes & Changelog](./FIXES_CHANGELOG.md)** - Historical issues and resolutions
+  - Version tag migration (December 2024)
+  - Linter error fixes (October 2024)
+  - Platform identifier fixes (October 2024)
 
 ### For Maintainers
 
 - **[Release Process](docs/RELEASE_PROCESS.md)** - Automated releases and versioning
 - Releases are automated via GitHub Actions when version tags are pushed
 - Use `./scripts/release.sh` for easy version bumping
+
+### For AI Assistants
+
+- **[AI Guidelines](./../.zencoder/rules/ai-guidelines.md)** - Reality-first instructions for AI helpers
+  - Reality anchor protocol
+  - Developer communication preferences
+  - Verification requirements
 
 ## 🆘 Support
 

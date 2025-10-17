@@ -1,4 +1,8 @@
-# GitHub Actions Workflow Fixes - Complete
+# 🔧 Workflow Fixes & Historical Changes
+
+Historical record of GitHub Actions workflow issues and resolutions.
+
+---
 
 ## Latest Update: December 2024 - Version Tag Migration
 
@@ -42,7 +46,7 @@ uses: game-ci/unity-builder@v4
 
 ---
 
-## Previous Fix: October 2024 - Linter Errors
+## October 2024 - Linter Errors Resolution
 
 ### Problem: 72 Duplicate Linter Errors
 
@@ -78,13 +82,13 @@ uses: game-ci/unity-builder@v4
 - Documents expected secrets (UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD)
 - Provides reference to Unity activation guide
 
-## Current Status: ✅ ALL ERRORS RESOLVED
+**Result**: ✅ ALL ERRORS RESOLVED
 
 - **Before**: 72 errors (7 unique errors × ~10 duplicate references)
 - **After**: 0 errors
 - **Action**: Reloaded VS Code window to clear ghost workspace folder references
 
-## Expected Warnings When Secrets Are Not Configured
+### Expected Warnings When Secrets Are Not Configured
 
 When Unity secrets are not yet added to GitHub repository settings, you may see these **informational warnings**:
 
@@ -97,6 +101,80 @@ When Unity secrets are not yet added to GitHub repository settings, you may see 
 
 See Unity activation guide: <https://game.ci/docs/github/activation>
 
+---
+
+## October 2024 - Platform Identifier Fix
+
+### Issue
+
+The workflow was failing on Linux builds with the error:
+
+```
+Platform must be one of the ones described in the documentation.
+"Linux64" is currently not supported.
+```
+
+### Root Cause
+
+The workflow was using an incorrect platform identifier `Linux64` which is not recognized by Unity's build system.
+
+### Solution
+
+Changed from dynamic platform selection to explicit matrix mapping using correct Unity platform identifiers:
+
+#### Before (Incorrect)
+
+```yaml
+matrix:
+  os: [ubuntu-latest, windows-latest, macos-latest]
+  
+targetPlatform: ${{ matrix.os == 'windows-latest' && 'StandaloneWindows64' || matrix.os == 'macos-latest' && 'StandaloneOSX' || 'Linux64' }}
+```
+
+#### After (Correct)
+
+```yaml
+matrix:
+  include:
+    - os: ubuntu-latest
+      unity-platform: StandaloneLinux64  # ✅ Correct name
+    - os: windows-latest
+      unity-platform: StandaloneWindows64
+    - os: macos-latest
+      unity-platform: StandaloneOSX
+  unity-version: ['2022.3.17f1']
+
+targetPlatform: ${{ matrix.unity-platform }}
+```
+
+### Valid Unity Platform Identifiers
+
+According to [game-ci/unity-builder documentation](https://game.ci/docs/github/builder#targetplatform):
+
+- **Linux**: `StandaloneLinux64` (not ~~Linux64~~)
+- **Windows**: `StandaloneWindows64` (or `StandaloneWindows` for 32-bit)
+- **macOS**: `StandaloneOSX`
+- **WebGL**: `WebGL`
+- **Android**: `Android`
+- **iOS**: `iOS`
+
+### Benefits of This Approach
+
+1. ✅ **Explicit mapping** - Clear relationship between OS runner and Unity build target
+2. ✅ **Maintainable** - Easy to add new platform combinations
+3. ✅ **Type-safe** - No complex ternary expressions that can fail silently
+4. ✅ **Extensible** - Can add platform-specific configurations (e.g., Android API level)
+
+### Testing
+
+After this fix, all three platforms should build successfully:
+
+- ✅ **Ubuntu** → StandaloneLinux64
+- ⏳ **Windows** → StandaloneWindows64
+- ⏳ **macOS** → StandaloneOSX
+
+---
+
 ## Workflow Features
 
 ✅ Cross-platform testing (Ubuntu, Windows, macOS)  
@@ -107,19 +185,11 @@ See Unity activation guide: <https://game.ci/docs/github/activation>
 ✅ Separate job for pure .NET assembly testing  
 ✅ Dependabot-friendly commit hash documentation  
 
-## Next Steps
-
-1. **Add Unity Secrets** to GitHub repository (see link above)
-2. **Push workflow** to GitHub: `git add .github/ && git commit -m "fix: Clean up GitHub Actions workflow" && git push`
-3. **Monitor first run** at: `https://github.com/jmeyer1980/TheStoryTest/actions`
-4. **Review artifacts** uploaded by successful workflow runs
-
 ---
 
-**Date Fixed**: October 2, 2025  
-**Files Modified**:
+## Next Steps When Deploying
 
-- `.github/workflows/story-test.yml`
-- `.github/actionlint.yaml`
-- `.vscode/settings.json`
-- `TheStoryTest.code-workspace`
+1. **Add Unity Secrets** to GitHub repository (see Unity activation link above)
+2. **Push workflow** to GitHub: `git add .github/ && git commit -m "fix: GitHub Actions workflow" && git push`
+3. **Monitor first run** at: `https://github.com/jmeyer1980/TheStoryTest/actions`
+4. **Review artifacts** uploaded by successful workflow runs
