@@ -116,3 +116,63 @@ python scripts/story_test_unity_safe.py . --fail-on-violations --output story-te
 **Version Management**: 
 - Version is maintained in package.json, pyproject.toml, and Packages/com.tinywalnutgames.storytest/package.json
 - Release script: scripts/release.sh or scripts/release.ps1
+
+## Branch Strategy & Synchronization
+
+### Active Branches
+- **develop**: Daily work, feature development. Unstable. Contains latest scripts and syncing tools.
+- **release**: Staging branch for releases. Prepared via automation workflows.
+- **pre-release**: Pre-release testing and documentation.
+- **main**: Production snapshots only. Tagged with version releases.
+
+### Canonical Files (Must Sync Across All Branches)
+These files are identical on all branches. Updates on ANY branch must propagate to ALL others to prevent fragmentation and maintain consistency:
+- **/.github/workflows/**: All workflow files (critical for CI/CD consistency)
+- **/.github/\*.yml**: Workflow configuration
+- **/scripts/**: All utility scripts (sync_versions.py, story_test.py, story_test_unity_safe.py, etc.)
+- **/requirements.txt**: Python dependencies for scripts
+- **/.gitignore, .gitattributes**: Git configuration
+- **pyproject.toml**: Build metadata (canonical for Python distribution)
+
+### Version-Controlled Distribution Files
+These files contain version information and MUST stay synchronized via `scripts/sync_versions.py`:
+- **VERSION.txt**: Single source of truth for version (e.g., "1.3.0")
+- **package.json** (root): npm package version
+- **Packages/com.tinywalnutgames.storytest/package.json**: UPM package version (Unity Package Manager)
+- **Packages/com.tinywalnutgames.editor-tools/package.json**: UPM editor tools version
+- **pyproject.toml**: Python package version
+
+**How it works**: `scripts/sync_versions.py` reads VERSION.txt as canonical source and updates all other files to maintain consistency across multiple package managers (UPM, PyPI, NuGet, npm).
+
+### Branch-Specific Files
+These files can legitimately differ between branches:
+- **/Assets/** and **/Packages/com.tinywalnutgames.storytest/Runtime**: Source code and implementation
+- **/docs/**: Documentation (may have branch-specific notes about upcoming features)
+- **README.md**: May have branch-specific badges or status indicators
+- **CHANGELOG.md**: Branch-specific release notes
+
+### Synchronization Rules
+1. **When updating canonical files on ANY branch** → Manually replicate to all active branches to prevent fragmentation
+2. **When bumping VERSION.txt** → Run `scripts/sync_versions.py` immediately to update all distribution package files
+3. **When adding/updating workflows** → They must exist identically on all branches (CI consistency)
+4. **No branch-specific scripts**: All scripts must be canonical to avoid maintenance fragmentation
+5. **Decision Rule**: If you're asking "should this be on branch X?", it's probably canonical and should be everywhere
+
+**Rationale**: The multi-distribution architecture (UPM, PyPI, standalone) requires consistent synchronization. Automating as much as possible (via scripts and workflows) reduces cognitive load on maintainers.
+
+## Zencoder Personal Guidelines
+
+### Terminal Scripts with Emojis
+⚠️ **Important**: When creating or modifying terminal/CLI scripts that use emojis (status indicators, checkmarks, etc.), **always add UTF-8 BOM encoding**.
+
+#### For Python Scripts:
+```python
+#!/usr/bin/env python3
+# -*- coding: utf-8-sig -*-
+```
+Add this as the first two lines of the file to ensure emojis display correctly in terminal output on all platforms.
+
+#### For PowerShell Scripts:
+Add UTF-8 BOM when saving (most editors have this option in "Save with Encoding").
+
+**Reason**: Emojis require explicit UTF-8 encoding. Without BOM, some terminals (especially on Windows) may misinterpret the character encoding, causing display issues or script failures.

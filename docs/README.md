@@ -1,32 +1,40 @@
 # The Story Test Framework
 
-A comprehensive code quality validation framework for Unity and .NET projects that enforces **"Story Test Doctrine"**: every symbol (method, property, parameter, enum) must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.
+[![Story Test Validation](https://github.com/jmeyer1980/TheStoryTest/actions/workflows/story-test.yml/badge.svg?branch=jmeyer1980%2Fissue2)](https://github.com/jmeyer1980/TheStoryTest/actions/workflows/story-test.yml)
+
+## **Symbol Integrity & Narrative Completeness for C# Projects**
+
+<table>
+<tr>
+<td width="400" valign="top" style="padding-right: 20px;">
+<img src="WarblerMascotStickerized.png" alt="Warbler Mascot" width="400" style="max-width: 400px;">
+</td>
+<td width="*" valign="top">
+
+A code quality validation framework that enforces the "Story Test Doctrine": every symbol (method, property, parameter, enum) must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.
+
+Originally designed for Unity ECS/DOTS projects, Story Test is now **Unity-agnostic** and works with any C# codebase, including GameObject-based Unity projects and pure .NET applications.
 
 ## 🚀 Quick Start
 
 ### Installation
-
-#### Unity Package Manager
-1. Open Unity Package Manager (`Window > Package Manager`)
-2. Click the `+` button → **Add package from git URL...**
-3. Enter: `https://github.com/jmeyer1980/TheStoryTest.git?path=Packages/com.tinywalnutgames.storytest`
-
-#### Git URL
-Add to your project's `Packages/manifest.json`:
-```json
-{
-  "dependencies": {
-    "com.tinywalnutgames.storytest": "https://github.com/jmeyer1980/TheStoryTest.git?path=Packages/com.tinywalnutgames.storytest"
-  }
-}
+Add to Unity Package Manager via git URL:
 ```
+https://github.com/jmeyer1980/TheStoryTest.git?path=Packages/com.tinywalnutgames.storytest
+```
+</td>
+</tr>
+</table>
 
 ### First Validation
+```bash
+# Python validator (no Unity required)
+pip install -r requirements.txt
+python scripts/story_test_unity_safe.py . --verbose
 
-#### Unity Editor
-1. Open menu: `Tiny Walnut Games > The Story Test > Run Story Test and Export Report`
-2. Check the Console for results
-3. Find detailed report at `.debug/storytest_report.txt`
+# Unity Editor
+Tiny Walnut Games > The Story Test > Run Story Test and Export Report
+```
 
 #### Python Validator (Standalone)
 ```bash

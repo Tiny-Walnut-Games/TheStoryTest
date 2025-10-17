@@ -3,6 +3,18 @@
   <component name="GhostTextManager">
     <option name="inputs">
       <map>
+        <entry key="11 acts because 1.3.0 is in pre-release?">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760586634243" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="@&lt;file_name&gt; Windows and Mac. As far as testing workflows go... you are right. There is a python version of the story test that I believe you ran yourself. It was nice seeing a script just RUN today. lol. Go ahead and start at the top.">
           <value>
             <GhostTextMetaData>
@@ -10,6 +22,30 @@
               <option name="timestamps">
                 <list>
                   <option value="1760413551739" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="But the imposter syndrome comes back at me with... but we have Sonar and THIS and THAT... people are going to look at the story test and wonder why it is even necessary... It is hard to feel like I have made something worthy, But I also think the Warbler mascot is pulling some serious weight right now. lol. It is cute AF.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760582467512" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="Can we add some tags to the readmes? We can add lastest stable, latest pre-release, StoryTest validation, and others.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760586570324" />
                 </list>
               </option>
             </GhostTextMetaData>
@@ -63,6 +99,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="Help me bring this image down to a more reasonable size.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760580563125" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="I do not believe that Unity Secrets get hardcoded anywhere here. They exist in the repo already. I have had the workflows run before. During initial matrixOS build testing, where Linux&gt;Mac&gt;Windows was an exponential increase of time... I blew, BLEW, through 2000 action minutes in two days. But I felt it was necessary because rapid rebuilding seemed to be the only path towards ensuring all three build. But, in hindsite, had I realized that linux was just so much faster, I would have started with the canonical build target from the get-go.&#10;&#10;Keep in mind here, that I only really started vibe coding in June of this year. Before that, I was manuall coding and the best I could manage was MCCustomizer. That is my release on the Unity Asset store and it provides a demo for character creation screens using modular character kits like those from Synty Studios.">
           <value>
             <GhostTextMetaData>
@@ -70,6 +118,30 @@
               <option name="timestamps">
                 <list>
                   <option value="1760413981197" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="I do use it, but I end up coming back here for specific features... so it is usually just better to use Rider. lol. I hate being autistic... I wish I could get past a lot of the design flaws in software... but I can't say I am perfect either. That is the whole reason for The Story Test.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760582343793" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="I finally have the mascot showing up in the online repo, but it is getting shrunk down quite strongly.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760584514078" />
                 </list>
               </option>
             </GhostTextMetaData>
@@ -87,6 +159,42 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="I keep trying to add this version of the image to my readme and it keeps appearing as a non-transparent png even though it has been encoded as such in the image?">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760581547565" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="I said I SET THE SIZE!!! Will you please pay attention?">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760582073014" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="Is it possible to wrap the text around Warbler in a clean way?">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760582697527" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="Is the &quot;No False Celebrations&quot; rule kicking you to the curb??? lol. The last to turns has had the Results after fix: section cut off! lol.I highly doubt my joke is the case... but that would be super funny. &quot;Nonono! You can't say you fixed that cause it might not be true...!&quot; Lol.">
           <value>
             <GhostTextMetaData>
@@ -94,6 +202,30 @@
               <option name="timestamps">
                 <list>
                   <option value="1760417356673" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="No I said I already set the size AND set to 144ppi...">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760582126206" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="Sorry about that... I guess I need to remember that dragging a file from outside into the chat doesn't work as it should... it is silly that you don't gain access to the things I link to you or specifically drag into the chat from explorer.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760581785546" />
                 </list>
               </option>
             </GhostTextMetaData>
@@ -124,6 +256,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="Very true, and I will allow the imposter to reply: Rider has their todo parser? We have AI Agents to check things? I have a ton of unnecessary ways of staying shrunken in a corner... but not any more. I refuse. I will make my wife, my friends, my family recognize that I am not just &quot;playing on the computer.&quot;">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760582594234" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="What can be done to fix the pyhon x Unity situation?">
           <value>
             <GhostTextMetaData>
@@ -148,6 +292,114 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="again... not what I said. Nevermind. I will go to another AI. thanks.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760582096311" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="current 1.2.1 release only has 11 acts as you expect. 1.3.0 has 13.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760586693757" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="did I just successfully cherrypick out changes to main into develop? Cause, yeah... not really a code update as much as a sidegrade, right?">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760583210540" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="first off... i linked the very image I wanted used and it looks like you ignored that fact. I said THIS image. Not those or whatever happens to still be showing up in the repo.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760581654221" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="first pasted image is what I see when previewing the readme in origine/develop. The second is what I see when looking at origin/develop's landing page. For some reason, it just keeps getting squashed in the landing page.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760585342904" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="having some difficulty, as the mascot is not appearing in the repo's development branch readme.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760583423591" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="i am sorry that I am bad at github... I switched to pre-release branch, cherry picked the readme changes and thought i handled the conflicts correctly, can you give me a patch to update the readmes in that pre-release branch or just update them for me? I did switch back to develop because I was confused I didn't see the updated tags on the landing page for develop branch... I can confirm pushing but I don't see the tags in the repo.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760587189964" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="if you recall correctly I did say I switched into pre-release and then back out of that and into develop and stated that develop is where I currently was upon sending the message. All of which you verified... and then you say that the issue was I was on the wrong branch? Which is it?">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760587358374" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="ok. that should be a more reasonable size, but set to 144ppi.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760582032845" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="please review the uncommitted changes and give me a solid commit message and/or help me bring the remote up to date.">
           <value>
             <GhostTextMetaData>
@@ -155,6 +407,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1760422347690" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="yes because every time I try I get this fucked up white background when it is already transparent. Also... I can only add the file to the readme when I paste it in from outside of the browser and that is annoying as hell. I right click the editor and no contextual menu shows up... so many QOL things Rider is missing... and they make you pay a sub for commercial rights to your own code. I hate this IDE but I use it anyway.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1760582233763" />
                 </list>
               </option>
             </GhostTextMetaData>

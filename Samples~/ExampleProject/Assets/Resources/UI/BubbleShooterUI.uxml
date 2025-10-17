@@ -1,0 +1,26 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="BubbleShooterStyles.uss" />
+
+    <ui:VisualElement name="game-ui" class="game-container">
+        <!-- Top UI Bar -->
+        <ui:VisualElement name="top-bar" class="top-bar">
+            <ui:Label text="Score: 0" name="score-label" class="score-label" />
+            <ui:Label text="High Score: 0" name="high-score-label" class="high-score-label" />
+        </ui:VisualElement>
+
+        <!-- Game Over Panel (Hidden by default) -->
+        <ui:VisualElement name="game-over-panel" class="game-over-panel" style="display: none;">
+            <ui:VisualElement class="game-over-content">
+                <ui:Label text="Game Over!" class="game-over-title" />
+                <ui:Label text="Final Score: 0" name="final-score-label" class="final-score-label" />
+                <ui:Button text="Restart" name="restart-button" class="restart-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Instructions -->
+        <ui:VisualElement name="instructions" class="instructions">
+            <ui:Label text="Click to shoot bubbles!" class="instruction-text" />
+            <ui:Label text="Match 3 or more of the same color" class="instruction-text" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
