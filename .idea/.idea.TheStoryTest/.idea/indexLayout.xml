@@ -2,7 +2,11 @@
 <project version="4">
   <component name="UserContentModel">
     <attachedFolders />
-    <explicitIncludes />
+    <explicitIncludes>
+      <Path>Samples~</Path>
+      <Path>scripts</Path>
+      <Path>scripts/__pycache__</Path>
+    </explicitIncludes>
     <explicitExcludes />
   </component>
 </project>
