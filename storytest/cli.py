@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import List
 
 from .validator import StoryTestValidator, StoryViolation, StoryViolationType, find_assemblies
+from .python_validator import validate_python_path
 
 
 def main():
@@ -22,10 +23,10 @@ def main():
     
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
     
-    # Validate command
+    # Validate command (.NET / assemblies)
     validate_parser = subparsers.add_parser(
         "validate",
-        help="Validate assemblies for Story Test violations"
+        help="Validate .NET assemblies for Story Test violations"
     )
     validate_parser.add_argument(
         "path",
@@ -45,6 +46,42 @@ def main():
         action="store_true",
         help="Exit with code 1 if violations found"
     )
+
+    # Validate Python source command
+    validate_py = subparsers.add_parser(
+        "validate-py",
+        help="Validate Python source files for Story Test violations"
+    )
+    validate_py.add_argument(
+        "path",
+        help="Path to a Python project directory or .py file"
+    )
+    validate_py.add_argument(
+        "--include",
+        action="append",
+        default=[],
+        help="Glob pattern to include (can be used multiple times). Default: **/*.py"
+    )
+    validate_py.add_argument(
+        "--exclude",
+        action="append",
+        default=[],
+        help="Directory/file name to exclude (can be used multiple times)"
+    )
+    validate_py.add_argument(
+        "-v", "--verbose",
+        action="store_true",
+        help="Enable verbose output"
+    )
+    validate_py.add_argument(
+        "-o", "--output",
+        help="Output file for JSON report"
+    )
+    validate_py.add_argument(
+        "--fail-on-violations",
+        action="store_true",
+        help="Exit with code 1 if violations found"
+    )
     
     # Version command
     version_parser = subparsers.add_parser("version", help="Show version information")
@@ -59,6 +96,8 @@ def main():
     
     elif args.command == "validate":
         run_validation(args)
+    elif args.command == "validate-py":
+        run_validation_py(args)
     
     else:
         parser.print_help()
@@ -130,6 +169,41 @@ def run_validation(args):
         sys.exit(0)
 
 
+def run_validation_py(args):
+    """Run Python source validation command"""
+    includes = args.include if args.include else None
+    excludes = args.exclude if args.exclude else None
+
+    violations = validate_python_path(
+        args.path,
+        includes=includes,
+        excludes=excludes,
+        verbose=args.verbose,
+    )
+
+    report = {
+        "totalViolations": len(violations),
+        "violations": [v.to_dict() for v in violations],
+        "violationsByType": {},
+    }
+    for v_type in StoryViolationType:
+        count = sum(1 for v in violations if v.violation_type == v_type)
+        if count > 0:
+            report["violationsByType"][v_type.value] = count
+
+    if args.output:
+        with open(args.output, "w", encoding="utf-8") as f:
+            json.dump(report, f, indent=2)
+        print(f"\n✓ Report saved to: {args.output}")
+    else:
+        print_report(violations, report)
+
+    if args.fail_on_violations and violations:
+        sys.exit(1)
+    else:
+        sys.exit(0)
+
+
 def print_report(violations: List[StoryViolation], report: dict):
     """Print formatted validation report"""
     print("\n" + "=" * 80)
@@ -146,7 +220,7 @@ def print_report(violations: List[StoryViolation], report: dict):
             print(f"  • {v_type}: {count}")
     else:
         print("\n✅ No Story Test violations found!")
-        print("\n🎉 All assemblies pass Story Test validation.")
+        print("\n🎉 All targets pass Story Test validation.")
         print("   Every symbol tells a story. No placeholders, no TODOs, no unused code.")
     
     print("\n" + "=" * 80)

@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.tinywalnutgames.storytest": "https://github.com/jmeyer1980/TheStoryTest.git?path=Packages/com.tinywalnutgames.storytest",
+    "com.tinywalnutgames.editor-tools": "https://github.com/jmeyer1980/TheStoryTest.git?path=Packages/com.tinywalnutgames.editor-tools",
     "com.unity.ai.navigation": "2.0.9",
     "com.unity.collab-proxy": "2.9.3",
     "com.unity.feature.2d": "2.0.1",
