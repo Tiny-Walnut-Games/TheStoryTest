@@ -3,9 +3,79 @@
   <component name="UserContentModel">
     <attachedFolders />
     <explicitIncludes>
+      <Path>.debug</Path>
+      <Path>.git</Path>
+      <Path>.git/hooks</Path>
+      <Path>.git/info</Path>
+      <Path>.git/lfs</Path>
+      <Path>.git/logs</Path>
+      <Path>.git/objects</Path>
+      <Path>.git/refs</Path>
+      <Path>.gitattributes</Path>
+      <Path>.github</Path>
+      <Path>.gitignore</Path>
+      <Path>.idea</Path>
+      <Path>.junie</Path>
+      <Path>.pypirc.example</Path>
+      <Path>.pytest_cache</Path>
+      <Path>.unity-cache-server</Path>
+      <Path>.venv</Path>
+      <Path>.vscode</Path>
+      <Path>.zencoder</Path>
+      <Path>Assembly-CSharp-Editor.csproj</Path>
+      <Path>Assembly-CSharp.Player.csproj</Path>
+      <Path>Assets.meta</Path>
+      <Path>CHANGELOG.md</Path>
+      <Path>DEPENDENCY_FIX_SUMMARY.md</Path>
+      <Path>DocCodeSamples.Player.csproj</Path>
+      <Path>LICENSE</Path>
+      <Path>Logs</Path>
+      <Path>MANIFEST.in</Path>
+      <Path>MANUAL_SYNC.md</Path>
+      <Path>MENTAL_MODEL_INTEGRATION.md</Path>
+      <Path>OPTIMIZATION_RECOVERY_REPORT.md</Path>
+      <Path>PR5_RELEASE_REVIEW.md</Path>
+      <Path>PYPI_PACKAGE_SUMMARY.md</Path>
+      <Path>PYPI_READY.md</Path>
+      <Path>README.PyPI.md</Path>
+      <Path>README.md</Path>
+      <Path>REFACTORING_SUMMARY.md</Path>
+      <Path>RELEASE_CHECKLIST.md</Path>
       <Path>Samples~</Path>
+      <Path>Temp</Path>
+      <Path>TheStoryTest.code-workspace</Path>
+      <Path>VERSION.txt</Path>
+      <Path>WarblerMascotStickerized copy.png</Path>
+      <Path>WarblerMascotStickerized.png</Path>
+      <Path>dist</Path>
+      <Path>docs</Path>
+      <Path>fieldreport_pretty.md</Path>
+      <Path>mental-model-report.html</Path>
+      <Path>obj</Path>
+      <Path>package-lock.json</Path>
+      <Path>package.json</Path>
+      <Path>pyproject.toml</Path>
+      <Path>pyrightconfig.json</Path>
+      <Path>quick_sync_readme.py</Path>
+      <Path>requirements.txt</Path>
+      <Path>resize_image.py</Path>
+      <Path>resize_with_transparency.py</Path>
       <Path>scripts</Path>
       <Path>scripts/__pycache__</Path>
+      <Path>security_fixes.patch</Path>
+      <Path>security_patch.patch</Path>
+      <Path>setup.py</Path>
+      <Path>story-test-report.json</Path>
+      <Path>storytest</Path>
+      <Path>storytest-mental-model.json</Path>
+      <Path>storytest.egg-info</Path>
+      <Path>sync-readme.ps1</Path>
+      <Path>sync_github_cleanup.ps1</Path>
+      <Path>sync_readme.py</Path>
+      <Path>test_iterator_fix.py</Path>
+      <Path>test_package.py</Path>
+      <Path>tests</Path>
+      <Path>verify_refactoring.cs</Path>
     </explicitIncludes>
     <explicitExcludes />
   </component>

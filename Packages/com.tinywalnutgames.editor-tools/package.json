@@ -1,0 +1,28 @@
+{
+    "name": "com.tinywalnutgames.editor-tools",
+    "version": "1.3.0",
+    "displayName": "Tiny Walnut Games Editor Tools",
+    "description": "Collection of editor utilities and tools for Unity, including meta file generation, validation suite, and custom inspectors.",
+    "unity": "2020.3",
+    "unityRelease": "0f1",
+    "documentationUrl": "https://github.com/jmeyer1980/TheStoryTest/blob/main/docs/README.md",
+    "changelogUrl": "https://github.com/jmeyer1980/TheStoryTest/blob/main/CHANGELOG.md",
+    "licensesUrl": "https://github.com/jmeyer1980/TheStoryTest/blob/main/LICENSE",
+    "keywords": [
+        "editor-tools",
+        "utilities",
+        "meta-files",
+        "validation",
+        "inspector"
+    ],
+    "author": {
+        "name": "Tiny Walnut Games",
+        "email": "jmeyer1980@gmail.com",
+        "url": "https://tinywalnutgames.com"
+    },
+    "dependencies": {
+        "com.tinywalnutgames.storytest": "1.3.0"
+    },
+    "hideInEditor": false,
+    "type": "tool"
+}

@@ -20,9 +20,13 @@ Originally designed for Unity ECS/DOTS projects, Story Test is now **Unity-agnos
 
 ### First Validation
 ```bash
-# Python validator (no Unity required)
-pip install -r requirements.txt
-python scripts/story_test_unity_safe.py . --verbose
+# Python projects (no Unity or .NET required)
+python -m storytest.cli validate-py . --verbose
+# or, if installed as a package
+storytest validate-py . --verbose
+
+# .NET/Unity assemblies (no Unity Editor required)
+storytest validate ./path/to/assemblies --verbose
 
 # Unity Editor
 Tiny Walnut Games > The Story Test > Run Story Test and Export Report

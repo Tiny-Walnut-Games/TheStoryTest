@@ -1,13 +1,14 @@
 using UnityEditor;
 using UnityEngine;
+using TinyWalnutGames.StoryTest;
 
-namespace TinyWalnutGames.StoryTest.Editor
+namespace TinyWalnutGames.EditorTools
 {
     /// <summary>
     /// Custom Inspector for ProductionExcellenceStoryTest with manual validation trigger.
     /// </summary>
     [CustomEditor(typeof(ProductionExcellenceStoryTest))]
-    public class ProductionExcellenceStoryTestEditor : UnityEditor.Editor
+    public class StoryTestComponentEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
