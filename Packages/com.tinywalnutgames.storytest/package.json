@@ -2,7 +2,7 @@
     "name":  "com.tinywalnutgames.storytest",
     "version":  "1.3.0",
     "displayName":  "The Story Test Framework",
-    "description":  "A comprehensive code quality validation framework for Unity and .NET projects that enforces Story Test Doctrine: every symbol must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.",
+    "description":  "A comprehensive code quality validation framework for Unity and .NET projects that enforces Story Test Doctrine: every symbol must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production. Core validation logic only—editor tools are provided by com.tinywalnutgames.editor-tools.",
     "unity":  "2020.3",
     "unityRelease":  "0f1",
     "documentationUrl":  "https://github.com/jmeyer1980/TheStoryTest/blob/main/docs/README.md",

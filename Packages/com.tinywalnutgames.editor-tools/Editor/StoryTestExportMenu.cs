@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-namespace TinyWalnutGames.StoryTest.Editor
+namespace TinyWalnutGames.EditorTools
 {
     /// <summary>
     /// Placeholder for removed "Run Story Test and Export Report" menu functionality.

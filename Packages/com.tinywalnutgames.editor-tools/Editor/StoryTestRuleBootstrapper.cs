@@ -6,8 +6,9 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using TinyWalnutGames.StoryTest.Shared;
+using TinyWalnutGames.StoryTest;
 
-namespace TinyWalnutGames.StoryTest.Editor
+namespace TinyWalnutGames.EditorTools
 {
     /// <summary>
     /// Automatically registers all validation rules from the Acts assembly whenever the Unity Editor domain reloads.

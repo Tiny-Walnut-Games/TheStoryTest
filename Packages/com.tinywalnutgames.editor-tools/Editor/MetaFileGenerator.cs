@@ -3,7 +3,7 @@ using UnityEditor;
 using System.IO;
 using System.Linq;
 
-namespace TinyWalnutGames.StoryTest.Editor
+namespace TinyWalnutGames.EditorTools
 {
     /// <summary>
     /// Editor window and context menu for generating missing .meta files in the Unity project.
