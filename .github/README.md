@@ -9,18 +9,20 @@
 [![StoryTest Validation](https://img.shields.io/badge/StoryTest-11%20Acts-green.svg)](docs/acts.md)
 [![Coming Soon](https://img.shields.io/badge/StoryTest-13%20Acts%20in%201.3.0-orange.svg)](https://github.com/jmeyer1980/TheStoryTest/releases)
 
-
 ## **Symbol Integrity & Narrative Completeness for C# Projects**
 
 <table>
 <tr>
-<td width="400" valign="top" style="padding-right: 20px;">
-<img src="WarblerMascotStickerized.png" alt="Warbler Mascot";">
+<td width="220" align="center" valign="middle">
+  <img src="https://media.githubusercontent.com/media/Tiny-Walnut-Games/TheStoryTest/develop/.github/WarblerMascotStickerized.png" 
+       alt="Warbler Mascot" width="160"/>
 </td>
-<td>
-A code quality validation framework that enforces the "Story Test Doctrine": every symbol (method, property, parameter, enum) must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.
+<td valign="top">
 
-Originally designed for Unity ECS/DOTS projects, Story Test is now **Unity-agnostic** and works with any C# codebase, including GameObject-based Unity projects and pure .NET applications.
+A code quality validation framework that enforces the **"Story Test Doctrine"**: every symbol (method, property, parameter, enum) must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.
+
+Originally designed for Unity ECS/DOTS projects, Story Test is now **Unity‑agnostic** and works with any C# codebase, including GameObject‑based Unity projects and pure .NET applications.
+
 </td>
 </tr>
 </table>
