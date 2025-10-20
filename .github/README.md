@@ -4,11 +4,20 @@
 
 ## **Symbol Integrity & Narrative Completeness for C# Projects**
 
-![Warbler Mascot](WarblerMascotStickerized.png)
+<table>
+<tr>
+<td width="220" align="center" valign="middle">
+  <img src="WarblerMascotStickerized.png" alt="Warbler Mascot" width="160"/>
+</td>
+<td valign="top">
 
-A code quality validation framework that enforces the "Story Test Doctrine": every symbol (method, property, parameter, enum) must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.
+A code quality validation framework that enforces the **"Story Test Doctrine"**: every symbol (method, property, parameter, enum) must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.
 
-Originally designed for Unity ECS/DOTS projects, Story Test is now **Unity-agnostic** and works with any C# codebase, including GameObject-based Unity projects and pure .NET applications.
+Originally designed for Unity ECS/DOTS projects, Story Test is now **Unity‑agnostic** and works with any C# codebase, including GameObject‑based Unity projects and pure .NET applications.
+
+</td>
+</tr>
+</table>
 
 ## 🚀 Quick Start
 
