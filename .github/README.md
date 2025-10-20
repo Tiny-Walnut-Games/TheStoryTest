@@ -17,11 +17,16 @@
   <img src="https://media.githubusercontent.com/media/Tiny-Walnut-Games/TheStoryTest/develop/.github/WarblerMascotStickerized.png" 
        alt="Warbler Mascot" width="160"/>
 </td>
-<td valign="top">
+<td width="*" valign="top">
 
-A code quality validation framework that enforces the **"Story Test Doctrine"**: every symbol (method, property, parameter, enum) must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.
+A code quality validation framework that enforces the "Story Test Doctrine": every symbol (method, property, parameter, enum) must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.
 
-Originally designed for Unity ECS/DOTS projects, Story Test is now **Unity‑agnostic** and works with any C# codebase, including GameObject‑based Unity projects and pure .NET applications.
+Originally designed for Unity ECS/DOTS projects, Story Test is now **Unity-agnostic** and works with any C# codebase, including GameObject-based Unity projects and pure .NET applications.
+
+## 🚀 Quick Start
+
+### Installation
+Download and extract the zip/tar.gz and extract it into your packages or assets folder. I recommend asking your agent to validate your project by setting up The Story Test and its settings.json to match your project's needs. As long as the agent has tool access, it will be able to install all prerequisites and validate your project for you.
 
 </td>
 </tr>
