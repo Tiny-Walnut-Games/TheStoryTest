@@ -6,8 +6,9 @@
 
 <table>
 <tr>
-<td width="360" valign="top">
-<img src="WarblerMascotStickerized.png" alt="Warbler Mascot" width="360">
+<td width="220" align="center" valign="middle">
+  <img src="https://media.githubusercontent.com/media/Tiny-Walnut-Games/TheStoryTest/develop/.github/WarblerMascotStickerized.png" 
+       alt="Warbler Mascot" width="160"/>
 </td>
 <td width="*" valign="top">
 
@@ -18,10 +19,8 @@ Originally designed for Unity ECS/DOTS projects, Story Test is now **Unity-agnos
 ## 🚀 Quick Start
 
 ### Installation
-Add to Unity Package Manager via git URL:
-```
-https://github.com/jmeyer1980/TheStoryTest.git?path=Packages/com.tinywalnutgames.storytest
-```
+Download and extract the zip/tar.gz and extract it into your packages or assets folder. I recommend asking your agent to validate your project by setting up The Story Test and its settings.json to match your project's needs. As long as the agent has tool access, it will be able to install all prerequisites and validate your project for you.
+
 </td>
 </tr>
 </table>
