@@ -1,0 +1,13 @@
+.*
+*.md
+!Documentation~/**
+!README.md
+.github/
+Samples~/
+docs/
+tests/
+obj/
+bin/
+*.csproj
+*.sln
+.DS_Store

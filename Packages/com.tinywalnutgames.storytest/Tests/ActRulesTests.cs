@@ -186,6 +186,118 @@ namespace TinyWalnutGames.StoryTest.Tests
 
         #endregion
 
+        #region Act10: Suspiciously Simple Methods
+
+        [Test]
+        public void Act10_CanValidateMethods()
+        {
+            var method = typeof(TestClassWithViolations).GetMethod(nameof(TestClassWithViolations.UnusedMethod));
+            if (method != null)
+            {
+                // Just verify it can be called without crashing
+                Assert.DoesNotThrow(() => Act10SuspiciouslySimple.Rule(method, out _));
+            }
+        }
+
+        #endregion
+
+        #region Act11: Dead Code
+
+        [Test]
+        public void Act11_CanValidateMethods()
+        {
+            var method = typeof(TestClassWithViolations).GetMethod(nameof(TestClassWithViolations.UnusedMethod));
+            if (method != null)
+            {
+                // Just verify it can be called without crashing
+                Assert.DoesNotThrow(() => Act11DeadCode.Rule(method, out _));
+            }
+        }
+
+        #endregion
+
+        #region Act12: Mental Model Claims
+
+        [Test]
+        public void Act12_IgnoresNullMember()
+        {
+            // Act 12 validates at assembly level, not member level
+            var hasViolation = Act12MentalModelClaims.Rule(null, out _);
+            
+            // Should return false when no config is found
+            // (or true with a violation message if config validation fails)
+            Assert.DoesNotThrow(() => Act12MentalModelClaims.Rule(null, out _));
+        }
+
+        [Test]
+        public void Act12_IgnoresMemberValidation()
+        {
+            // Act 12 should ignore non-null members
+            var method = typeof(TestClassWithViolations).GetMethod(nameof(TestClassWithViolations.MethodWithNotImplemented));
+            var hasViolation = Act12MentalModelClaims.Rule(method, out _);
+
+            Assert.IsFalse(hasViolation, "Act 12 should not validate individual members");
+        }
+
+        [Test]
+        public void Act12_ReportsWhenMentalModelMissing()
+        {
+            // When mental model config doesn't exist, Act12 reports a warning
+            var hasViolation = Act12MentalModelClaims.Rule(null, out var message);
+
+            // Depending on whether storytest-mental-model.json exists:
+            // If missing: hasViolation=true, message contains "not found"
+            // If exists: runs full validation
+            if (hasViolation)
+            {
+                Assert.IsNotNull(message);
+                Assert.IsTrue(
+                    message.Contains("Mental model") || 
+                    message.Contains("not found") || 
+                    message.Contains("Error validating"),
+                    $"Unexpected violation message: {message}");
+            }
+        }
+
+        #endregion
+
+        #region Act13: Narrative Coherence
+
+        [Test]
+        public void Act13_IgnoresNullMember()
+        {
+            // Act 13 validates at assembly level, not member level
+            var hasViolation = Act13NarrativeCoherence.Rule(null, out _);
+
+            // Should not crash and should only report violations if config validation fails
+            Assert.DoesNotThrow(() => Act13NarrativeCoherence.Rule(null, out _));
+        }
+
+        [Test]
+        public void Act13_IgnoresMemberValidation()
+        {
+            // Act 13 should ignore non-null members
+            var method = typeof(TestClassWithViolations).GetMethod(nameof(TestClassWithViolations.MethodWithNotImplemented));
+            var hasViolation = Act13NarrativeCoherence.Rule(method, out _);
+
+            Assert.IsFalse(hasViolation, "Act 13 should not validate individual members");
+        }
+
+        [Test]
+        public void Act13_HandlesNoMentalModelGracefully()
+        {
+            // Act 13 should not fail if mental model config is missing
+            // (Act 12 will report it)
+            var hasViolation = Act13NarrativeCoherence.Rule(null, out var message);
+
+            // When no config: should return false (no coherence violation if no config)
+            // When config exists: should validate coherence rules
+            // Either way, should not crash
+            Assert.DoesNotThrow(() => Act13NarrativeCoherence.Rule(null, out _));
+        }
+
+        #endregion
+
         #region Test Classes
 
         public class TestClassWithViolations

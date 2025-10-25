@@ -146,12 +146,16 @@ class StoryTestValidator:
             types = assembly.GetTypes()
             self.log(f"Found {len(types)} types to validate")
 
+            # First pass: validate all members in all types
             for type_obj in types:
                 try:
                     self._validate_type(type_obj)
                 except Exception as e:
                     self.log(f"Error validating type {type_obj.Name}: {str(e)[:100]}...")
                     continue
+
+            # Second pass: assembly-level validation (Acts 12-13)
+            self._validate_assembly_level(assembly)
 
             self.log(f"Validation complete. Found {len(self.violations)} violations")
             return self.violations
@@ -222,6 +226,199 @@ class StoryTestValidator:
             return False
         # Look for common patterns that indicate NotImplementedException
         return (0x73 in il_bytes and 0x7A in il_bytes)  # throw + new opcodes
+
+    def _validate_assembly_level(self, assembly):
+        """
+        Assembly-level validation (Acts 12-13).
+        Validates at the assembly/project level rather than individual members.
+        """
+        assembly_name = str(assembly.GetName().Name)
+        assembly_location = str(assembly.Location)
+        
+        # Act 12: Mental Model Claims Validation
+        mental_model_violations = self._validate_mental_model_claims(assembly_location)
+        self.violations.extend(mental_model_violations)
+        
+        # Act 13: Narrative Coherence Validation
+        narrative_violations = self._validate_narrative_coherence(assembly_location)
+        self.violations.extend(narrative_violations)
+
+    def _validate_mental_model_claims(self, assembly_location: str) -> List[StoryViolation]:
+        """
+        Act 12: Mental Model Claims
+        Validates that claimed capabilities have evidence in the codebase.
+        """
+        violations = []
+        
+        try:
+            mental_model_path = self._find_mental_model_config(assembly_location)
+            if not mental_model_path:
+                # Optional feature - not a critical violation if missing
+                self.log("Mental model configuration not found (storytest-mental-model.json)")
+                return violations
+            
+            # Check for claims vs evidence gaps
+            config_content = Path(mental_model_path).read_text()
+            
+            # Validate required artifacts exist
+            required_artifact_violations = self._check_required_artifacts(config_content, mental_model_path)
+            violations.extend(required_artifact_violations)
+            
+            # Validate platform claims
+            platform_violations = self._check_platform_claims(config_content, assembly_location)
+            violations.extend(platform_violations)
+            
+        except Exception as e:
+            self.log(f"Error during mental model validation: {str(e)[:100]}...")
+        
+        return violations
+
+    def _validate_narrative_coherence(self, assembly_location: str) -> List[StoryViolation]:
+        """
+        Act 13: Narrative Coherence
+        Validates that project architecture aligns with stated narrative.
+        """
+        violations = []
+        
+        try:
+            mental_model_path = self._find_mental_model_config(assembly_location)
+            if not mental_model_path:
+                # Not a violation - Act 12 handles missing config
+                return violations
+            
+            config_content = Path(mental_model_path).read_text()
+            
+            # Validate architectural consistency
+            coherence_violations = self._check_architectural_coherence(config_content, assembly_location)
+            violations.extend(coherence_violations)
+            
+        except Exception as e:
+            self.log(f"Error during narrative coherence validation: {str(e)[:100]}...")
+        
+        return violations
+
+    def _find_mental_model_config(self, assembly_location: str) -> str:
+        """Find the mental model configuration file"""
+        candidates = [
+            Path("storytest-mental-model.json"),
+            Path(assembly_location).parent.parent.parent / "storytest-mental-model.json",
+            Path(assembly_location).parent.parent / "storytest-mental-model.json",
+        ]
+        
+        for candidate in candidates:
+            if candidate.exists():
+                return str(candidate.absolute())
+        
+        return None
+
+    def _check_required_artifacts(self, config_content: str, config_path: str) -> List[StoryViolation]:
+        """Check that required artifacts mentioned in config exist"""
+        violations = []
+        
+        try:
+            # Simple pattern matching for "required": true entries
+            if '"required": true' not in config_content:
+                return violations
+            
+            config_dir = Path(config_path).parent
+            
+            # Look for artifact paths in config
+            import json
+            config = json.loads(config_content)
+            
+            if "required_artifacts" in config:
+                for artifact in config["required_artifacts"]:
+                    artifact_path = config_dir / artifact
+                    if not artifact_path.exists():
+                        violations.append(StoryViolation(
+                            "[Assembly]",
+                            "[Assembly]",
+                            f"Mental model claims required artifact that doesn't exist: {artifact}",
+                            StoryViolationType.OTHER,
+                            file_path=str(config_path)
+                        ))
+        except:
+            # If we can't parse as JSON, that's a config error but not fatal
+            pass
+        
+        return violations
+
+    def _check_platform_claims(self, config_content: str, assembly_location: str) -> List[StoryViolation]:
+        """Check that claimed platforms have implementation evidence"""
+        violations = []
+        
+        try:
+            # Count claimed platforms
+            claimed_platforms = 0
+            if '"Unity"' in config_content or '"unity"' in config_content.lower():
+                claimed_platforms += 1
+            if '".NET"' in config_content or '"net"' in config_content.lower():
+                claimed_platforms += 1
+            if '"Python"' in config_content or '"python"' in config_content.lower():
+                claimed_platforms += 1
+            
+            if claimed_platforms == 0:
+                return violations
+            
+            # Count implemented platforms
+            project_root = Path(assembly_location).parent.parent.parent
+            implemented = 0
+            
+            if (project_root / "Packages" / "com.tinywalnutgames.storytest").exists():
+                implemented += 1  # C#/Unity
+            if (project_root / "storytest").exists() and (project_root / "storytest" / "cli.py").exists():
+                implemented += 1  # Python
+            if (project_root / "scripts" / "story_test.py").exists():
+                implemented += 1  # CLI scripts
+            
+            if claimed_platforms > implemented:
+                violations.append(StoryViolation(
+                    "[Assembly]",
+                    "[Assembly]",
+                    f"Mental model claims {claimed_platforms} platforms but only {implemented} are implemented",
+                    StoryViolationType.OTHER,
+                    file_path=str(assembly_location)
+                ))
+        except Exception as e:
+            self.log(f"Platform validation error: {str(e)[:50]}...")
+        
+        return violations
+
+    def _check_architectural_coherence(self, config_content: str, assembly_location: str) -> List[StoryViolation]:
+        """Check that project architecture aligns with stated narrative"""
+        violations = []
+        
+        try:
+            # Parse config to check architectural rules
+            import json
+            config = json.loads(config_content)
+            
+            if "architectural_rules" not in config:
+                return violations
+            
+            # For now, just validate that the config is well-formed
+            # More sophisticated coherence checks can be added here
+            rules = config.get("architectural_rules", [])
+            if not isinstance(rules, list):
+                violations.append(StoryViolation(
+                    "[Assembly]",
+                    "[Assembly]",
+                    "Narrative configuration has malformed architectural rules",
+                    StoryViolationType.OTHER,
+                    file_path=str(assembly_location)
+                ))
+        except json.JSONDecodeError:
+            violations.append(StoryViolation(
+                "[Assembly]",
+                "[Assembly]",
+                "Mental model configuration is not valid JSON",
+                StoryViolationType.OTHER,
+                file_path=str(assembly_location)
+            ))
+        except Exception as e:
+            self.log(f"Coherence check error: {str(e)[:50]}...")
+        
+        return violations
 
 
 def find_assemblies(project_path: str) -> List[str]:

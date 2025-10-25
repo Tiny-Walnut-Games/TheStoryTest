@@ -151,6 +151,7 @@ namespace TinyWalnutGames.StoryTest
                 LogWarning($"[Story Test] Could not load all types from {assembly.FullName}: {ex.Message}");
             }
 
+            // First pass: validate all members in all types
             foreach (var type in types)
             {
                 if (type == null || HasStoryIgnore(type))
@@ -174,7 +175,49 @@ namespace TinyWalnutGames.StoryTest
                 }
             }
 
+            // Second pass: assembly-level validation (Acts 12-13, etc.)
+            // These acts expect null for member parameter and validate the entire assembly
+            violations.AddRange(ValidateAssemblyLevel(assembly));
+
             return violations;
+        }
+
+        /// <summary>
+        /// Validates at assembly level by calling all rules with null member.
+        /// This is where assembly-level Acts (12-13, etc.) execute their logic.
+        /// Member-level Acts will return false when given null and won't produce violations.
+        /// </summary>
+        private static IEnumerable<StoryViolation> ValidateAssemblyLevel(Assembly assembly)
+        {
+            foreach (var rule in GetRulesSnapshot())
+            {
+                bool hasViolation;
+                string violationMessage;
+
+                try
+                {
+                    // Call rule with null member to trigger assembly-level validation
+                    hasViolation = rule(null, out violationMessage);
+                }
+                catch (Exception ex)
+                {
+                    LogWarning($"[Story Test] Assembly-level rule {rule.Method.DeclaringType?.FullName}.{rule.Method.Name} threw: {ex.Message}");
+                    continue;
+                }
+
+                if (hasViolation && !string.IsNullOrWhiteSpace(violationMessage))
+                {
+                    yield return new StoryViolation
+                    {
+                        Type = assembly.GetName().Name,
+                        Member = "[Assembly]",
+                        Violation = violationMessage,
+                        FilePath = assembly.Location,
+                        LineNumber = 0,
+                        ViolationType = StoryTestUtilities.GetViolationType(violationMessage)
+                    };
+                }
+            }
         }
 
         private static IEnumerable<StoryViolation> ValidateMembersForType(Type type)
