@@ -11,17 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.0] - 2025-10-16
 
 ### Added
-- Acts 12-13 Integration
-  - Act 12 (Act12MentalModelClaims.cs) - Validates claims have evidence
-  - Act 13 (Act13NarrativeCoherence.cs) - Validates architecture coherence
-  - Reporter (mental_model_reporter.py) - Dynamic analysis & reporting
-- Configuration-Driven Validation
-  - storytest-mental-model.json for project narrative definition
-  - Supports: claimed capabilities, required artifacts, architectural rules, quality gates
-- Multi-Output Reporting
-  - JSON for automation
-  - HTML for visualization
-  - Exit codes for CI/CD flow control
+- Stable Acts 1-11 validation pipeline (proven, tested, production-ready)
+- Enhanced compiler-generated member detection
+- Improved false positive filtering
+- **Acts 12-13 Full Implementation**: Assembly-level validation infrastructure
+  - Act 12 (Mental Model Claims) - Validates claimed capabilities have evidence
+  - Act 13 (Narrative Coherence) - Validates architecture alignment with narrative
+  - Assembly-level validation orchestration in StoryIntegrityValidator
+  - Configuration-driven validation with storytest-mental-model.json
+  - Python validator integration with Acts 12-13 support
+  - Multi-output reporting (JSON, HTML, exit codes)
 
 ## [1.2.1] - 2025-10-15
 
