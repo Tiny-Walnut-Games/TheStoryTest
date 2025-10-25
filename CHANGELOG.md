@@ -8,29 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
-## [1.2.1] - 2025-10-16
-
-
-- Bump version to 1.2.1 (a9168ea)
-- Update build_pypi.ps1 for CLI options and cleanup, chaning file encoding to UTF-16BE for emoji support. Performance hit is minimal. (ff05e31)
-- Add new project files for TheStoryTest suite (c517031)
-- Revert "Fix PowerShell syntax and encoding issues in build script. Linux workflow was failing upon lack of dlls to test. This should be more graceful now." (eeb320c)
-- security: add PyPI publishing with GitHub secrets (no hardcoded tokens) (5417748)
-- Update JSON chat metadata with timestamp and checksum (bbaad95)
-
-
-
-## [1.2.1] - 2025-10-16
-
-
-- Bump version to 1.2.1 (a9168ea)
-- Update build_pypi.ps1 for CLI options and cleanup, chaning file encoding to UTF-16BE for emoji support. Performance hit is minimal. (ff05e31)
-- Add new project files for TheStoryTest suite (c517031)
-- Revert "Fix PowerShell syntax and encoding issues in build script. Linux workflow was failing upon lack of dlls to test. This should be more graceful now." (eeb320c)
-- security: add PyPI publishing with GitHub secrets (no hardcoded tokens) (5417748)
-- Update JSON chat metadata with timestamp and checksum (bbaad95)
-
-
 ## [1.3.0] - 2025-10-16
 
 ### Added
