@@ -9,18 +9,25 @@
 [![StoryTest Validation](https://img.shields.io/badge/StoryTest-11%20Acts-green.svg)](docs/acts.md)
 [![Coming Soon](https://img.shields.io/badge/StoryTest-13%20Acts%20in%201.3.0-orange.svg)](https://github.com/jmeyer1980/TheStoryTest/releases)
 
-
 ## **Symbol Integrity & Narrative Completeness for C# Projects**
 
 <table>
 <tr>
-<td width="400" valign="top" style="padding-right: 20px;">
-<img src="WarblerMascotStickerized.png" alt="Warbler Mascot";">
+<td width="220" align="center" valign="middle">
+  <img src="https://media.githubusercontent.com/media/Tiny-Walnut-Games/TheStoryTest/develop/.github/WarblerMascotStickerized.png" 
+       alt="Warbler Mascot" width="160"/>
 </td>
-<td>
+<td width="*" valign="top">
+
 A code quality validation framework that enforces the "Story Test Doctrine": every symbol (method, property, parameter, enum) must be fully implemented and meaningful—no placeholders, TODOs, or unused code in production.
 
 Originally designed for Unity ECS/DOTS projects, Story Test is now **Unity-agnostic** and works with any C# codebase, including GameObject-based Unity projects and pure .NET applications.
+
+## 🚀 Quick Start
+
+### Installation
+Download and extract the zip/tar.gz and extract it into your packages or assets folder. I recommend asking your agent to validate your project by setting up The Story Test and its settings.json to match your project's needs. As long as the agent has tool access, it will be able to install all prerequisites and validate your project for you.
+
 </td>
 </tr>
 </table>
