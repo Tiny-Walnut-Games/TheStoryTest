@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Story Test Framework - Unity-Safe Python Validator
 Analyzes C# assemblies for Story Test violations without Unity dependencies.
@@ -14,6 +15,11 @@ import json
 from pathlib import Path
 from typing import List, Dict, Any, Tuple
 from enum import Enum
+
+# Ensure UTF-8 output on Windows
+if sys.platform == "win32":
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 try:
     from pythonnet import set_runtime

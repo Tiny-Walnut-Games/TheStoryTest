@@ -1,8 +1,12 @@
 # Mental Model Validation
 
+## ⚠️ Status: DRAFT / Phase 2 Implementation
+
+**Note**: Acts 12 & 13 are currently **not integrated** into the main validation pipeline. This documentation describes the planned architecture for v1.4.0. Currently shipping: Acts 1-11.
+
 ## Overview
 
-The Story Test Framework validates code completeness through 11 Acts of IL analysis. **Acts 12 & 13** extend this to validate **mental model adherence** — ensuring the project's stated narrative (what it claims to do) aligns with its actual implementation.
+The Story Test Framework validates code completeness through 11 Acts of IL analysis. **Acts 12 & 13** (planned for v1.4.0) will extend this to validate **mental model adherence** — ensuring the project's stated narrative (what it claims to do) aligns with its actual implementation.
 
 ### The Problem
 

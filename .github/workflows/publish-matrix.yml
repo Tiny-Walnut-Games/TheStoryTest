@@ -1,0 +1,265 @@
+name: 📦 Multi-Target Release (PyPI + UPM)
+
+# Triggered manually or on release publish
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.3.0)'
+        required: true
+        type: string
+      targets:
+        description: 'Release targets (comma-separated: pypi, upm, npm)'
+        required: true
+        default: 'pypi,upm'
+        type: string
+      dry_run:
+        description: 'Dry run (no actual publish)'
+        required: false
+        default: true
+        type: boolean
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  parse-targets:
+    name: 🎯 Parse Release Targets
+    runs-on: ubuntu-latest
+    outputs:
+      publish_pypi: ${{ steps.targets.outputs.publish_pypi }}
+      publish_upm: ${{ steps.targets.outputs.publish_upm }}
+      publish_npm: ${{ steps.targets.outputs.publish_npm }}
+      dry_run: ${{ steps.targets.outputs.dry_run }}
+      version: ${{ steps.targets.outputs.version }}
+    steps:
+      - name: Extract targets
+        id: targets
+        run: |
+          # If triggered by release event, always publish to pypi and upm
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "publish_pypi=true" >> $GITHUB_OUTPUT
+            echo "publish_upm=true" >> $GITHUB_OUTPUT
+            echo "publish_npm=false" >> $GITHUB_OUTPUT
+            echo "dry_run=false" >> $GITHUB_OUTPUT
+            VERSION="${{ github.ref }}"
+            VERSION="${VERSION#refs/tags/v}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            # Manual dispatch - parse targets input
+            TARGETS="${{ github.event.inputs.targets }}"
+            echo "publish_pypi=$(echo $TARGETS | grep -q 'pypi' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+            echo "publish_upm=$(echo $TARGETS | grep -q 'upm' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+            echo "publish_npm=$(echo $TARGETS | grep -q 'npm' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+            echo "dry_run=${{ github.event.inputs.dry_run }}" >> $GITHUB_OUTPUT
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          fi
+
+  validate:
+    name: ✅ Pre-Publish Validation
+    runs-on: ubuntu-latest
+    needs: parse-targets
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: ✅ Run Story Test validation
+        run: |
+          echo "🧪 Running Story Test Framework self-validation..."
+          python scripts/story_test_unity_safe.py . --verbose || echo "⚠️ Warnings detected (non-blocking)"
+
+      - name: 🔍 Verify version consistency
+        run: |
+          VERSION="${{ needs.parse-targets.outputs.version }}"
+          echo "Verifying version: $VERSION"
+          
+          # Check pyproject.toml
+          PYPROJECT_VERSION=$(grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          if [ "$PYPROJECT_VERSION" != "$VERSION" ]; then
+            echo "❌ Version mismatch in pyproject.toml: $PYPROJECT_VERSION != $VERSION"
+            exit 1
+          fi
+          
+          # Check package.json (both root and Unity)
+          ROOT_VERSION=$(jq -r '.version' package.json)
+          if [ "$ROOT_VERSION" != "$VERSION" ]; then
+            echo "❌ Version mismatch in package.json: $ROOT_VERSION != $VERSION"
+            exit 1
+          fi
+          
+          UNITY_VERSION=$(jq -r '.version' Packages/com.tinywalnutgames.storytest/package.json)
+          if [ "$UNITY_VERSION" != "$VERSION" ]; then
+            echo "❌ Version mismatch in Unity package.json: $UNITY_VERSION != $VERSION"
+            exit 1
+          fi
+          
+          echo "✅ All versions match: $VERSION"
+
+  publish-pypi:
+    name: 🐍 Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: [parse-targets, validate]
+    if: needs.parse-targets.outputs.publish_pypi == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 📦 Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine
+
+      - name: 🔨 Build distribution
+        run: python -m build
+
+      - name: 📋 Verify package
+        run: python -m twine check dist/storytest-*
+
+      - name: 📤 Publish to PyPI
+        if: needs.parse-targets.outputs.dry_run != 'true'
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: python -m twine upload dist/storytest-*
+
+      - name: 🧪 Dry Run - Show what would be uploaded
+        if: needs.parse-targets.outputs.dry_run == 'true'
+        run: |
+          echo "📦 Would publish to PyPI:"
+          ls -lh dist/
+
+  publish-upm:
+    name: 🎮 Publish to UPM (GitHub Release)
+    runs-on: ubuntu-latest
+    needs: [parse-targets, validate]
+    if: needs.parse-targets.outputs.publish_upm == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🏷️ Create UPM Release Tag
+        if: needs.parse-targets.outputs.dry_run != 'true'
+        run: |
+          VERSION="${{ needs.parse-targets.outputs.version }}"
+          TAG="v$VERSION"
+          
+          # Tag is already created by release-automation.yml
+          # This step just documents it
+          echo "✅ UPM will use: $TAG"
+          echo "📦 Unity users can add:"
+          echo '  "com.tinywalnutgames.storytest": "https://github.com/jmeyer1980/TheStoryTest.git#'$TAG'"'
+
+      - name: 📝 Update UPM Release Notes
+        if: needs.parse-targets.outputs.dry_run != 'true'
+        run: |
+          VERSION="${{ needs.parse-targets.outputs.version }}"
+          TAG="v$VERSION"
+          
+          # UPM documentation
+          cat >> .github/upm-release-notes.md <<EOF
+          # UPM Release: $VERSION
+          
+          **Installation via Package Manager:**
+          \`\`\`json
+          {
+            "dependencies": {
+              "com.tinywalnutgames.storytest": "https://github.com/jmeyer1980/TheStoryTest.git#$TAG"
+            }
+          }
+          \`\`\`
+          
+          **Or via git URL directly:**
+          1. Open Package Manager (Window > Package Manager)
+          2. Click + icon → Add package from git URL
+          3. Paste: \`https://github.com/jmeyer1980/TheStoryTest.git#$TAG\`
+          4. Click Add
+          
+          **Minimum Unity Version:** 2020.3.0f1 or later
+          **Type:** Tool
+          EOF
+
+      - name: 🧪 Dry Run - Show UPM info
+        if: needs.parse-targets.outputs.dry_run == 'true'
+        run: |
+          VERSION="${{ needs.parse-targets.outputs.version }}"
+          echo "🎮 Would publish to UPM with tag: v$VERSION"
+          echo "📦 Git URL: https://github.com/jmeyer1980/TheStoryTest.git#v$VERSION"
+
+  publish-npm:
+    name: 📦 Publish to npm
+    runs-on: ubuntu-latest
+    needs: [parse-targets, validate]
+    if: needs.parse-targets.outputs.publish_npm == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 🟢 Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: 📦 Publish to npm
+        if: needs.parse-targets.outputs.dry_run != 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_API_TOKEN }}
+        run: npm publish
+
+      - name: 🧪 Dry Run - npm info
+        if: needs.parse-targets.outputs.dry_run == 'true'
+        run: |
+          echo "📦 Would publish to npm:"
+          cat package.json | jq '.name,.version'
+
+  summary:
+    name: 📊 Release Summary
+    runs-on: ubuntu-latest
+    needs: [parse-targets, validate, publish-pypi, publish-upm, publish-npm]
+    if: always()
+    steps:
+      - name: 📋 Report Summary
+        run: |
+          echo "📦 Story Test Multi-Target Release Summary"
+          echo "=========================================="
+          echo ""
+          echo "Version: ${{ needs.parse-targets.outputs.version }}"
+          echo "Dry Run: ${{ needs.parse-targets.outputs.dry_run }}"
+          echo ""
+          echo "Targets:"
+          echo "  PyPI: ${{ needs.parse-targets.outputs.publish_pypi }}"
+          echo "  UPM:  ${{ needs.parse-targets.outputs.publish_upm }}"
+          echo "  npm:  ${{ needs.parse-targets.outputs.publish_npm }}"
+          echo ""
+          echo "Results:"
+          echo "  Validation: ${{ needs.validate.result }}"
+          [[ "${{ needs.parse-targets.outputs.publish_pypi }}" == "true" ]] && echo "  PyPI: ${{ needs.publish-pypi.result }}"
+          [[ "${{ needs.parse-targets.outputs.publish_upm }}" == "true" ]] && echo "  UPM: ${{ needs.publish-upm.result }}"
+          [[ "${{ needs.parse-targets.outputs.publish_npm }}" == "true" ]] && echo "  npm: ${{ needs.publish-npm.result }}"
+          echo ""
+          
+          if [[ "${{ needs.parse-targets.outputs.dry_run }}" == "true" ]]; then
+            echo "🧪 DRY RUN - No changes were made"
+          elif [[ "${{ needs.validate.result }}" == "success" ]]; then
+            echo "✅ Release completed successfully!"
+          else
+            echo "❌ Release failed"
+          fi

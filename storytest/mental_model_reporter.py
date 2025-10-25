@@ -66,7 +66,7 @@ def verify_artifacts(config: Dict) -> tuple[int, int, List[str]]:
     return found, len(missing), missing
 
 
-def verify_claims(config: Dict, artifacts_found: int, artifacts_total: int) -> tuple[int, int, List[str]]:
+def verify_claims(config: Dict, artifacts_found: int) -> tuple[int, int, List[str]]:
     """Verify claimed capabilities have evidence."""
     gaps = []
     verified = 0
@@ -183,7 +183,7 @@ def validate_quality_gates(config: Dict) -> tuple[int, int, List[str]]:
 def generate_report(config: Dict) -> MentalModelReport:
     """Generate comprehensive mental model adherence report."""
     artifacts_found, artifacts_missing, missing_list = verify_artifacts(config)
-    claims_verified, claims_total, claim_gaps = verify_claims(config, artifacts_found, artifacts_total=len(config.get("required_artifacts", [])))
+    claims_verified, claims_total, claim_gaps = verify_claims(config, artifacts_found)
     gates_passed, gates_total, gate_failures = validate_quality_gates(config)
     
     # Calculate completeness
@@ -192,7 +192,7 @@ def generate_report(config: Dict) -> MentalModelReport:
     completeness = (total_success / total_checks * 100) if total_checks > 0 else 0
     
     # Determine status
-    if gates_passed == gates_total and claim_gaps == []:
+    if gates_passed == gates_total and not claim_gaps:
         status = "COMPLETE"
     elif artifacts_missing == 0 and gates_passed >= gates_total - 1:
         status = "INCOMPLETE"

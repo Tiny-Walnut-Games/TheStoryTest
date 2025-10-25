@@ -1,0 +1,29 @@
+# Exclude all C# and Unity-related files from npm publishing
+Packages/
+Assets/
+Library/
+ProjectSettings/
+*.meta
+*.csproj
+*.sln
+*.unitypackage
+
+# Exclude Python-specific from npm (even though it's in repo)
+__pycache__/
+*.egg-info/
+*.pyc
+dist/
+build/
+
+# Exclude tests and examples  
+tests/
+Samples~/
+
+# Exclude CI/CD except what's needed
+.github/
+
+# Exclude build artifacts and debug
+obj/
+bin/
+.debug/
+Logs/

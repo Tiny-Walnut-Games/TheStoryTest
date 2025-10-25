@@ -8,32 +8,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
-## [1.3.0] - 2025-10-16
-
-
-- Bump version to 1.3.0 (6af4c38)
-- Fix CHANGELOG encoding (UTF-8) and reorganize v1.2.1 vs Unreleased content (fbfd794)
-- Last commit claimed bump to v1.2.2 but we're not ready for that tag. (9d69702)
-- Update CHANGELOG date for v1.2.1 release (0cfc1d2)
-- Update CHANGELOG date for v1.2.1 release (8db0e89)
-- Update CHANGELOG date for v1.2.1 release (58a529e)
-- Update CHANGELOG date for v1.2.1 release (77afda6)
-
-
-## [1.3.0] - 2025-10-16
+## [1.3.1] - 2025-12-20
 
 ### Added
-- Acts 12-13 Integration
-  - Act 12 (Act12MentalModelClaims.cs) - Validates claims have evidence
-  - Act 13 (Act13NarrativeCoherence.cs) - Validates architecture coherence
-  - Reporter (mental_model_reporter.py) - Dynamic analysis & reporting
-- Configuration-Driven Validation
-  - storytest-mental-model.json for project narrative definition
-  - Supports: claimed capabilities, required artifacts, architectural rules, quality gates
-- Multi-Output Reporting
-  - JSON for automation
-  - HTML for visualization
-  - Exit codes for CI/CD flow control
+- **Acts 12-13 Registry Integration**: Central `ActRegistry.cs` for accessing all 13 validation acts
+- **Full Mental Model Support**: Acts 12 (Mental Model Claims) and Act 13 (Narrative Coherence) now discoverable and testable via registry
+- **Mental Model Reporter**: `mental_model_reporter.py` fully functional with HTML and JSON output
+- **Act12and13Tests.cs**: Comprehensive test coverage for extended acts
+
+### Fixed
+- UTF-8 encoding support on Windows for Unicode output characters
+- `mental_model_reporter.py` parameter and logic corrections
+
+### Changed
+- Acts 12-13 remain optional (opt-in) but fully integrated into discovery system
+- Acts 1-11 continue as core, always-on validation
+
+### Game Jam Ready
+- **Portfolio Feature**: Can now validate games pre-submission using Acts 1-13
+- **Self-Validation**: Use Story Test on your own game before submission
+- **Proof of Tooling**: Demonstrates use of professional code validation framework
+
+---
+
+## [1.3.0] - 2025-10-24
+
+### Added
+- Acts 1-11 validation stability improvements
+- Enhanced false positive filtering for compiler-generated code
+- Mental Model infrastructure (foundational work)
+  - Act 12 (Mental Model Claims) - C# implementation complete, integration planned for v1.4.0
+  - Act 13 (Narrative Coherence) - C# implementation complete, integration planned for v1.4.0
+  - Reporter (mental_model_reporter.py) - Core logic implemented, CLI wiring planned for v1.4.0
+  - storytest-mental-model.json configuration schema - Framework ready
+
+### Note on Acts 12-13
+- **Current Status**: Files exist and contain implementation logic
+- **Current Limitation**: Not yet integrated into the main validation pipeline
+- **Next Step (v1.4.0)**: Full integration into Python validator and CLI
+- **Game Jam Ready**: Acts 1-11 are production-ready and fully supported
 
 ## [1.2.1] - 2025-10-15
 

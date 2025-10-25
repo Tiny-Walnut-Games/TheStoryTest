@@ -1,12 +1,16 @@
 # Mental Model Validation Integration
 
+## Status: DRAFT / Phase 2 (v1.4.0)
+
+**Important**: Acts 12 & 13 are **not yet integrated** into the main validation pipeline. This document describes the planned architecture for v1.4.0. The C# Act implementations and Python reporter exist but are not called during normal `storytest validate` runs.
+
 ## Summary
 
-The Story Test Framework now includes **Acts 12 & 13** for mental model validation, ensuring projects don't just have complete code (Acts 1-11) but also maintain narrative coherence between what they claim and what they deliver.
+The Story Test Framework is building **Acts 12 & 13** for mental model validation, to ensure projects don't just have complete code (Acts 1-11) but also maintain narrative coherence between what they claim and what they deliver. This feature is currently in foundational stage.
 
 ---
 
-## What Was Added
+## Planned for v1.4.0 (Currently Implemented but Not Integrated)
 
 ### 1. New Validation Acts (C#)
 
